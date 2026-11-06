@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gambarku Hidup</title>
+  <meta name="description" content="Gambar anak berdiri dan bergoyang di atas kertasnya, lalu mengajak berhitung dan mengeja.">
+  <meta name="theme-color" content="#eef3f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121a1c" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Gambarku">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="20" width="26" height="8" rx="2" fill="var(--leaf)"/><path d="M9 20 L9 8 C9 5 11 4 13 4 L19 4 C21 4 23 5 23 8 L23 20" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><circle cx="13.5" cy="11" r="1.5" fill="var(--ink)"/><circle cx="18.5" cy="11" r="1.5" fill="var(--ink)"/></svg>
+      Gambarku Hidup
+    </div>
+    <div class="top-right">
+      <button class="btn small" id="installBtn" type="button" hidden>Pasang di HP</button>
+      <span class="tag">Prototipe · Level 1</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" id="intro">
+      <div class="intro-text">
+        <h1>Gambar anak berdiri dan bergoyang di atas kertasnya.</h1>
+        <p class="lead">Cetak lembarnya, biarkan anak mewarnai atau menebalkan huruf, lalu foto lembarnya di sini. Gambarnya terpotong, berdiri, lalu mengajak anak berhitung dan mengeja.</p>
+        <div class="actions">
+          <label class="btn primary" for="file">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>
+            Foto lembar yang sudah diwarnai
+          </label>
+          <input class="vh" id="file" type="file" accept="image/*" capture="environment">
+          <button class="btn" id="liveBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>
+            Kamera langsung
+          </button>
+        </div>
+        <p class="note" id="liveNote" hidden>Kamera langsung butuh alamat HTTPS. Pakai tombol foto dulu.</p>
+        <p class="note" id="iosNote" hidden>Supaya bisa dibuka seperti aplikasi: ketuk tombol Bagikan di Safari, lalu pilih <b>Tambah ke Layar Utama</b>.</p>
+      </div>
+
+      <div class="intro-side">
+        <p class="demo-label">Belum cetak? Coba dengan foto contoh</p>
+        <div class="demos">
+          <button class="demo" type="button" data-demo="warna"><img alt="Contoh foto lembar mewarnai sapi" src="/demo/photo-warna.jpg" width="1200" height="1600" decoding="async"><b>Lembar 1 · Mewarnai</b><span>Sapi berdiri, lalu hitung kakinya</span></button>
+          <button class="demo" type="button" data-demo="tebal"><img alt="Contoh foto lembar menebalkan huruf SAPI" src="/demo/photo-tebal.jpg" width="1200" height="1600" decoding="async"><b>Lembar 2 · Menulis</b><span>Huruf berdiri, lalu eja SA-PI</span></button>
+        </div>
+        <ol class="how">
+          <li>Cetak PDF, anak mewarnai atau menebalkan huruf.</li>
+          <li>Foto seluruh halaman, 4 kotak hitam ikut terlihat.</li>
+          <li>Gambar berdiri, anak berhitung atau mengeja.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="play" id="play" hidden>
+      <div class="stage-wrap" id="stageWrap">
+        <div class="stage" id="stage">
+          <img id="bg" alt="">
+          <video id="vid" playsinline muted hidden></video>
+          <canvas id="gl" aria-label="Gambar yang berdiri. Ketuk untuk berinteraksi."></canvas>
+          <div class="chip" id="chip" hidden></div>
+          <div class="busy" id="busy" hidden>Memotong gambar…</div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="toolbar">
+          <button class="btn small" id="backBtn" type="button" aria-label="Ganti lembar">← Ganti</button>
+          <button class="btn small" id="replayBtn" type="button">Ulangi</button>
+          <button class="btn small" id="viewBtn" type="button">Putar 3D</button>
+          <button class="btn small primary" id="captureBtn" type="button" hidden disabled>Hidupkan!</button>
+        </div>
+        <div class="panel" id="panel" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <p class="foot">Prototipe. Suara memakai suara bawaan HP; produk akhirnya memakai rekaman suara asli.</p>
+</div>
+<p class="toast" id="toast" role="status" hidden></p>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

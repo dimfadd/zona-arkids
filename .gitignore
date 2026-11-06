@@ -8,3 +8,7 @@ prototype/build/tebal-sapi.png
 prototype/build/mask-*.svg
 prototype/build/Kotak-Hidup-*.pdf
 __pycache__/
+apps/scan/dist/
+apps/scan/dev-dist/
+apps/scan/e2e/out/
+.vercel/
