@@ -1,6 +1,8 @@
-# Calistung AR for Kids · catatan proyek
+# Roket Kertas · catatan proyek
 
-(Nama kerja lama: Gambarku Hidup. Nama produk sejak Nov 2026: **Calistung AR for Kids**.)
+Nama produk: **Roket Kertas**, keterangan "Belajar calistung dari kertas" (dipilih Nov 2026).
+Nama sebelumnya: Gambarku Hidup (nama kerja), lalu sempat "Calistung AR for Kids".
+Merek, domain, dan akun sosial belum dicek; pemilik perlu cek PDKI kelas 9, 16, 41.
 
 Baca juga `prototype/CLAUDE.md` (riset, desain lembar, cara kerja mesin AR). File ini mencatat
 struktur repo dan keputusan yang diambil sesudahnya.
@@ -54,8 +56,10 @@ Konten mengalir: `prototype/sheets.py` → `build_assets.py` → `config.json` �
 - **Membaca (disetujui):** metode suku kata, audio "sa · pi · sapi". Eja nama huruf ("es, a, sa")
   hanya pilihan di laci "Untuk Ayah/Bunda".
 - **Hitung:** anak mengetuk tiap bagian, lalu MEMILIH jumlahnya dari kartu angka (kardinalitas).
-- **Logo:** belum ada. Ikon PWA sekarang placeholder ("Ca" di kertas bergaris). Prompt logo:
-  `docs/brand/logo-prompt.md`.
+- **Logo:** roket kertas berdiri dari buku tulis (dibuat pemilik dengan generator AI dari
+  `docs/brand/logo-prompt.md`). File asli raster 1254 px: `docs/brand/logo-roket-kertas-asli.webp`.
+  Turunan di `apps/scan/public/brand` dan `public/icons` (dipotong rapat; maskable 70%).
+  **Masih perlu versi vektor (SVG)** sebelum dicetak atau didaftarkan.
 - **Ilustrasi:** dibuat Claude sebagai SVG garis (bagian terstruktur → mask dan titik ketuk otomatis).
 - **Marketplace:** [Kemungkinan Besar] TikTok Shop tidak menerima produk digital; afiliasi butuh SKU fisik.
 - **Backend:** Vercel (serverless functions) + **Postgres Neon**.

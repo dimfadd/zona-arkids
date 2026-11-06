@@ -1,4 +1,4 @@
-/* Calistung AR for Kids - scan app. Port of prototype/src/app.js to a Vite + TS module. */
+/* Roket Kertas - scan app. Port of prototype/src/app.js to a Vite + TS module. */
 // Andika: letters children read (single-storey a/g, distinct I/l/1). Plus Jakarta Sans: parent-facing UI.
 import "@fontsource/andika/latin-400.css";
 import "@fontsource/andika/latin-700.css";

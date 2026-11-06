@@ -1,5 +1,5 @@
 /*
- * Calistung AR for Kids: a school exercise book (buku tulis) and paper cut-outs.
+ * Roket Kertas: a school exercise book (buku tulis) and paper cut-outs.
  * Colours come from the printed sheets: white paper, the brown-black line-art ink,
  * the blue ruling and red margin line of a buku tulis. Dark mode is a chalkboard.
  * One accent only (red margin), used for the main action on each screen.
@@ -60,8 +60,12 @@ main { display: contents; }
 
 /* ---------- header ---------- */
 .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; }
-.merek { font: 800 1.12rem/1.1 var(--font-ui); letter-spacing: -0.01em; }
-.merek-kecil { font-weight: 500; color: var(--tinta-2); }
+.merek { display: inline-flex; align-items: center; gap: 10px; color: var(--tinta); text-decoration: none; min-height: 44px; }
+/* the logo art has a white page around it; on the chalkboard (dark) it sits on a white paper tile */
+.merek-logo { width: 65px; height: 56px; object-fit: contain; border-radius: 6px; background: #ffffff; flex: none; }
+.merek-teks { display: flex; flex-direction: column; gap: 2px; }
+.merek-nama { font: 800 1.15rem/1.05 var(--font-ui); letter-spacing: -0.01em; }
+.merek-kecil { font: 500 .78rem/1.2 var(--font-ui); color: var(--tinta-2); }
 
 h1 { font: 800 clamp(1.7rem, 7.2vw, 2.7rem)/1.18 var(--font-ui); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
 .lead { margin: 0; color: var(--tinta-2); max-width: 56ch; }

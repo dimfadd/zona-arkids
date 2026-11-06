@@ -1,4 +1,4 @@
-# Prompt logo: Calistung AR for Kids
+# Prompt logo: Roket Kertas (dulu "Calistung AR for Kids")
 
 Pakai di generator logo AI. Buat **simbol saja**; tulisan nama dipasang terpisah oleh desainer
 dengan Plus Jakarta Sans ExtraBold, karena generator AI sering salah mengeja teks.

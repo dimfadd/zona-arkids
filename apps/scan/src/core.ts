@@ -1,5 +1,5 @@
 /**
- * Gambarku Hidup - core geometry & image helpers.
+ * Roket Kertas - core geometry & image helpers.
  * Typed port of prototype/src/core.js. The math is unchanged on purpose:
  * it is covered by test/core.test.ts against the simulated phone photos.
  */

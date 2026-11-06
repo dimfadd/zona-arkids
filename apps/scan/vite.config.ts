@@ -7,12 +7,12 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false, // registered in src/main.ts
-      includeAssets: ["favicon.svg", "icons/apple-touch-icon.png", "demo/*.jpg"],
+      includeAssets: ["icons/favicon-64.png", "icons/apple-touch-icon.png", "brand/*.png", "demo/*.jpg"],
       manifest: {
         id: "/",
-        name: "Calistung AR for Kids",
-        short_name: "Calistung AR",
-        description: "Anak mewarnai dan menebalkan huruf di kertas, lalu gambarnya berdiri di layar dan mengajak berhitung serta membaca.",
+        name: "Roket Kertas",
+        short_name: "Roket Kertas",
+        description: "Belajar calistung dari kertas. Anak mewarnai dan menebalkan huruf, lalu gambarnya berdiri di layar dan mengajak berhitung serta membaca.",
         lang: "id",
         start_url: "/",
         scope: "/",

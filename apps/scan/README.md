@@ -1,4 +1,4 @@
-# Gambarku Hidup · scan app (PWA)
+# Roket Kertas · scan app (PWA)
 
 Vite + TypeScript port of `prototype/`. Photo mode, live camera, paper-cutout AR, count and spell tasks.
 three.js, js-aruco (patched) and fonts are bundled, so the app works offline once installed.
