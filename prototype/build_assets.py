@@ -192,7 +192,12 @@ def build_config():
                 pieces.append({"id": f"letter{i}", "kind": "letter", "ch": L["ch"], "index": i,
                                "box": [round(L["x"], 3), S.TILE_Y, S.TILE_W, S.TILE_H],
                                "hingeY": S.TILE_Y + S.TILE_H, "radius": 5})
-        task = ({"type": "count", "prompt": "Ada berapa kaki sapi?", "answer": 4}
+        questions = [{"id": q["id"], "prompt": q["prompt"], "noun": q["noun"], "piece": "cow",
+                      "items": [{"x": round(cow["x"] + it["cx"] * sc, 2), "y": round(cow["y"] + it["cy"] * sc, 2),
+                                 "r": round(it["r"] * sc, 2)} for it in q["items"]]}
+                     for q in S.COW_COUNT]
+        # prompt/answer kept for the old prototype app, which only knows the legs question
+        task = ({"type": "count", "prompt": "Ada berapa kaki sapi?", "answer": 4, "questions": questions}
                 if key == "warna-sapi" else
                 {"type": "spell", "syllables": S.SYLLABLES, "word": S.WORD})
         cfg["sheets"][key] = {"title": "Sapi" if key == "warna-sapi" else "SAPI",

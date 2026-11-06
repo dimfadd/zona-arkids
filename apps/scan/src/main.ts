@@ -21,8 +21,10 @@ interface Piece {
   mask?: string; radius?: number; legs?: Leg[]; ch?: string;
 }
 interface Syllable { text: string; letters: number[]; say: string[] }
+interface CountItem { x: number; y: number; r: number }
+interface CountQuestion { id: string; prompt: string; noun: string; piece: string; items: CountItem[] }
 type Task =
-  | { type: "count"; prompt: string; answer: number }
+  | { type: "count"; prompt: string; answer: number; questions?: CountQuestion[] }
   | { type: "spell"; syllables: Syllable[]; word: { text: string; say: string } };
 interface Sheet { title: string; markers: Record<string, [number, number][]>; pieces: Piece[]; task: Task }
 interface Config { page: [number, number]; sheets: Record<string, Sheet> }
@@ -43,7 +45,7 @@ const el = {
   file: $<HTMLInputElement>("#file"), liveBtn: $<HTMLButtonElement>("#liveBtn"), backBtn: $<HTMLButtonElement>("#backBtn"),
   replayBtn: $<HTMLButtonElement>("#replayBtn"), viewBtn: $<HTMLButtonElement>("#viewBtn"),
   captureBtn: $<HTMLButtonElement>("#captureBtn"), installBtn: $<HTMLButtonElement>("#installBtn"),
-  liveNote: $("#liveNote"), iosNote: $("#iosNote"),
+  liveNote: $("#liveNote"), iosNote: $("#iosNote"), zoomer: $("#zoomer"),
 };
 
 let toastTimer = 0;
@@ -56,15 +58,16 @@ function toast(msg: string, ms?: number) {
 interface PieceRT {
   pc: Piece; hinge: THREE.Group; front: THREE.Mesh; back: THREE.Mesh; hole: THREE.Mesh; shadow: THREE.Group;
   shadowMesh: THREE.Mesh; delay: number; target: number; phase: number; hopAt: number; hopH: number;
-  badges: THREE.Mesh[]; cur?: number; yaw?: number;
+  badges: Record<string, THREE.Mesh[]>; cur?: number; yaw?: number; calm?: number;
 }
+interface TaskState { type: string; playing: boolean; qi: number; counted: number[]; solved: Set<string> }
 type Mode = "idle" | "photo" | "live-scan" | "live";
 const S = {
   mode: "idle" as Mode,
   W: 0, H: 0, f: 1000,
   sheetKey: null as string | null, sheet: null as Sheet | null,
   pieces: [] as PieceRT[], t0: 0, view: "ar" as "ar" | "3d", yaw: -18 * DEG, pitch: 52 * DEG,
-  task: null as null | { type: string; counted: number[]; playing: boolean },
+  task: null as null | TaskState,
   stream: null as MediaStream | null, lastSeen: 0, smooth: null as [number, number][] | null,
   liveH: null as Mat3 | null, liveKey: null as string | null, liveCount: 0, pageTex: null as THREE.Texture | null,
   savedPose: null as { R: Vec3[]; t: Vec3 } | null, photoUrl: null as string | null, pausedLive: false,
@@ -140,6 +143,7 @@ function layout() {
   const w = Math.round(S.W * s), h = Math.round(S.H * s);
   el.stage.style.width = w + "px"; el.stage.style.height = h + "px"; el.stage.style.aspectRatio = "auto";
   renderer.setSize(w, h, false);
+  if (zoomed) requestAnimationFrame(() => zoomToQuestion(false));
 }
 new ResizeObserver(() => layout()).observe(el.stageWrap);
 window.addEventListener("resize", layout);
@@ -215,7 +219,7 @@ function clearPieces() {
       const mat = m.material as BasicMat;
       m.geometry.dispose(); mat.map?.dispose(); mat.alphaMap?.dispose(); mat.dispose();
     });
-    p.badges.forEach((b) => { const mat = b.material as BasicMat; mat.map?.dispose(); mat.dispose(); b.geometry.dispose(); });
+    Object.values(p.badges).flat().forEach((b) => { const mat = b.material as BasicMat; mat.map?.dispose(); mat.dispose(); b.geometry.dispose(); });
   }
   S.pieces = [];
 }
@@ -270,20 +274,23 @@ async function buildPieces(src: RGBAImage, H: Mat3) {
     const p: PieceRT = {
       pc, hinge, front: frontMesh, back: backMesh, hole: holeMesh, shadow, shadowMesh,
       delay: 0.25 + i * 0.16, target: (pc.kind === "letter" ? 74 : 70) * DEG, phase: i * 1.3 + 0.4,
-      hopAt: 0, hopH: pc.kind === "letter" ? 9 : 14, badges: [],
+      hopAt: 0, hopH: pc.kind === "letter" ? 9 : 14, badges: {},
     };
-    pc.legs?.forEach((leg) => {
-      const b = badge("");
-      b.position.set(leg.x, leg.y - pc.hingeY, -0.6); b.visible = false;
-      hinge.add(b); p.badges.push(b);
-    });
+    // one hidden number badge per countable item, shown when the child taps it
+    for (const q of countQuestions(sheet).filter((q) => q.piece === pc.id)) {
+      p.badges[q.id] = q.items.map((it) => {
+        const b = badge("", Math.max(8, Math.min(13, it.r * 2.2)));
+        b.position.set(it.x, it.y - pc.hingeY, -0.6); b.visible = false;
+        hinge.add(b); return b;
+      });
+    }
     S.pieces.push(p); i++;
   }
 }
 
-function badge(text: string) {
+function badge(text: string, size = 13) {
   const c = document.createElement("canvas"); c.width = c.height = 128;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(13, 13),
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size),
     new THREE.MeshBasicMaterial({ map: tex(c), transparent: true, depthTest: false, side: THREE.BackSide }));
   m.renderOrder = 10; m.userData.canvas = c; drawBadge(m, text); return m;
 }
@@ -324,10 +331,15 @@ function animatePieces(now: number) {
     const k = Math.min(1, Math.max(0, (t - p.delay) / 0.95));
     const base = p.cur * (k > 0 ? easeOutBack(k) : 0);
     const settle = Math.min(1, Math.max(0, (t - p.delay - 0.95) / 0.8));
-    const amp = (reduceMotion ? 1.2 : 5) * DEG;
+    // Hold still while the child is counting on this piece: the head swings ~12 mm at 5 degrees,
+    // more than the size of an eye, so taps would miss a moving target.
+    const counting = S.task?.type === "count" && countingOn(p);
+    const calmWant = counting ? 0.08 : 1;
+    p.calm = p.calm == null ? calmWant : p.calm + (calmWant - p.calm) * 0.06;
+    const amp = (reduceMotion ? 1.2 : 5) * DEG * p.calm;
     const th = base + settle * amp * Math.sin(t * 2 * Math.PI * 0.62 + p.phase);
     p.hinge.rotation.x = th;
-    p.hinge.rotation.z = p.yaw * Math.min(1, k * 1.5) + settle * (reduceMotion ? 0.01 : 0.04) * Math.sin(t * 2 * Math.PI * 0.31 + p.phase * 1.7);
+    p.hinge.rotation.z = p.yaw * Math.min(1, k * 1.5) + settle * p.calm * (reduceMotion ? 0.01 : 0.04) * Math.sin(t * 2 * Math.PI * 0.31 + p.phase * 1.7);
     let hz = 0, sc = 1;
     if (p.hopAt) {
       const ht = (now - p.hopAt) / 1000;
@@ -379,42 +391,124 @@ function say(text: string, rate?: number) {
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ----------------------------------------------------------------- tasks
-const NUM = ["nol", "satu", "dua", "tiga", "empat", "lima"];
+const NUM = ["nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh"];
+
+/** Counting questions of a sheet. Older configs only have the legs question. */
+function countQuestions(sheet: Sheet): CountQuestion[] {
+  const t = sheet.task;
+  if (t.type !== "count") return [];
+  if (t.questions?.length) return t.questions;
+  const cow = sheet.pieces.find((p) => p.legs);
+  return cow ? [{ id: "kaki", prompt: t.prompt, noun: "Kaki sapi", piece: cow.id, items: cow.legs! }] : [];
+}
+
 function setupTask() {
   const task = S.sheet!.task;
-  S.task = { type: task.type, counted: [], playing: false };
-  if (task.type === "count") renderCount(); else renderSpell("ready");
+  S.task = { type: task.type, counted: [], playing: false, qi: 0, solved: new Set() };
+  if (task.type === "count") openQuestion(0, false); else renderSpell("ready");
+}
+
+function currentQuestion() { return countQuestions(S.sheet!)[S.task!.qi]; }
+function countingOn(p: PieceRT) {
+  const q = S.task && S.sheet ? currentQuestion() : null;
+  return !!q && q.piece === p.pc.id && S.task!.counted.length < q.items.length;
+}
+function questionPiece(q: CountQuestion) { return S.pieces.find((p) => p.pc.id === q.piece); }
+
+function openQuestion(i: number, speak = true) {
+  const qs = countQuestions(S.sheet!);
+  S.task!.qi = i; S.task!.counted = [];
+  S.pieces.forEach((p) => Object.values(p.badges).flat().forEach((b) => (b.visible = false)));
+  renderCount();
+  // the first question waits for the piece to finish standing up before zooming
+  const settle = Math.max(0, S.t0 + 1500 - performance.now());
+  setTimeout(() => { if (S.task?.qi === i) zoomToQuestion(true); }, settle);
+  if (speak) say(qs[i].prompt);
 }
 
 function renderCount() {
-  const task = S.sheet!.task as Extract<Task, { type: "count" }>;
-  const n = task.answer, c = S.task!.counted.length, done = c >= n;
+  const qs = countQuestions(S.sheet!), q = qs[S.task!.qi], n = q.items.length;
+  const c = S.task!.counted.length, done = c >= n, last = S.task!.qi === qs.length - 1;
+  const allDone = qs.every((x) => S.task!.solved.has(x.id));
+  const dots = qs.map((x, i) => `<button class="qdot ${i === S.task!.qi ? "cur" : ""} ${S.task!.solved.has(x.id) ? "ok" : ""}" type="button" data-q="${i}" aria-label="Soal ${i + 1}">${i + 1}</button>`).join("");
   el.panel.innerHTML = `
-    <h2>${done ? `Hebat! Kaki sapi ada ${n}.` : task.prompt}</h2>
-    <p class="${done ? "success" : ""}">${done ? "Ketuk sapinya untuk mendengar suaranya, atau hitung ulang." : "Ketuk kaki sapi satu per satu di gambar. Hitung bersama anak."}</p>
-    <div class="row"><div class="slots">${Array.from({ length: n }, (_, i) => `<div class="slot ${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</div>`).join("")}</div>
-    ${c ? `<button class="btn small" id="recount" type="button">Hitung ulang</button>` : ""}</div>`;
-  const rc = document.getElementById("recount");
-  if (rc) rc.onclick = resetCount;
+    <div class="qnav" role="group" aria-label="Pilih soal">${dots}</div>
+    <h2>${done ? `Hebat! ${q.noun} ada ${NUM[n] || n}.` : q.prompt}</h2>
+    <p class="${done ? "success" : ""}">${done
+      ? (allDone ? "Semua soal di lembar ini sudah selesai." : "Lanjut ke soal berikutnya, atau hitung ulang.")
+      : "Ketuk satu per satu di gambar. Hitung bersama anak."}</p>
+    <div class="slots">${Array.from({ length: n }, (_, i) => `<div class="slot ${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</div>`).join("")}</div>
+    <div class="row">
+      ${c ? `<button class="btn small" id="recount" type="button">Hitung ulang</button>` : ""}
+      ${last
+        ? (allDone ? `<button class="btn small primary" id="restartQ" type="button">Ulangi dari soal 1</button>` : "")
+        : `<button class="btn small ${done ? "primary" : ""}" id="nextQ" type="button">Soal berikutnya →</button>`}
+    </div>`;
+  document.getElementById("recount")?.addEventListener("click", resetCount);
+  document.getElementById("nextQ")?.addEventListener("click", () => openQuestion(S.task!.qi + 1));
+  document.getElementById("restartQ")?.addEventListener("click", () => { S.task!.solved.clear(); openQuestion(0); });
+  el.panel.querySelectorAll<HTMLElement>("[data-q]").forEach((b) => b.addEventListener("click", () => openQuestion(Number(b.dataset.q))));
 }
 function resetCount() {
-  S.task!.counted = []; S.pieces.forEach((p) => p.badges.forEach((b) => (b.visible = false))); renderCount();
+  S.task!.counted = [];
+  S.pieces.forEach((p) => Object.values(p.badges).flat().forEach((b) => (b.visible = false)));
+  renderCount();
 }
 
 function onCountTap(p: PieceRT, pageX: number, pageY: number, now: number) {
-  const task = S.sheet!.task as Extract<Task, { type: "count" }>;
-  const legs = p.pc.legs || [];
+  const q = currentQuestion();
+  if (q.piece !== p.pc.id) { hop(p, now); return; }
   let hit = -1, best = 1e9;
-  legs.forEach((l, i) => { const d = Math.hypot(pageX - l.x, pageY - l.y); if (d < l.r * 1.45 && d < best) { best = d; hit = i; } });
+  q.items.forEach((it, i) => { const d = Math.hypot(pageX - it.x, pageY - it.y); if (d < it.r * 1.45 && d < best) { best = d; hit = i; } });
   if (hit < 0) { hop(p, now); say("mooo", 0.7); return; }
-  if (S.task!.counted.includes(hit)) { toast("Kaki itu sudah dihitung. Cari kaki yang lain."); return; }
+  if (S.task!.counted.includes(hit)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
   S.task!.counted.push(hit);
-  const k = S.task!.counted.length;
-  drawBadge(p.badges[hit], String(k)); p.badges[hit].visible = true;
+  const k = S.task!.counted.length, badges = p.badges[q.id];
+  drawBadge(badges[hit], String(k)); badges[hit].visible = true;
+  if (k >= q.items.length) S.task!.solved.add(q.id);
   renderCount();
-  if (k >= task.answer) {
-    say(NUM[k]).then(() => { hop(p); confetti(); return say(`Hebat! Kaki sapi ada ${NUM[k]}.`); });
+  if (k >= q.items.length) {
+    say(NUM[k]).then(() => { hop(p); confetti(); return say(`Hebat! ${q.noun} ada ${NUM[k] || k}.`); });
   } else say(NUM[k] || String(k));
+}
+
+// ----------------------------------------------------------------- zoom
+// Small parts (eyes, horns) sit ~20 px apart on a phone screen, smaller than a fingertip.
+// Zoom the photo + 3D layer together until neighbouring items are at least MIN_GAP apart.
+const MIN_GAP = 56, MIN_DIAMETER = 44, MAX_ZOOM = 3;
+let zoomed = false;
+function setZoom(s: number, tx: number, ty: number, animate: boolean) {
+  el.zoomer.style.transition = animate && !reduceMotion ? "" : "none";
+  el.zoomer.style.transform = s === 1 ? "" : `translate(${tx}px, ${ty}px) scale(${s})`;
+  zoomed = s !== 1;
+}
+function resetZoom() { setZoom(1, 0, 0, true); }
+
+function zoomToQuestion(animate: boolean) {
+  if (!S.task || S.task.type !== "count" || S.view !== "ar" || S.mode !== "photo") { resetZoom(); return; }
+  const q = currentQuestion(), p = q && questionPiece(q);
+  if (!p) { resetZoom(); return; }
+  const w = el.stage.clientWidth, h = el.stage.clientHeight;
+  pageRoot.updateMatrixWorld(true);
+  const toPx = (x: number, y: number) => {
+    const v = new THREE.Vector3(x, y - p.pc.hingeY, 0).applyMatrix4(p.hinge.matrixWorld).project(camera);
+    return [(v.x + 1) / 2 * w, (1 - v.y) / 2 * h];
+  };
+  const pts = q.items.map((it) => { const c = toPx(it.x, it.y), e = toPx(it.x + it.r, it.y); return { x: c[0], y: c[1], r: Math.hypot(e[0] - c[0], e[1] - c[1]) }; });
+  let need = 1;
+  for (let i = 0; i < pts.length; i++) {
+    need = Math.max(need, MIN_DIAMETER / (2 * pts[i].r || 1));
+    for (let j = i + 1; j < pts.length; j++) need = Math.max(need, MIN_GAP / (Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) || 1));
+  }
+  const pad = 12;
+  const x0 = Math.min(...pts.map((t) => t.x - t.r)) - pad, x1 = Math.max(...pts.map((t) => t.x + t.r)) + pad;
+  const y0 = Math.min(...pts.map((t) => t.y - t.r)) - pad, y1 = Math.max(...pts.map((t) => t.y + t.r)) + pad;
+  const fit = Math.min(w / (x1 - x0), h / (y1 - y0));
+  const s = Math.max(1, Math.min(need, fit, MAX_ZOOM));
+  if (s < 1.08) { resetZoom(); return; }
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const tx = Math.min(0, Math.max(w - s * w, w / 2 - s * cx)), ty = Math.min(0, Math.max(h - s * h, h / 2 - s * cy));
+  setZoom(s, tx, ty, animate);
 }
 
 function renderSpell(phase: "ready" | "play" | "done", caption?: string) {
@@ -529,7 +623,7 @@ function showPlay() {
   requestAnimationFrame(layout);
 }
 function resetToIntro() {
-  stopLive(); clearPieces(); S.mode = "idle"; S.view = "ar"; S.task = null; S.savedPose = null;
+  stopLive(); clearPieces(); resetZoom(); S.mode = "idle"; S.view = "ar"; S.task = null; S.savedPose = null;
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   el.play.hidden = true; el.intro.hidden = false; el.panel.innerHTML = ""; el.bg.removeAttribute("src");
   el.stage.classList.remove("view3d"); pagePlane.visible = false; el.bg.hidden = false; el.viewBtn.textContent = "Putar 3D";
@@ -551,7 +645,7 @@ async function runPhoto(src: string) {
   pagePlane.visible = false; pageRoot.visible = true; outline.visible = false;
   el.vid.hidden = true; el.bg.hidden = false; el.captureBtn.hidden = true; el.chip.hidden = true;
   el.viewBtn.hidden = false; el.replayBtn.hidden = false;
-  clearPieces();
+  clearPieces(); setZoom(1, 0, 0, false);
   el.panel.innerHTML = `<h2>Membaca lembar…</h2><p>Mencari 4 kotak hitam di pojok.</p>`;
   el.busy.hidden = false; el.busy.textContent = "Membaca lembar…";
   try {
@@ -719,16 +813,17 @@ el.captureBtn.addEventListener("click", captureLive);
 el.backBtn.addEventListener("click", goBack);
 el.replayBtn.addEventListener("click", () => {
   S.t0 = performance.now();
-  if (S.task?.type === "count") resetCount();
+  if (S.task?.type === "count") openQuestion(S.task.qi, false);
 });
 el.viewBtn.addEventListener("click", () => {
   if (S.view === "ar") {
-    S.view = "3d"; el.bg.hidden = true; pagePlane.visible = true; el.stage.classList.add("view3d");
+    S.view = "3d"; el.bg.hidden = true; pagePlane.visible = true; el.stage.classList.add("view3d"); setZoom(1, 0, 0, false);
     el.viewBtn.textContent = "Kembali ke foto"; toast("Geser gambar untuk memutar.", 2500);
   } else {
     S.view = "ar"; el.bg.hidden = false; pagePlane.visible = false; el.stage.classList.remove("view3d");
     el.viewBtn.textContent = "Putar 3D"; setCameraFromIntrinsics();
     if (S.savedPose) setPoseMatrix(S.savedPose.R, S.savedPose.t); // restore photo pose
+    requestAnimationFrame(() => zoomToQuestion(false));
   }
 });
 

@@ -95,6 +95,25 @@ COW_LEGS = [
     {"cx": 120.0, "cy": 145.0, "r": 11.0},
 ]
 
+# Counting questions on the cow (sheet 1). Item = one thing the child taps,
+# centre + radius in cow-local coords. Questions only ask about things drawn as
+# outlines, so the answer does not depend on how the child coloured them.
+COW_COUNT = [
+    {"id": "kaki", "prompt": "Ada berapa kaki sapi?", "noun": "Kaki sapi",
+     "items": [{"cx": l["cx"], "cy": l["cy"], "r": l["r"]} for l in COW_LEGS]},
+    {"id": "corak", "prompt": "Ada berapa corak bulat di badan sapi?", "noun": "Corak di badan sapi",
+     "items": [{"cx": 56.0, "cy": 71.0, "r": 10.0}, {"cx": 94.0, "cy": 62.0, "r": 8.0},
+               {"cx": 100.0, "cy": 99.0, "r": 10.0}]},
+    {"id": "mata", "prompt": "Ada berapa mata sapi?", "noun": "Mata sapi",
+     "items": [{"cx": 132.5, "cy": 58.0, "r": 5.0}, {"cx": 147.5, "cy": 58.0, "r": 5.0}]},
+    {"id": "tanduk", "prompt": "Ada berapa tanduk sapi?", "noun": "Tanduk sapi",
+     "items": [{"cx": 131.0, "cy": 35.0, "r": 6.0}, {"cx": 147.0, "cy": 35.0, "r": 6.0}]},
+    {"id": "kuping", "prompt": "Ada berapa kuping sapi?", "noun": "Kuping sapi",
+     "items": [{"cx": 115.0, "cy": 51.0, "r": 7.0}, {"cx": 163.0, "cy": 51.0, "r": 7.0}]},
+    {"id": "ekor", "prompt": "Ada berapa ekor sapi?", "noun": "Ekor sapi",
+     "items": [{"cx": 22.0, "cy": 118.0, "r": 10.0}]},
+]
+
 # ---------------------------------------------------------------- layouts
 # Sheet 1: cow box placed on page, scale 1.
 SHEET1_COW = {"x": 20.0, "y": 32.0, "scale": 1.0}

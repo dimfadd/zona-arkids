@@ -96,3 +96,24 @@ describe("geometry helpers", () => {
     expect(corr.src.length).toBe(4);
   });
 });
+
+describe("content: counting questions", () => {
+  // Every tap target must sit on the cut-out piece, or the child can never tap it.
+  it("every item lies inside its piece mask", async () => {
+    const { PNG } = await import("pngjs");
+    for (const [key, sh] of Object.entries(cfg.sheets)) {
+      const task = sh.task as { questions?: { id: string; piece: string; items: { x: number; y: number; r: number }[] }[] };
+      for (const q of task.questions || []) {
+        const pc = sh.pieces.find((p) => p.id === q.piece) as { box: number[]; mask: string };
+        const png = PNG.sync.read(Buffer.from(pc.mask.split(",")[1], "base64"));
+        const pxPerMm = png.width / pc.box[2];
+        expect(q.items.length, `${key}/${q.id} has items`).toBeGreaterThan(0);
+        for (const it of q.items) {
+          const u = Math.round((it.x - pc.box[0]) * pxPerMm), v = Math.round((it.y - pc.box[1]) * pxPerMm);
+          expect(u >= 0 && v >= 0 && u < png.width && v < png.height, `${key}/${q.id} item inside box`).toBe(true);
+          expect(png.data[(v * png.width + u) * 4], `${key}/${q.id} item (${it.x},${it.y}) on the cut-out`).toBeGreaterThan(128);
+        }
+      }
+    }
+  });
+});

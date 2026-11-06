@@ -32,6 +32,9 @@ const browser = await chromium.launch({
 });
 const failures = [];
 const check = (ok, msg) => { if (!ok) failures.push(msg); console.log(ok ? "  ok  " : "  FAIL", msg); };
+// Content limits (art too tight for a fingertip) are reported, not failed: the fix is in the drawing.
+const warnings = [];
+const warn = (ok, msg) => { if (!ok) warnings.push(msg); console.log(ok ? "  ok  " : "  WARN", msg); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function noHorizontalScroll(page, label) {
@@ -64,18 +67,33 @@ for (const vp of VIEWPORTS) {
   check(stage.bottom <= vp.viewport.height + 1, `panggung muat di layar tanpa scroll (bawah ${Math.round(stage.bottom)})`);
   await page.screenshot({ path: `${OUT}/${vp.name}-1-warna.png` });
   await noHorizontalScroll(page, "play");
-  const pts = await page.evaluate(() => {
-    const G = window.__GH, { THREE } = G, p = G.S.pieces[0];
-    G.pageRoot.updateMatrixWorld(true);
-    const r = document.querySelector("#gl").getBoundingClientRect();
-    return p.pc.legs.map((l) => {
-      const v = new THREE.Vector3(l.x, l.y - p.pc.hingeY, 0).applyMatrix4(p.hinge.matrixWorld).project(G.camera);
-      return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height];
+  // answer every counting question by tapping each item where it is drawn on screen
+  const nq = await page.evaluate(() => window.__GH.S.sheet.task.questions.length);
+  check(nq === 6, `6 soal hitung di lembar sapi (${nq})`);
+  for (let qi = 0; qi < nq; qi++) {
+    await sleep(qi === 0 ? 400 : 900); // let the zoom animation settle
+    const info = await page.evaluate(() => {
+      const G = window.__GH, { THREE } = G, S = G.S, q = S.sheet.task.questions[S.task.qi];
+      const p = S.pieces.find((x) => x.pc.id === q.piece);
+      G.pageRoot.updateMatrixWorld(true);
+      const r = document.querySelector("#gl").getBoundingClientRect();
+      const pts = q.items.map((it) => {
+        const v = new THREE.Vector3(it.x, it.y - p.pc.hingeY, 0).applyMatrix4(p.hinge.matrixWorld).project(G.camera);
+        return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height];
+      });
+      let gap = 1e9;
+      for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) gap = Math.min(gap, Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]));
+      const zoom = document.querySelector("#zoomer").style.transform;
+      return { id: q.id, pts, gap: Math.round(gap), zoom };
     });
-  });
-  for (const [x, y] of pts) { await tap(page, x, y, vp.hasTouch); await sleep(250); }
-  const counted = await page.evaluate(() => window.__GH.S.task.counted.length);
-  check(counted === 4, `4 kaki terhitung lewat ketukan (${counted})`);
+    if (info.pts.length > 1) warn(info.gap >= 44, `soal ${info.id}: jarak antar sasaran ${info.gap} px di layar (min 44, batas sentuh Apple)${info.zoom ? " · zoom" : ""}`);
+    for (const [x, y] of info.pts) { await tap(page, x, y, vp.hasTouch); await sleep(220); }
+    const got = await page.evaluate(() => window.__GH.S.task.counted.length);
+    check(got === info.pts.length, `soal ${info.id}: ${got}/${info.pts.length} terhitung`);
+    if (qi === 2) await page.screenshot({ path: `${OUT}/${vp.name}-2b-${info.id}.png` });
+    if (qi < nq - 1) await page.click("#nextQ");
+  }
+  check(await page.isVisible("#restartQ"), "semua soal selesai");
   await sleep(500);
   await page.screenshot({ path: `${OUT}/${vp.name}-2-hitung.png`, fullPage: true });
   await page.click("#viewBtn"); await sleep(800);
@@ -117,5 +135,6 @@ for (const vp of VIEWPORTS) {
 
 await browser.close();
 stopServer();
+if (warnings.length) console.log(`\n${warnings.length} peringatan (sasaran ketuk terlalu rapat untuk jari):\n  ` + warnings.join("\n  "));
 console.log(failures.length ? `\n${failures.length} GAGAL` : "\nSemua lulus");
 process.exit(failures.length ? 1 : 0);
