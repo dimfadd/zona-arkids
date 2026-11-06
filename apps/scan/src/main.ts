@@ -1,10 +1,11 @@
-/* Gambarku Hidup - scan app. Port of prototype/src/app.js to a Vite + TS module. */
-import "@fontsource/fredoka/latin-500.css";
-import "@fontsource/fredoka/latin-600.css";
-import "@fontsource/fredoka/latin-700.css";
-import "@fontsource/nunito/latin-500.css";
-import "@fontsource/nunito/latin-700.css";
-import "@fontsource/nunito/latin-800.css";
+/* Calistung AR for Kids - scan app. Port of prototype/src/app.js to a Vite + TS module. */
+// Andika: letters children read (single-storey a/g, distinct I/l/1). Plus Jakarta Sans: parent-facing UI.
+import "@fontsource/andika/latin-400.css";
+import "@fontsource/andika/latin-700.css";
+import "@fontsource/plus-jakarta-sans/latin-400.css";
+import "@fontsource/plus-jakarta-sans/latin-500.css";
+import "@fontsource/plus-jakarta-sans/latin-700.css";
+import "@fontsource/plus-jakarta-sans/latin-800.css";
 import "./style.css";
 
 import * as THREE from "three";
@@ -27,7 +28,10 @@ interface CountQuestion { id: string; prompt: string; noun: string; piece: strin
 type Task =
   | { type: "count"; prompt: string; answer: number; questions?: CountQuestion[] }
   | { type: "spell"; syllables: Syllable[]; word: { text: string; say: string } };
-interface Sheet { title: string; markers: Record<string, [number, number][]>; pieces: Piece[]; task: Task; qr?: [number, number, number] }
+interface Sheet {
+  title: string; markers: Record<string, [number, number][]>; pieces: Piece[]; task: Task;
+  qr?: [number, number, number]; guide?: string[];
+}
 interface Config { page: [number, number]; sheets: Record<string, Sheet> }
 
 const CFG = rawConfig as unknown as Config;
@@ -49,6 +53,7 @@ const el = {
   replayBtn: $<HTMLButtonElement>("#replayBtn"), viewBtn: $<HTMLButtonElement>("#viewBtn"),
   captureBtn: $<HTMLButtonElement>("#captureBtn"), installBtn: $<HTMLButtonElement>("#installBtn"),
   liveNote: $("#liveNote"), iosNote: $("#iosNote"), zoomer: $("#zoomer"),
+  playInfo: $("#playInfo"), ortu: $<HTMLDetailsElement>("#ortu"), ortuIsi: $("#ortuIsi"),
 };
 
 let toastTimer = 0;
@@ -63,7 +68,11 @@ interface PieceRT {
   shadowMesh: THREE.Mesh; delay: number; target: number; phase: number; hopAt: number; hopH: number;
   badges: Record<string, THREE.Mesh[]>; cur?: number; yaw?: number; calm?: number;
 }
-interface TaskState { type: string; playing: boolean; qi: number; counted: number[]; solved: Set<string> }
+/** count: child taps each part · choose: child picks how many · done: answered right */
+interface TaskState {
+  type: string; playing: boolean; qi: number; counted: number[]; solved: Set<string>;
+  phase: "count" | "choose" | "done";
+}
 type Mode = "idle" | "photo" | "live-scan" | "live";
 const S = {
   mode: "idle" as Mode,
@@ -302,10 +311,11 @@ function badge(text: string, size = 13) {
 function drawBadge(m: THREE.Mesh, text: string) {
   const c = m.userData.canvas as HTMLCanvasElement, x = c.getContext("2d")!;
   x.clearRect(0, 0, 128, 128);
+  // a paper sticker: white rim, ink disc, white number in the children's typeface
   x.fillStyle = "#ffffff"; x.beginPath(); x.arc(64, 64, 60, 0, 7); x.fill();
-  x.fillStyle = "#f07f1a"; x.beginPath(); x.arc(64, 64, 52, 0, 7); x.fill();
-  x.fillStyle = "#fff"; x.font = "700 70px Fredoka, Nunito, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
-  x.fillText(text, 64, 69);
+  x.fillStyle = "#26231f"; x.beginPath(); x.arc(64, 64, 52, 0, 7); x.fill();
+  x.fillStyle = "#fff"; x.font = "700 72px Andika, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+  x.fillText(text, 64, 70);
   (m.material as BasicMat).map!.needsUpdate = true;
 }
 
@@ -397,6 +407,8 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ----------------------------------------------------------------- tasks
 const NUM = ["nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh"];
+const ICON_DENGAR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M19.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>`;
+const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 /** Counting questions of a sheet. Older configs only have the legs question. */
 function countQuestions(sheet: Sheet): CountQuestion[] {
@@ -409,20 +421,21 @@ function countQuestions(sheet: Sheet): CountQuestion[] {
 
 function setupTask() {
   const task = S.sheet!.task;
-  S.task = { type: task.type, counted: [], playing: false, qi: 0, solved: new Set() };
+  S.task = { type: task.type, counted: [], playing: false, qi: 0, solved: new Set(), phase: "count" };
+  renderParentGuide();
   if (task.type === "count") openQuestion(0, false); else renderSpell("ready");
 }
 
 function currentQuestion() { return countQuestions(S.sheet!)[S.task!.qi]; }
 function countingOn(p: PieceRT) {
   const q = S.task && S.sheet ? currentQuestion() : null;
-  return !!q && q.piece === p.pc.id && S.task!.counted.length < q.items.length;
+  return !!q && q.piece === p.pc.id && S.task!.phase === "count";
 }
 function questionPiece(q: CountQuestion) { return S.pieces.find((p) => p.pc.id === q.piece); }
 
 function openQuestion(i: number, speak = true) {
   const qs = countQuestions(S.sheet!);
-  S.task!.qi = i; S.task!.counted = [];
+  S.task!.qi = i; S.task!.counted = []; S.task!.phase = "count";
   S.pieces.forEach((p) => Object.values(p.badges).flat().forEach((b) => (b.visible = false)));
   renderCount();
   // the first question waits for the piece to finish standing up before zooming
@@ -431,50 +444,162 @@ function openQuestion(i: number, speak = true) {
   if (speak) say(qs[i].prompt);
 }
 
+/** Five answer cards around the right answer, so the answer is not always in the same place. */
+function answerChoices(n: number) {
+  const start = Math.max(1, Math.min(n - 2, 10 - 4));
+  return Array.from({ length: 5 }, (_, i) => start + i);
+}
+
 function renderCount() {
-  const qs = countQuestions(S.sheet!), q = qs[S.task!.qi], n = q.items.length;
-  const c = S.task!.counted.length, done = c >= n, last = S.task!.qi === qs.length - 1;
-  const allDone = qs.every((x) => S.task!.solved.has(x.id));
-  const dots = qs.map((x, i) => `<button class="qdot ${i === S.task!.qi ? "cur" : ""} ${S.task!.solved.has(x.id) ? "ok" : ""}" type="button" data-q="${i}" aria-label="Soal ${i + 1}">${i + 1}</button>`).join("");
+  const qs = countQuestions(S.sheet!), q = qs[S.task!.qi], n = q.items.length, t = S.task!;
+  const c = t.counted.length, last = t.qi === qs.length - 1, allDone = qs.every((x) => t.solved.has(x.id));
+  el.playInfo.textContent = `Soal ${t.qi + 1} dari ${qs.length}`;
+  const ask = t.phase === "count" ? q.prompt : t.phase === "choose" ? "Jadi, ada berapa?" : "";
+  const body = t.phase === "count"
+    ? `<div class="ketuk" aria-label="${c} dari ${n} sudah diketuk">${Array.from({ length: n }, (_, i) => `<span class="${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</span>`).join("")}</div>`
+    : t.phase === "choose"
+      ? `<div class="angka" role="group" aria-label="Pilih jumlahnya">${answerChoices(n).map((k) => `<button class="btn" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
+      : `<p class="pujian">Betul! ${esc(q.noun)} ada ${n}.</p>`;
+  const dots = qs.map((x, i) => `<button type="button" data-q="${i}" class="${t.solved.has(x.id) ? "selesai" : ""}" ${i === t.qi ? 'aria-current="step"' : ""} aria-label="Soal ${i + 1}${t.solved.has(x.id) ? ", selesai" : ""}">${i + 1}</button>`).join("");
+  const next = last
+    ? (allDone ? `<button class="btn utama" id="restartQ" type="button">Ulangi dari soal 1</button>` : "")
+    : `<button class="btn ${t.phase === "done" ? "utama" : ""}" id="nextQ" type="button">Soal berikutnya</button>`;
   el.panel.innerHTML = `
-    <div class="qnav" role="group" aria-label="Pilih soal">${dots}</div>
-    <h2>${done ? `Hebat! ${q.noun} ada ${NUM[n] || n}.` : q.prompt}</h2>
-    <p class="${done ? "success" : ""}">${done
-      ? (allDone ? "Semua soal di lembar ini sudah selesai." : "Lanjut ke soal berikutnya, atau hitung ulang.")
-      : "Ketuk satu per satu di gambar. Hitung bersama anak."}</p>
-    <div class="slots">${Array.from({ length: n }, (_, i) => `<div class="slot ${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</div>`).join("")}</div>
-    <div class="row">
-      ${c ? `<button class="btn small" id="recount" type="button">Hitung ulang</button>` : ""}
-      ${last
-        ? (allDone ? `<button class="btn small primary" id="restartQ" type="button">Ulangi dari soal 1</button>` : "")
-        : `<button class="btn small ${done ? "primary" : ""}" id="nextQ" type="button">Soal berikutnya →</button>`}
-    </div>`;
-  document.getElementById("recount")?.addEventListener("click", resetCount);
+    ${ask ? `<div class="soal"><p class="soal-teks">${esc(ask)}</p><button class="btn dengar" id="dengar" type="button" aria-label="Dengar soalnya lagi">${ICON_DENGAR}</button></div>` : ""}
+    ${body}
+    <div class="nav-soal"><div class="titik" role="group" aria-label="Pilih soal">${dots}</div>${next}</div>`;
+  document.getElementById("dengar")?.addEventListener("click", () => say(ask));
   document.getElementById("nextQ")?.addEventListener("click", () => openQuestion(S.task!.qi + 1));
   document.getElementById("restartQ")?.addEventListener("click", () => { S.task!.solved.clear(); openQuestion(0); });
   el.panel.querySelectorAll<HTMLElement>("[data-q]").forEach((b) => b.addEventListener("click", () => openQuestion(Number(b.dataset.q))));
+  el.panel.querySelectorAll<HTMLButtonElement>("[data-n]").forEach((b) => b.addEventListener("click", () => chooseAnswer(b, Number(b.dataset.n))));
 }
-function resetCount() {
-  S.task!.counted = [];
-  S.pieces.forEach((p) => Object.values(p.badges).flat().forEach((b) => (b.visible = false)));
-  renderCount();
+
+function resetCount() { openQuestion(S.task!.qi, false); }
+
+/** Count one item: from a tap on the drawing, or from the parent's "mark one" button. */
+function countItem(p: PieceRT, q: CountQuestion, hit: number) {
+  const t = S.task!;
+  t.counted.push(hit);
+  const k = t.counted.length, badges = p.badges[q.id];
+  drawBadge(badges[hit], String(k)); badges[hit].visible = true;
+  if (k >= q.items.length) {
+    // every part is counted: now the child says how many (cardinality), not the app
+    t.phase = "choose";
+    renderCount();
+    say(NUM[k] || String(k)).then(() => say("Jadi, ada berapa?"));
+  } else { renderCount(); say(NUM[k] || String(k)); }
 }
 
 function onCountTap(p: PieceRT, pageX: number, pageY: number, now: number) {
-  const q = currentQuestion();
-  if (q.piece !== p.pc.id) { hop(p, now); return; }
+  const q = currentQuestion(), t = S.task!;
+  if (q.piece !== p.pc.id || t.phase !== "count") { hop(p, now); return; }
   let hit = -1, best = 1e9;
   q.items.forEach((it, i) => { const d = Math.hypot(pageX - it.x, pageY - it.y); if (d < it.r * 1.45 && d < best) { best = d; hit = i; } });
   if (hit < 0) { hop(p, now); say("mooo", 0.7); return; }
-  if (S.task!.counted.includes(hit)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
-  S.task!.counted.push(hit);
-  const k = S.task!.counted.length, badges = p.badges[q.id];
-  drawBadge(badges[hit], String(k)); badges[hit].visible = true;
-  if (k >= q.items.length) S.task!.solved.add(q.id);
+  if (t.counted.includes(hit)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
+  countItem(p, q, hit);
+}
+
+function chooseAnswer(btn: HTMLButtonElement, k: number) {
+  const q = currentQuestion(), n = q.items.length, t = S.task!;
+  if (t.phase !== "choose") return;
+  if (k !== n) {
+    btn.classList.remove("salah"); void btn.offsetWidth; btn.classList.add("salah");
+    say(`Hmm, coba hitung lagi ${q.noun.split(" ")[0].toLowerCase()}nya.`);
+    return;
+  }
+  t.phase = "done"; t.solved.add(q.id);
   renderCount();
-  if (k >= q.items.length) {
-    say(NUM[k]).then(() => { hop(p); confetti(); return say(`Hebat! ${q.noun} ada ${NUM[k] || k}.`); });
-  } else say(NUM[k] || String(k));
+  const p = questionPiece(q);
+  hop(p);
+  say(`Betul! ${q.noun} ada ${NUM[n] || n}.`);
+}
+
+// ----------------------------------------------------------------- parent drawer
+let spellByLetterName = false;
+try { spellByLetterName = localStorage.getItem("gh.eja") === "huruf"; } catch { /* storage blocked */ }
+
+function renderParentGuide() {
+  const sh = S.sheet!, guide = sh.guide || [];
+  el.ortu.hidden = false;
+  const isCount = sh.task.type === "count";
+  el.ortuIsi.innerHTML = `
+    ${guide.length ? `<ol>${guide.map((g) => `<li>${esc(g)}</li>`).join("")}</ol>` : ""}
+    ${isCount
+      ? `<p>Biarkan anak mengetuk sendiri satu per satu, lalu memilih angkanya. Beri jeda sebelum membantu, dan puji usahanya.</p>
+         <button class="btn kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu bagian</button>`
+      : `<label class="pilihan"><input type="checkbox" id="ejaHuruf" ${spellByLetterName ? "checked" : ""}> Sebut nama huruf dulu (es, a, sa)</label>
+         <p>Bawaannya suku kata (sa, pi, sapi), seperti cara membaca di kelas 1 SD.</p>`}
+    <p>Suara sementara memakai suara bawaan HP. Versi jual memakai rekaman suara asli.</p>`;
+  document.getElementById("tandai")?.addEventListener("click", () => {
+    const q = currentQuestion(), p = questionPiece(q), t = S.task!;
+    if (!p || t.phase !== "count") return;
+    const next = q.items.findIndex((_, i) => !t.counted.includes(i));
+    if (next >= 0) countItem(p, q, next);
+  });
+  document.getElementById("ejaHuruf")?.addEventListener("change", (e) => {
+    spellByLetterName = (e.target as HTMLInputElement).checked;
+    try { localStorage.setItem("gh.eja", spellByLetterName ? "huruf" : "suku"); } catch { /* storage blocked */ }
+  });
+}
+
+// ----------------------------------------------------------------- reading (syllable method)
+function renderWord(task: Extract<Task, { type: "spell" }>, active: number) {
+  // active = index of the syllable being read; -1 = none yet; syllables.length = whole word
+  return task.syllables.map((s, i) => {
+    const cls = active === task.syllables.length || i < active ? "suku-selesai" : i === active ? "suku-on" : active < 0 ? "suku-selesai" : "suku-belum";
+    return `<span class="${cls}">${esc(s.text)}</span>`;
+  }).join(" ");
+}
+
+function renderSpell(phase: "ready" | "play" | "done") {
+  const task = S.sheet!.task as Extract<Task, { type: "spell" }>;
+  el.playInfo.textContent = "Membaca";
+  const ask = phase === "ready" ? "Ayo baca kata ini." : phase === "done" ? "" : "Dengarkan.";
+  el.panel.innerHTML = `
+    ${ask ? `<div class="soal"><p class="soal-teks">${ask}</p>${phase === "ready" ? `<button class="btn dengar" id="dengar" type="button" aria-label="Dengar petunjuknya">${ICON_DENGAR}</button>` : ""}</div>` : ""}
+    <p class="kata" id="kata" aria-label="${esc(task.word.text)}">${renderWord(task, -1)}</p>
+    ${phase === "done" ? `<p class="pujian">Betul! Dibaca ${esc(task.word.say)}.</p>` : ""}
+    ${phase === "ready" ? `<button class="btn utama besar" id="checkSpell" type="button">Sudah dibaca · Dengar contoh</button>` : ""}
+    ${phase === "done" ? `<div class="nav-soal"><button class="btn utama" id="again" type="button">Dengar lagi</button><button class="btn" id="reset" type="button">Baca ulang</button></div>` : ""}`;
+  document.getElementById("dengar")?.addEventListener("click", () => say("Ayo baca kata ini bersama Ayah atau Bunda."));
+  document.getElementById("checkSpell")?.addEventListener("click", playSpell);
+  document.getElementById("again")?.addEventListener("click", playSpell);
+  document.getElementById("reset")?.addEventListener("click", () => renderSpell("ready"));
+}
+
+async function playSpell() {
+  if (!S.task || S.task.playing) return;
+  S.task.playing = true;
+  const task = S.sheet!.task as Extract<Task, { type: "spell" }>;
+  const letters = S.pieces.filter((p) => p.pc.kind === "letter");
+  const animal = S.pieces.find((p) => p.pc.kind === "animal");
+  renderSpell("play");
+  const setWord = (active: number) => { const k = document.getElementById("kata"); if (k) k.innerHTML = renderWord(task, active); };
+  for (let si = 0; si < task.syllables.length; si++) {
+    const s = task.syllables[si];
+    setWord(si);
+    if (spellByLetterName) {
+      // optional: letter names first ("es", "a"), then the syllable
+      for (let j = 0; j < s.letters.length; j++) { hop(letters[s.letters[j]]); await say(s.say[j]); await wait(100); }
+    }
+    s.letters.forEach((li) => hop(letters[li]));
+    await say(s.say[s.say.length - 1]); // the syllable sound: "sa"
+    await wait(260);
+  }
+  setWord(task.syllables.length);
+  letters.forEach((L, i) => setTimeout(() => hop(L), i * 90));
+  if (animal) setTimeout(() => hop(animal), 380);
+  await say(task.word.say);
+  if (S.task) S.task.playing = false;
+  renderSpell("done");
+}
+
+/** Tapping a letter card reads its whole syllable, the way children learn to read at school. */
+function syllableOf(letterIndex: number) {
+  const t = S.sheet?.task;
+  return t && t.type === "spell" ? t.syllables.find((s) => s.letters.includes(letterIndex)) : undefined;
 }
 
 // ----------------------------------------------------------------- zoom
@@ -516,75 +641,6 @@ function zoomToQuestion(animate: boolean) {
   setZoom(s, tx, ty, animate);
 }
 
-function renderSpell(phase: "ready" | "play" | "done", caption?: string) {
-  const task = S.sheet!.task as Extract<Task, { type: "spell" }>;
-  const syl = task.syllables.map((s) => `<span>${s.text}</span>`).join("");
-  if (phase === "ready") {
-    el.panel.innerHTML = `<h2>Ayo eja bersama anak</h2>
-      <p>Tunjuk huruf yang berdiri satu per satu dan minta anak mengejanya. Setelah anak selesai, ketuk tombol di bawah untuk mencocokkan.</p>
-      <div class="row"><button class="btn leaf" id="checkSpell" type="button">Anak sudah mengeja · Cek</button></div>`;
-    document.getElementById("checkSpell")!.onclick = playSpell;
-  } else {
-    el.panel.innerHTML = `<h2>${phase === "done" ? "Betul! Dibaca: Sapi" : "Dengarkan cara mengejanya"}</h2>
-      <div class="caption" id="cap">${caption || ""}</div>
-      <div class="syl">${phase === "done" ? syl + `<span>${task.word.text}</span>` : ""}</div>
-      ${phase === "done" ? `<div class="row"><button class="btn small" id="again" type="button">Putar lagi</button><button class="btn small" id="reset" type="button">Eja ulang</button></div>` : ""}`;
-    const a = document.getElementById("again"), r = document.getElementById("reset");
-    if (a) a.onclick = playSpell;
-    if (r) r.onclick = () => renderSpell("ready");
-  }
-}
-
-async function playSpell() {
-  if (!S.task || S.task.playing) return;
-  S.task.playing = true;
-  const task = S.sheet!.task as Extract<Task, { type: "spell" }>;
-  const letters = S.pieces.filter((p) => p.pc.kind === "letter");
-  const cow = S.pieces.find((p) => p.pc.kind === "animal");
-  renderSpell("play", "");
-  const setCap = (html: string) => { const c = document.getElementById("cap"); if (c) c.innerHTML = html; };
-  const shown: string[] = [];
-  for (const s of task.syllables) {
-    for (let j = 0; j < s.letters.length; j++) {
-      const L = letters[s.letters[j]];
-      hop(L);
-      shown.push(L.pc.ch || "");
-      setCap(renderCaption(shown, null));
-      await say(s.say[j]);
-      await wait(120);
-    }
-    s.letters.forEach((li) => hop(letters[li]));
-    setCap(renderCaption(shown, s.text));
-    await say(s.say[s.say.length - 1]);
-    await wait(260);
-    shown.push(" ");
-  }
-  letters.forEach((L, i) => setTimeout(() => hop(L), i * 90));
-  if (cow) setTimeout(() => hop(cow), 380);
-  setCap(`<span class="hl">Sapi</span>`);
-  await say("dibaca, " + task.word.say);
-  confetti();
-  if (S.task) S.task.playing = false;
-  renderSpell("done", `S-A <span class="hl">Sa</span> · P-I <span class="hl">Pi</span>`);
-}
-function renderCaption(shown: string[], syl: string | null) {
-  const txt = shown.join("").trim().split(" ").map((g) => g.split("").join("-")).join(" · ");
-  return syl ? `${txt} <span class="hl">${syl[0] + syl.slice(1).toLowerCase()}</span>` : txt;
-}
-
-function confetti() {
-  if (reduceMotion) return;
-  const cols = ["#f07f1a", "#23855a", "#3a7bd5", "#f2c230", "#e24f6b"];
-  const r = el.stage.getBoundingClientRect();
-  for (let i = 0; i < 34; i++) {
-    const s = document.createElement("span"); s.className = "confetti";
-    s.style.left = (r.width * (0.15 + Math.random() * 0.7)) + "px"; s.style.top = (r.height * (0.05 + Math.random() * 0.25)) + "px";
-    s.style.background = cols[i % cols.length]; s.style.setProperty("--dx", (Math.random() * 120 - 60) + "px");
-    s.style.animationDelay = (Math.random() * 0.25) + "s";
-    el.stage.appendChild(s); setTimeout(() => s.remove(), 1800);
-  }
-}
-
 // ----------------------------------------------------------------- tapping & orbit
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 let drag: { x: number; y: number; moved: boolean; yaw: number; pitch: number } | null = null;
@@ -614,9 +670,11 @@ el.gl.addEventListener("pointerup", (e) => {
   const now = performance.now();
   if (S.task.type === "count" && p.pc.kind === "animal") onCountTap(p, px, py, now);
   else if (p.pc.kind === "letter") {
-    hop(p, now);
-    const ch = (p.pc.ch || "").toLowerCase();
-    say(ch === "s" ? "es" : ch === "p" ? "pe" : ch);
+    const syl = syllableOf(S.pieces.filter((x) => x.pc.kind === "letter").indexOf(p));
+    if (syl) {
+      S.pieces.filter((x) => x.pc.kind === "letter").forEach((x, i) => { if (syl.letters.includes(i)) hop(x, now); });
+      say(syl.say[syl.say.length - 1]);
+    } else hop(p, now);
   } else { hop(p, now); say("mooo", 0.7); }
 });
 
@@ -631,6 +689,7 @@ function resetToIntro() {
   stopLive(); clearPieces(); resetZoom(); S.mode = "idle"; S.view = "ar"; S.task = null; S.savedPose = null;
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   el.play.hidden = true; el.intro.hidden = false; el.panel.innerHTML = ""; el.bg.removeAttribute("src");
+  el.ortuIsi.innerHTML = ""; el.ortu.open = false; el.ortu.hidden = true; el.playInfo.textContent = "";
   el.stage.classList.remove("view3d"); pagePlane.visible = false; el.bg.hidden = false; el.viewBtn.textContent = "Putar 3D";
   document.body.classList.remove("playing");
   window.scrollTo({ top: 0 });
@@ -640,7 +699,9 @@ function goBack() { if (history.state?.gh === "play") history.back(); else reset
 
 function photoFailed(title: string, body: string) {
   el.busy.hidden = true;
-  el.panel.innerHTML = `<h2>${title}</h2><p>${body}</p><div class="row"><label class="btn primary" for="file">Foto ulang</label></div>`;
+  el.playInfo.textContent = "";
+  el.panel.innerHTML = `<div class="soal"><p class="soal-teks">${title}</p></div><p class="tip">${body}</p>
+    <label class="btn utama besar" for="file">Foto ulang</label>`;
 }
 
 async function runPhoto(src: string) {
@@ -651,7 +712,7 @@ async function runPhoto(src: string) {
   el.vid.hidden = true; el.bg.hidden = false; el.captureBtn.hidden = true; el.chip.hidden = true;
   el.viewBtn.hidden = false; el.replayBtn.hidden = false;
   clearPieces(); setZoom(1, 0, 0, false);
-  el.panel.innerHTML = `<h2>Membaca lembar…</h2><p>Mencari 4 kotak hitam di pojok.</p>`;
+  el.panel.innerHTML = ""; el.ortu.hidden = true; el.playInfo.textContent = "Membaca lembar…";
   el.busy.hidden = false; el.busy.textContent = "Membaca lembar…";
   try {
     const im = await loadImage(src);
@@ -734,7 +795,8 @@ async function startLive() {
   pagePlane.visible = false; el.stage.classList.remove("view3d"); el.viewBtn.textContent = "Putar 3D";
   el.bg.hidden = true; el.vid.hidden = false; el.chip.hidden = false; el.captureBtn.hidden = false; el.captureBtn.disabled = true;
   el.viewBtn.hidden = true; el.replayBtn.hidden = true; S.smooth = null; S.task = null; S.sheetKey = null;
-  el.panel.innerHTML = `<h2>Arahkan kamera ke lembar</h2><p>Pegang HP di atas lembar sampai 4 kotak hitam terlihat dan garis hijau muncul di tepi kertas. Lalu ketuk <b>Hidupkan!</b></p>`;
+  el.ortu.hidden = true; el.playInfo.textContent = "Kamera langsung";
+  el.panel.innerHTML = `<p class="tip">Pegang HP di atas lembar sampai keempat kotak hitam terlihat dan garis hijau muncul di tepi kertas. Lalu ketuk <b>Hidupkan!</b></p>`;
 }
 function liveBlocked() {
   el.liveNote.hidden = false;

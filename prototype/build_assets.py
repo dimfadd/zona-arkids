@@ -201,7 +201,8 @@ def build_config():
                 if key == "warna-sapi" else
                 {"type": "spell", "syllables": S.SYLLABLES, "word": S.WORD})
         cfg["sheets"][key] = {"title": "Sapi" if key == "warna-sapi" else "SAPI",
-                              "markers": markers, "pieces": pieces, "task": task, "qr": S.QR_BOX}
+                              "markers": markers, "pieces": pieces, "task": task, "qr": S.QR_BOX,
+                              "guide": S.GUIDE.get(key, [])}
     return cfg
 
 

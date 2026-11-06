@@ -117,6 +117,20 @@ COW_COUNT = [
      "items": [{"cx": 22.0, "cy": 118.0, "r": 10.0}]},
 ]
 
+# Three-line parent guide per sheet (dialogic reading: before, during, after).
+GUIDE = {
+    "warna-sapi": [
+        "Sebelum mewarnai, tanya: Sapi tinggal di mana? Sapi makan apa?",
+        "Saat mewarnai, ulangi jawaban anak sambil menambah satu kata. \"Kaki.\" jadi \"Ya, kaki sapi ada empat.\"",
+        "Sesudah di layar, hubungkan ke hidupnya: Kamu pernah minum susu sapi?",
+    ],
+    "tebal-sapi": [
+        "Sebelum menebalkan, tunjuk kata SAPI dan baca pelan: sa, pi, sapi.",
+        "Saat menebalkan, sebut suku katanya, bukan nama hurufnya: \"sa\" untuk S dan A.",
+        "Sesudah di layar, cari benda lain yang diawali sa: sate, sayur, sabun.",
+    ],
+}
+
 # ---------------------------------------------------------------- layouts
 # Sheet 1: cow box placed on page, scale 1.
 SHEET1_COW = {"x": 20.0, "y": 32.0, "scale": 1.0}

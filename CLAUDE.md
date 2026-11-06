@@ -1,4 +1,6 @@
-# Gambarku Hidup · catatan proyek
+# Calistung AR for Kids · catatan proyek
+
+(Nama kerja lama: Gambarku Hidup. Nama produk sejak Nov 2026: **Calistung AR for Kids**.)
 
 Baca juga `prototype/CLAUDE.md` (riset, desain lembar, cara kerja mesin AR). File ini mencatat
 struktur repo dan keputusan yang diambil sesudahnya.
@@ -43,6 +45,19 @@ Konten mengalir: `prototype/sheets.py` → `build_assets.py` → `config.json` �
   watermark nama/order. Fotokopi tidak bisa dideteksi dari gambarnya; yang dideteksi pemakaian:
   **1 serial = 1 akun Google, maksimal 3 HP**. Di luar itu: layar penutup "belum diaktifkan".
   Konten (config, mask, audio) dikirim server hanya ke yang berhak.
+- **Rupa (disetujui):** buku tulis + potongan gunting. Kertas putih, tinta #26231f, garis biru
+  #2f5fa8, satu aksen merah margin #c4302b untuk aksi utama, hijau #2b7a4b hanya untuk "benar".
+  Mode gelap = papan tulis. Font: **Andika** untuk semua huruf yang dibaca anak (a/g satu kait,
+  I/l/1 beda), **Plus Jakarta Sans** untuk teks orang tua. Fredoka/Nunito dilarang (I = l).
+  Motif: garis bantu menulis di judul. Tanpa konfeti, tanpa label pil, tanpa poin/streak.
+  Arah lengkap: https://claude.ai/artifact/RmyYyu48PjUPSsmpn5Np92
+- **Membaca (disetujui):** metode suku kata, audio "sa · pi · sapi". Eja nama huruf ("es, a, sa")
+  hanya pilihan di laci "Untuk Ayah/Bunda".
+- **Hitung:** anak mengetuk tiap bagian, lalu MEMILIH jumlahnya dari kartu angka (kardinalitas).
+- **Logo:** belum ada. Ikon PWA sekarang placeholder ("Ca" di kertas bergaris). Prompt logo:
+  `docs/brand/logo-prompt.md`.
+- **Ilustrasi:** dibuat Claude sebagai SVG garis (bagian terstruktur → mask dan titik ketuk otomatis).
+- **Marketplace:** [Kemungkinan Besar] TikTok Shop tidak menerima produk digital; afiliasi butuh SKU fisik.
 - **Backend:** Vercel (serverless functions) + **Postgres Neon**.
 - **Format QR produksi:** `HTTPS://<DOMAIN>/A/<SERIAL>` huruf besar semua (mode alfanumerik, modul
   lebih besar). Parser: `parseActivation()` di `apps/scan/src/qr.ts`.

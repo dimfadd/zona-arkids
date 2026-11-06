@@ -87,10 +87,25 @@ for (const vp of VIEWPORTS) {
       return { id: q.id, pts, gap: Math.round(gap), zoom };
     });
     if (info.pts.length > 1) warn(info.gap >= 44, `soal ${info.id}: jarak antar sasaran ${info.gap} px di layar (min 44, batas sentuh Apple)${info.zoom ? " · zoom" : ""}`);
-    for (const [x, y] of info.pts) { await tap(page, x, y, vp.hasTouch); await sleep(220); }
+    if (vp.name === "desktop" && qi === nq - 1) {
+      // the parent's "mark one" button is the path that needs no tapping on the drawing (keyboard, missed taps)
+      await page.click("#ortu summary");
+      for (let i = 0; i < info.pts.length; i++) { await page.click("#tandai"); await sleep(150); }
+    } else {
+      for (const [x, y] of info.pts) { await tap(page, x, y, vp.hasTouch); await sleep(220); }
+    }
     const got = await page.evaluate(() => window.__GH.S.task.counted.length);
     check(got === info.pts.length, `soal ${info.id}: ${got}/${info.pts.length} terhitung`);
-    if (qi === 2) await page.screenshot({ path: `${OUT}/${vp.name}-2b-${info.id}.png` });
+    // after counting, the child picks how many (cardinality); try a wrong card first
+    const n = info.pts.length;
+    const wrong = await page.$(`[data-n]:not([data-n="${n}"])`);
+    if (wrong && qi === 0) {
+      await wrong.click(); await sleep(200);
+      check(await page.evaluate(() => window.__GH.S.task.phase === "choose"), `soal ${info.id}: jawaban salah tidak menyelesaikan soal`);
+    }
+    await page.click(`[data-n="${n}"]`);
+    check(await page.evaluate(() => window.__GH.S.task.phase === "done"), `soal ${info.id}: memilih angka ${n} benar`);
+    if (qi === 0 || qi === 2) await page.screenshot({ path: `${OUT}/${vp.name}-2b-${info.id}.png` });
     if (qi < nq - 1) await page.click("#nextQ");
   }
   check(await page.isVisible("#restartQ"), "semua soal selesai");
