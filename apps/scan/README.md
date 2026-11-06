@@ -13,8 +13,9 @@ npm run build && npm run e2e   # headless Chromium at 5 screen sizes
 ```
 
 ## Deploy to Vercel
-`vercel.json` at the repo root already sets install/build/output, so import the repo with
-**Root Directory left at the repo root** and **Framework: Vite** (pre-filled). No env vars needed.
+In the Vercel project: **Settings → Build and Deployment → Root Directory = `apps/scan`**,
+Framework Preset **Vite**, no command overrides. `apps/scan/vercel.json` sets install/build/output
+and headers. No env vars needed yet.
 
 After the first deploy, rebuild the printable PDF so its QR points at the new address:
 ```bash

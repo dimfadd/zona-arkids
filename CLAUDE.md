@@ -12,7 +12,7 @@ yang wajar diambil langsung; keputusan bisnis ditanyakan.
 prototype/     prototipe asli (dibekukan) + pipeline konten Python: sheets.py (sumber kebenaran
                layout, soal hitung, posisi QR), build_assets.py, make_photos.py
 apps/scan/     aplikasi PWA (Vite + TS) yang di-deploy ke Vercel. Lihat apps/scan/README.md
-vercel.json    install/build/output untuk apps/scan (root directory Vercel = root repo)
+               Vercel: Root Directory = apps/scan; konfigurasi di apps/scan/vercel.json
 ```
 Konten mengalir: `prototype/sheets.py` → `build_assets.py` → `config.json` → disalin ke
 `apps/scan/src/content/config.json`. Saat ini hanya bagian `task` dan `qr` yang di-patch ke config
