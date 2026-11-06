@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Roket Kertas</title>
-  <meta name="description" content="Anak mewarnai dan menebalkan huruf di kertas, lalu gambarnya berdiri di layar dan mengajak berhitung serta membaca bersama Ayah dan Bunda.">
+  <meta name="description" content="Belajar calistung sambil bermain: anak mewarnai sapi, sapinya jadi 3D, lalu berhitung dan membaca dalam perjalanan ke rumah Budi.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1d2a25" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
@@ -19,83 +19,100 @@
   <header class="top">
     <a class="merek" href="/" aria-label="Roket Kertas, ke halaman awal">
       <img class="merek-logo" src="/brand/logo-roket-kertas.png" width="65" height="56" alt="">
-      <span class="merek-teks"><span class="merek-nama">Roket Kertas</span><span class="merek-kecil">Belajar calistung dari kertas</span></span>
+      <span class="merek-teks"><span class="merek-nama">Roket Kertas</span><span class="merek-kecil">Belajar calistung sambil bermain</span></span>
     </a>
     <button class="btn kecil" id="installBtn" type="button" hidden>Pasang di HP</button>
   </header>
 
   <main>
-    <!-- ============ home ============ -->
-    <section class="intro" id="intro" aria-labelledby="judul">
-      <div class="intro-text">
-        <h1 id="judul"><span class="bantu">Gambar anakmu</span> berdiri di atas kertasnya.</h1>
-        <p class="lead">Setelah anak mewarnai atau menebalkan huruf, foto lembarnya di sini. Gambarnya terpotong, berdiri, lalu mengajak anak berhitung dan membaca bersama Ayah atau Bunda.</p>
-        <div class="actions">
-          <label class="btn utama" for="file">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>
-            Foto lembar
-          </label>
-          <input class="vh" id="file" type="file" accept="image/*" capture="environment">
-          <button class="btn" id="liveBtn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>
-            Kamera langsung
-          </button>
-        </div>
-        <p class="tip">Foto dari atas, dengan cahaya terang. Keempat kotak hitam di pojok harus ikut terlihat.</p>
-        <p class="note" id="liveNote" hidden></p>
-        <p class="note" id="iosNote" hidden>Supaya bisa dibuka seperti aplikasi: ketuk tombol Bagikan di Safari, lalu pilih <b>Tambah ke Layar Utama</b>.</p>
+    <!-- ================= home ================= -->
+    <section class="layar beranda" id="home" aria-labelledby="judul">
+      <div class="beranda-utama">
+        <h1 id="judul"><span class="bantu">Warnai sapimu,</span> lalu ajak dia ke rumah Budi.</h1>
+        <p class="lead">Anak mewarnai sapi di layar. Sapinya jadi 3D dan berjalan, lalu di perjalanan anak menghitung kaki dan mangga, dan membaca kata RUMAH dan SAPU. Sekitar 10 menit, paling seru ditemani Ayah atau Bunda.</p>
+        <button class="btn utama besar" id="startBtn" type="button">Mulai mewarnai</button>
       </div>
 
-      <div class="intro-side">
-        <h2 class="sub">Belum cetak? Coba lembar contoh</h2>
-        <div class="demos">
-          <button class="demo" type="button" data-demo="warna">
-            <img alt="" src="/demo/photo-warna.jpg" width="1200" height="1600" decoding="async">
-            <span class="demo-judul">Sapi · mewarnai</span>
-            <span class="demo-isi">6 soal berhitung</span>
-          </button>
-          <button class="demo" type="button" data-demo="tebal">
-            <img alt="" src="/demo/photo-tebal.jpg" width="1200" height="1600" decoding="async">
-            <span class="demo-judul">SAPI · menebalkan</span>
-            <span class="demo-isi">Membaca sa · pi</span>
-          </button>
+      <div class="beranda-sisi">
+        <section aria-labelledby="h-stiker">
+          <h2 class="sub" id="h-stiker">Kebun stiker</h2>
+          <div class="stiker-grid" id="stickers"></div>
+        </section>
+        <details class="ortu" id="laporan">
+          <summary>Untuk Ayah/Bunda: laporan belajar</summary>
+          <div class="ortu-isi">
+            <div id="report"></div>
+            <p>Laporan dan stiker tersimpan hanya di HP ini, tidak dikirim ke mana pun.</p>
+            <button class="btn kecil" id="clearData" type="button">Hapus data di HP ini</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ================= colouring ================= -->
+    <section class="layar warnai" id="warnai" hidden aria-label="Mewarnai">
+      <div class="bar">
+        <button class="btn kecil" type="button" data-back aria-label="Kembali ke awal">← Kembali</button>
+        <span class="bar-judul">Warnai sapimu</span>
+        <button class="btn kecil ikon" id="undoBtn" type="button" aria-label="Urungkan" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        </button>
+      </div>
+      <div class="warnai-isi">
+        <div id="boardHost" class="papan-host"></div>
+        <div class="alat">
+          <div class="krayon-grid" id="palette" role="radiogroup" aria-label="Pilih warna krayon"></div>
+          <div class="alat-baris" role="radiogroup" aria-label="Pilih alat">
+            <button class="btn alat-btn" type="button" data-tool="besar" role="radio" aria-checked="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg>Kuas besar</button>
+            <button class="btn alat-btn" type="button" data-tool="kecil" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>Kuas kecil</button>
+            <button class="btn alat-btn" type="button" data-tool="hapus" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M4 16 13 7l6 6-6 6H8z"/><path d="M8 19h12"/></svg>Penghapus</button>
+          </div>
+          <div class="alat-baris">
+            <button class="btn kecil" id="clearBtn" type="button">Hapus semua</button>
+            <button class="btn utama" id="doneBtn" type="button">Selesai, jadikan 3D!</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ============ play ============ -->
-    <section class="play" id="play" hidden aria-label="Ruang main">
-      <div class="play-bar">
-        <button class="btn kecil" id="backBtn" type="button" aria-label="Kembali ke awal">← Kembali</button>
-        <span class="play-info" id="playInfo"></span>
-        <div class="play-alat">
-          <button class="btn kecil" id="replayBtn" type="button">Ulangi</button>
-          <button class="btn kecil" id="viewBtn" type="button">Putar 3D</button>
+    <!-- ================= adventure ================= -->
+    <section class="layar main" id="main" hidden aria-label="Petualangan">
+      <div class="bar">
+        <button class="btn kecil" type="button" data-back aria-label="Kembali ke awal">← Kembali</button>
+        <ol class="bab" id="chapters" aria-label="Perjalanan"></ol>
+      </div>
+      <div class="main-isi">
+        <div class="panggung3d" id="stage3d">
+          <div class="muat" id="loading3d">Menyiapkan sapimu…</div>
+        </div>
+        <div class="sisi">
+          <div class="anak" id="panel" aria-live="polite"></div>
+          <details class="ortu" id="ortuMain">
+            <summary>Untuk Ayah/Bunda</summary>
+            <div class="ortu-isi" id="ortuMainIsi"></div>
+          </details>
         </div>
       </div>
-      <div class="stage-wrap" id="stageWrap">
-        <div class="stage" id="stage">
-          <div class="zoomer" id="zoomer">
-            <img id="bg" alt="">
-            <video id="vid" playsinline muted hidden></video>
-            <canvas id="gl" aria-label="Gambar anak yang berdiri. Ketuk bagiannya untuk menghitung."></canvas>
-          </div>
-          <div class="chip" id="chip" hidden></div>
-          <div class="busy" id="busy" hidden>Memotong gambar…</div>
-        </div>
-      </div>
-      <div class="side">
-        <button class="btn utama besar" id="captureBtn" type="button" hidden disabled>Hidupkan!</button>
-        <div class="anak" id="panel" aria-live="polite"></div>
-        <details class="ortu" id="ortu">
-          <summary>Untuk Ayah/Bunda</summary>
-          <div class="ortu-isi" id="ortuIsi"></div>
-        </details>
+    </section>
+
+    <!-- ================= finished ================= -->
+    <section class="layar selesai" id="selesai" hidden aria-labelledby="h-selesai">
+      <h2 class="selesai-judul" id="h-selesai">Hore! Sapimu sudah membantu Ibu.</h2>
+      <figure class="stiker-baru">
+        <img id="newSticker" alt="Stiker sapi yang kamu warnai">
+        <figcaption>Stiker baru masuk ke kebun stiker.</figcaption>
+      </figure>
+      <div class="alat-baris">
+        <button class="btn utama besar" id="againBtn" type="button">Warnai sapi baru</button>
+        <button class="btn besar" id="homeBtn" type="button">Lihat kebun stiker</button>
       </div>
     </section>
   </main>
 </div>
 <p class="toast" id="toast" role="status" hidden></p>
-<script type="module" src="/src/main.ts"></script>
+<script type="module" src="/src/play/app.ts"></script>
 </body>
 </html>

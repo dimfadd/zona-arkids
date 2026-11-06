@@ -8,7 +8,7 @@ import { mkdirSync } from "node:fs";
 
 const OUT = process.argv[2] || "e2e/out";
 mkdirSync(OUT, { recursive: true });
-const PORT = 4179, URL = `http://localhost:${PORT}/`;
+const PORT = 4179, URL = `http://localhost:${PORT}/scan.html`;
 
 const VIEWPORTS = [
   { name: "hp-kecil", viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 },
@@ -143,7 +143,7 @@ for (const vp of VIEWPORTS) {
   await page.goto(URL);
   const sw = await page.evaluate(async () => { const r = await navigator.serviceWorker.ready; return !!r.active; });
   check(sw, "service worker aktif");
-  const man = await (await page.request.get(URL + "manifest.webmanifest")).json();
+  const man = await (await page.request.get(new globalThis.URL("/manifest.webmanifest", URL).href)).json();
   check(man.display === "standalone" && man.icons.length >= 3, "manifest PWA valid");
   // ?debug=1 shows scan diagnostics (the demo photos have no QR printed on them)
   await page.goto(URL + "?debug=1");

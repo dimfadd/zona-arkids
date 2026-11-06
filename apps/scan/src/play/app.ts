@@ -1,0 +1,492 @@
+/* Roket Kertas - play: colour a cow, it becomes 3D, then a short trip to Budi's house with counting and reading. */
+import "@fontsource/andika/latin-400.css";
+import "@fontsource/andika/latin-700.css";
+import "@fontsource/plus-jakarta-sans/latin-400.css";
+import "@fontsource/plus-jakarta-sans/latin-500.css";
+import "@fontsource/plus-jakarta-sans/latin-700.css";
+import "@fontsource/plus-jakarta-sans/latin-800.css";
+import "./play.css";
+
+import * as THREE from "three";
+import { registerSW } from "virtual:pwa-register";
+import { ColoringBoard } from "./coloring";
+import { CRAYONS } from "./cow-art";
+import { Cow3D, anchorOf, type Countable } from "./cow3d";
+import { World, STOPS, type Item } from "./world";
+import { progress, type Attempt } from "./progress";
+import { say, hush, NUM } from "./speech";
+
+const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
+const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+const ICON_DENGAR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M19.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>`;
+
+const el = {
+  home: $("#home"), warnai: $("#warnai"), main: $("#main"), selesai: $("#selesai"),
+  startBtn: $<HTMLButtonElement>("#startBtn"), stickers: $("#stickers"), report: $("#report"), clearData: $<HTMLButtonElement>("#clearData"),
+  boardHost: $("#boardHost"), palette: $("#palette"), undoBtn: $<HTMLButtonElement>("#undoBtn"), clearBtn: $<HTMLButtonElement>("#clearBtn"),
+  doneBtn: $<HTMLButtonElement>("#doneBtn"), stage: $("#stage3d"), loading: $("#loading3d"), panel: $("#panel"),
+  chapters: $("#chapters"), ortuMain: $<HTMLDetailsElement>("#ortuMain"), ortuMainIsi: $("#ortuMainIsi"),
+  newSticker: $<HTMLImageElement>("#newSticker"), againBtn: $<HTMLButtonElement>("#againBtn"), homeBtn: $<HTMLButtonElement>("#homeBtn"),
+  toast: $("#toast"), installBtn: $<HTMLButtonElement>("#installBtn"),
+};
+
+let toastTimer = 0;
+function toast(msg: string, ms = 3500) {
+  el.toast.textContent = msg; el.toast.hidden = false;
+  clearTimeout(toastTimer); toastTimer = window.setTimeout(() => (el.toast.hidden = true), ms);
+}
+
+// =================================================================== screens
+type Screen = "home" | "warnai" | "main" | "selesai";
+let current: Screen = "home";
+function show(s: Screen) {
+  current = s;
+  (["home", "warnai", "main", "selesai"] as Screen[]).forEach((k) => (el[k].hidden = k !== s));
+  document.body.classList.toggle("bermain", s === "main" || s === "warnai");
+  if (s !== "home" && history.state?.rk !== "in") history.pushState({ rk: "in" }, "");
+  if (s === "home") renderHome();
+  window.scrollTo({ top: 0 });
+}
+function goHome() { hush(); running = false; if (history.state?.rk === "in") history.back(); else show("home"); }
+window.addEventListener("popstate", () => { if (current !== "home") { hush(); running = false; show("home"); } });
+document.querySelectorAll<HTMLElement>("[data-back]").forEach((b) => b.addEventListener("click", goHome));
+
+// =================================================================== home: stickers + parent report
+function renderHome() {
+  const st = progress.stickers();
+  el.stickers.innerHTML = st.length
+    ? st.slice().reverse().map((s) => `<figure class="stiker"><img src="${s.png}" alt="Stiker sapi, ${new Date(s.at).toLocaleDateString("id-ID")}"></figure>`).join("")
+    : `<p class="kosong">Belum ada stiker. Selesaikan petualangan pertama untuk mendapat stiker sapimu.</p>`;
+  const log = progress.log();
+  if (!log.length) { el.report.innerHTML = `<p>Belum ada catatan. Laporan muncul setelah anak menyelesaikan soal pertama.</p>`; return; }
+  const first = (k: Attempt["skill"]) => log.filter((a) => a.skill === k);
+  const sum = (k: Attempt["skill"]) => { const a = first(k); return `${a.filter((x) => x.tries === 1).length} dari ${a.length}`; };
+  el.report.innerHTML = `
+    <div class="ringkas"><span>Berhitung, benar di percobaan pertama: <b>${sum("hitung")}</b></span><span>Membaca, benar di percobaan pertama: <b>${sum("baca")}</b></span></div>
+    <table class="laporan"><thead><tr><th>Soal</th><th>Kemampuan</th><th>Hasil</th><th>Tanggal</th></tr></thead><tbody>
+    ${log.slice(-12).reverse().map((a) => `<tr><td class="kata">${esc(a.label)}</td><td>${a.skill === "hitung" ? "Berhitung" : "Membaca"}</td>
+      <td class="${a.tries === 1 ? "hasil-1" : ""}">${a.tries === 1 ? "Benar langsung" : `Benar setelah ${a.tries} kali coba`}</td>
+      <td>${new Date(a.at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</td></tr>`).join("")}
+    </tbody></table>`;
+}
+let clearArmed = 0;
+el.clearData.addEventListener("click", () => {
+  if (Date.now() - clearArmed > 4000) { clearArmed = Date.now(); el.clearData.textContent = "Ketuk lagi untuk menghapus"; return; }
+  progress.clear(); clearArmed = 0; el.clearData.textContent = "Hapus data di HP ini"; renderHome(); toast("Data di HP ini sudah dihapus.");
+});
+
+// =================================================================== colouring
+const board = new ColoringBoard();
+el.boardHost.append(board.el);
+CRAYONS.forEach((c, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "krayon"; b.style.setProperty("--c", c.hex);
+  b.setAttribute("role", "radio"); b.setAttribute("aria-checked", String(i === 0)); b.setAttribute("aria-label", `Krayon ${c.name}`);
+  b.addEventListener("click", () => {
+    board.color = c.hex; if (board.tool === "hapus") setTool("besar");
+    el.palette.querySelectorAll(".krayon").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+    say(c.name, 1);
+  });
+  el.palette.append(b);
+});
+function setTool(t: "besar" | "kecil" | "hapus") {
+  board.tool = t === "hapus" ? "hapus" : "kuas";
+  if (t !== "hapus") board.size = t;
+  document.querySelectorAll<HTMLElement>("[data-tool]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.tool === t)));
+}
+document.querySelectorAll<HTMLElement>("[data-tool]").forEach((b) => b.addEventListener("click", () => setTool(b.dataset.tool as "besar")));
+board.onChange = () => { el.undoBtn.disabled = !board.canUndo(); };
+el.undoBtn.addEventListener("click", () => board.undo());
+let wipeArmed = 0;
+el.clearBtn.addEventListener("click", () => {
+  if (Date.now() - wipeArmed > 3000) { wipeArmed = Date.now(); el.clearBtn.textContent = "Yakin? Ketuk lagi"; setTimeout(() => (el.clearBtn.textContent = "Hapus semua"), 3000); return; }
+  wipeArmed = 0; el.clearBtn.textContent = "Hapus semua"; board.clear();
+});
+el.startBtn.addEventListener("click", () => { show("warnai"); say("Ayo warnai sapimu. Pilih krayon, lalu gosok di gambarnya."); });
+el.doneBtn.addEventListener("click", () => {
+  if (board.coverage() < 0.04) { toast("Warnai dulu sapinya, ya."); say("Warnai dulu sapinya, ya."); return; }
+  startAdventure();
+});
+
+// =================================================================== 3D
+let renderer: THREE.WebGLRenderer | null = null;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#dcefff");
+scene.fog = new THREE.Fog("#dcefff", 22, 48);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+// total light on a lit face is about 1.0, so a crayon colour shows on the 3D cow as the child picked it
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd8e8cc, 0.55));
+const sun = new THREE.DirectionalLight(0xffffff, 0.45); sun.position.set(4, 8, 6); scene.add(sun);
+let world: World | null = null;
+let cow: Cow3D | null = null;
+let running = false;
+
+/** Where the camera looks and how much width must fit on screen. */
+interface Shot { target: THREE.Vector3; width: number; dir: THREE.Vector3 }
+let shot: Shot = { target: new THREE.Vector3(0, 1.1, 0), width: 4.2, dir: new THREE.Vector3(0.12, 0.28, 1) };
+const camTarget = new THREE.Vector3(0, 1.1, 0);
+function shotFor(name: "sapi" | "kaki" | "kepala" | "jalan" | "pohon" | "rumah" | "dapur"): Shot {
+  const c = cow!.group.position;
+  switch (name) {
+    case "sapi": return { target: new THREE.Vector3(c.x + 0.15, 1.15, 0), width: 4.4, dir: new THREE.Vector3(0.15, 0.3, 1) };
+    // a little from above and behind, so near and far legs separate on screen
+    case "kaki": return { target: new THREE.Vector3(c.x - 0.05, 0.6, 0), width: 2.8, dir: new THREE.Vector3(-0.35, 0.2, 1) };
+    // three-quarter front view of the head: both horns, eyes and ears apart
+    case "kepala": return { target: new THREE.Vector3(c.x + 1.3, 1.85, 0), width: 2.6, dir: new THREE.Vector3(1, 0.55, 0.45) };
+    case "jalan": return { target: new THREE.Vector3(c.x + 1.2, 1.3, 0), width: 7, dir: new THREE.Vector3(0, 0.3, 1) };
+    case "pohon": return { target: new THREE.Vector3(STOPS.pohon + 1.0, 2.0, -1.0), width: 5.6, dir: new THREE.Vector3(0, 0.12, 1) };
+    case "rumah": return { target: new THREE.Vector3(STOPS.rumah + 0.6, 1.5, -1.6), width: 6.4, dir: new THREE.Vector3(0, 0.18, 1) };
+    case "dapur": return { target: new THREE.Vector3(STOPS.rumah + 1.9, 0.75, -0.9), width: 6.2, dir: new THREE.Vector3(0, 0.45, 1) };
+  }
+}
+function desiredCamera(s: Shot) {
+  const vfov = camera.fov * Math.PI / 180;
+  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+  // fit the shot's width, and its height (~0.8 of the width) on wide, short screens
+  const dist = Math.max(2.6, (s.width / 2) / Math.tan(hfov / 2), (s.width * 0.4) / Math.tan(vfov / 2));
+  return s.target.clone().add(s.dir.clone().normalize().multiplyScalar(dist));
+}
+
+function ensure3D() {
+  if (renderer) return;
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  el.stage.append(renderer.domElement);
+  renderer.domElement.setAttribute("aria-label", "Sapimu dalam 3D. Ketuk bagian yang dihitung.");
+  world = new World(); scene.add(world.group);
+  cow = new Cow3D(); scene.add(cow.group);
+  new ResizeObserver(resize3D).observe(el.stage);
+  resize3D();
+  bindTaps();
+  requestAnimationFrame(loop);
+}
+function resize3D() {
+  if (!renderer) return;
+  const w = el.stage.clientWidth, h = el.stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
+}
+
+function loop(now: number) {
+  requestAnimationFrame(loop);
+  if (!renderer || current !== "main" || document.hidden) return;
+  cow!.update(now); world!.update(now);
+  const want = desiredCamera(shot);
+  const k = reduceMotion ? 1 : 0.06;
+  camera.position.lerp(want, k); camTarget.lerp(shot.target, k);
+  camera.lookAt(camTarget);
+  badges.forEach((b) => b.update());
+  renderer.render(scene, camera);
+}
+
+/** Walk the cow to x, the camera following along the road. */
+function walkTo(x: number) {
+  return new Promise<void>((done) => {
+    const c = cow!; const from = c.group.position.x, dist = Math.abs(x - from);
+    const dur = reduceMotion ? 300 : (dist / 2.4) * 1000, t0 = performance.now();
+    c.walking = true; c.group.rotation.y = 0;
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - t0) / dur);
+      c.group.position.x = from + (x - from) * k;
+      shot = shotFor("jalan");
+      if (k < 1) requestAnimationFrame(tick); else { c.walking = false; done(); }
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// ------------------------------------------------------------------- number badges that follow a part
+class Badge {
+  sprite: THREE.Sprite;
+  constructor(public part: THREE.Object3D, n: number, size = 0.42) {
+    const c = document.createElement("canvas"); c.width = c.height = 128;
+    const x = c.getContext("2d")!;
+    x.fillStyle = "#ffffff"; x.beginPath(); x.arc(64, 64, 60, 0, 7); x.fill();
+    x.fillStyle = "#26231f"; x.beginPath(); x.arc(64, 64, 52, 0, 7); x.fill();
+    x.fillStyle = "#ffffff"; x.font = "700 74px Andika, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(String(n), 64, 70);
+    this.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+    this.sprite.scale.setScalar(size); this.sprite.renderOrder = 20;
+    scene.add(this.sprite); this.update();
+  }
+  update() {
+    const p = anchorOf(this.part);
+    const toCam = camera.position.clone().sub(p).normalize().multiplyScalar(0.35);
+    this.sprite.position.copy(p.add(toCam));
+  }
+  dispose() { scene.remove(this.sprite); this.sprite.material.map?.dispose(); this.sprite.material.dispose(); }
+}
+let badges: Badge[] = [];
+function clearBadges() { badges.forEach((b) => b.dispose()); badges = []; }
+
+// =================================================================== adventure steps
+type CountTarget = Countable | "mangga";
+type Step =
+  | { kind: "count"; id: string; target: CountTarget; prompt: string; noun: string; label: string; chapter: number }
+  | { kind: "build"; id: string; parts: string[]; extra: string; word: string; chapter: number }
+  | { kind: "pick"; id: string; parts: string[]; answer: Item; chapter: number };
+
+const CHAPTERS = ["Sapiku", "Pohon", "Rumah", "Ibu"];
+const STEPS: Step[] = [
+  { kind: "count", id: "kaki", target: "kaki", prompt: "Ada berapa kaki sapimu?", noun: "Kaki sapi", label: "Kaki sapi", chapter: 0 },
+  { kind: "count", id: "tanduk", target: "tanduk", prompt: "Ada berapa tanduk sapimu?", noun: "Tanduk sapi", label: "Tanduk sapi", chapter: 0 },
+  { kind: "count", id: "mangga", target: "mangga", prompt: "Ada berapa mangga di pohon?", noun: "Mangganya", label: "Mangga", chapter: 1 },
+  { kind: "build", id: "rumah", parts: ["RU", "MAH"], extra: "BU", word: "rumah", chapter: 2 },
+  { kind: "pick", id: "sapu", parts: ["SA", "PU"], answer: "sapu", chapter: 3 },
+];
+
+interface Run {
+  si: number; phase: "count" | "choose" | "done"; counted: number[]; tries: number;
+  built: string[]; cards: string[]; mangoes: number;
+}
+let R: Run = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes: 4 };
+
+async function startAdventure() {
+  show("main");
+  el.loading.hidden = false;
+  await document.fonts?.load("700 40px Andika").catch(() => undefined);
+  ensure3D();
+  el.loading.hidden = true;
+  running = true;
+  const colors = board.regionColors();
+  cow!.setColors(colors);
+  cow!.group.position.set(STOPS.start, 0, 0); cow!.group.rotation.y = 0;
+  world!.reset();
+  R = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes: 3 + Math.floor(Math.random() * 3) };
+  world!.setMangoes(R.mangoes);
+  shot = shotFor("sapi");
+  camera.position.copy(desiredCamera(shot)); camTarget.copy(shot.target);
+  cow!.hop();
+  openStep(0, false);
+  await say("Ini sapimu! Geser untuk memutarnya.");
+  if (running && R.si === 0) say(STEPS[0].kind === "count" ? STEPS[0].prompt : "");
+}
+
+function renderChapters() {
+  const ch = STEPS[R.si].chapter;
+  el.chapters.innerHTML = CHAPTERS.map((c, i) => `<li ${i === ch ? 'aria-current="step"' : ""} class="${i < ch ? "lewat" : ""}">${c}</li>`).join("");
+}
+
+function openStep(i: number, speak = true) {
+  R.si = i; R.phase = "count"; R.counted = []; R.tries = 1; R.built = [];
+  clearBadges();
+  const s = STEPS[i];
+  cow!.calm = s.kind === "count" && s.target !== "mangga" ? 1 : 0;
+  if (s.kind === "count") {
+    cow!.group.rotation.y = 0;
+    shot = shotFor(s.target === "mangga" ? "pohon" : s.target === "kaki" ? "kaki" : "kepala");
+  }
+  if (s.kind === "build") { shot = shotFor("rumah"); R.cards = shuffle([...s.parts, s.extra]); }
+  if (s.kind === "pick") { shot = shotFor("dapur"); world!.showItems(true); }
+  renderChapters(); renderStep(); renderParentTools();
+  if (speak) say(promptOf(s));
+}
+function promptOf(s: Step) {
+  return s.kind === "count" ? s.prompt
+    : s.kind === "build" ? "Susun kartunya, jadi nama tempat ini."
+    : "Ibu minta tolong ambilkan benda ini. Baca kartunya, lalu pilih bendanya.";
+}
+function shuffle<T>(a: T[]) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function targetsOf(t: CountTarget): THREE.Object3D[] { return t === "mangga" ? world!.mangoes : cow!.countables[t]; }
+
+/** Five answer cards around the right answer. */
+function choices(n: number) { const start = Math.max(1, Math.min(n - 2, 6)); return Array.from({ length: 5 }, (_, i) => start + i); }
+
+function renderStep() {
+  const s = STEPS[R.si];
+  const next = R.phase === "done"
+    ? `<button class="btn utama besar" id="nextBtn" type="button">${R.si === STEPS.length - 1 ? "Selesai!" : STEPS[R.si + 1].chapter !== s.chapter ? "Ayo jalan!" : "Lanjut"}</button>` : "";
+  const ask = (t: string) => `<div class="soal"><p class="soal-teks">${esc(t)}</p><button class="btn dengar" id="dengar" type="button" aria-label="Dengar lagi">${ICON_DENGAR}</button></div>`;
+  if (s.kind === "count") {
+    const n = targetsOf(s.target).length, c = R.counted.length;
+    const body = R.phase === "count"
+      ? `<div class="ketuk" aria-label="${c} dari ${n} sudah diketuk">${Array.from({ length: n }, (_, i) => `<span class="${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</span>`).join("")}</div>`
+      : R.phase === "choose"
+        ? `<div class="angka" role="group" aria-label="Pilih jumlahnya">${choices(n).map((k) => `<button class="btn" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
+        : `<p class="pujian">Betul! ${esc(s.noun)} ada ${n}.</p>`;
+    el.panel.innerHTML = `${R.phase === "done" ? "" : ask(R.phase === "count" ? s.prompt : "Jadi, ada berapa?")}${body}${next}`;
+    el.panel.querySelectorAll<HTMLButtonElement>("[data-n]").forEach((b) => b.addEventListener("click", () => chooseNumber(b, Number(b.dataset.n))));
+  } else if (s.kind === "build") {
+    const doneWord = R.built.length === s.parts.length;
+    el.panel.innerHTML = `${doneWord ? `<p class="pujian">Betul! Ini RUMAH Budi.</p>` : ask("Susun kartunya, jadi nama tempat ini.")}
+      <div class="slot-kata" aria-label="Kata yang disusun">${s.parts.map((_, i) => `<span>${R.built[i] ?? ""}</span>`).join("")}</div>
+      ${doneWord ? "" : `<div class="kartu-baris" role="group" aria-label="Kartu suku kata">${R.cards.map((c) => `<button class="btn kartu" type="button" data-card="${c}" ${R.built.includes(c) ? "disabled" : ""}>${c}</button>`).join("")}</div>`}
+      ${next}`;
+    el.panel.querySelectorAll<HTMLButtonElement>("[data-card]").forEach((b) => b.addEventListener("click", () => tapCard(b)));
+  } else {
+    el.panel.innerHTML = `${R.phase === "done" ? `<p class="pujian">Betul! Itu SAPU. Terima kasih!</p>` : ask("Ibu minta tolong ambilkan:")}
+      <p class="kata-besar" aria-label="${s.parts.join("")}"><span>${s.parts[0]}</span><span class="s2">${s.parts[1]}</span></p>
+      ${R.phase === "done" ? "" : `<div class="pilih-benda" role="group" aria-label="Pilih bendanya">${(["bola", "sapu", "topi"] as Item[]).map((k, i) => `<button class="btn" type="button" data-item="${k}" aria-label="Gambar ${i + 1}">${itemIcon(k)}</button>`).join("")}</div>`}
+      ${next}`;
+    el.panel.querySelectorAll<HTMLButtonElement>("[data-item]").forEach((b) => b.addEventListener("click", () => pickItem(b.dataset.item as Item, b)));
+  }
+  document.getElementById("dengar")?.addEventListener("click", () => say(R.phase === "choose" ? "Jadi, ada berapa?" : promptOf(s)));
+  document.getElementById("nextBtn")?.addEventListener("click", nextStep);
+}
+
+/** Picture-only buttons, so the child has to read the word to choose. */
+function itemIcon(k: Item) {
+  const s = `fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"`;
+  if (k === "sapu") return `<svg viewBox="0 0 48 48" ${s} aria-hidden="true"><path d="M30 4 22 28"/><path d="M14 26h16l4 16H10z"/><path d="M16 34l-2 8M22 34v8M28 34l2 8"/></svg>`;
+  if (k === "bola") return `<svg viewBox="0 0 48 48" ${s} aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M8 24h32"/><path d="M24 8c6 5 6 27 0 32"/></svg>`;
+  return `<svg viewBox="0 0 48 48" ${s} aria-hidden="true"><path d="M6 34h36"/><path d="M14 34c0-12 4-18 10-18s10 6 10 18"/><path d="M14 28h20"/></svg>`;
+}
+
+// ------------------------------------------------------------------- counting
+function countOne(index: number, part: THREE.Object3D) {
+  const s = STEPS[R.si]; if (s.kind !== "count" || R.phase !== "count") return;
+  if (R.counted.includes(index)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
+  R.counted.push(index);
+  const k = R.counted.length, n = targetsOf(s.target).length;
+  badges.push(new Badge(part, k, s.target === "mangga" ? 0.5 : 0.4));
+  if (k >= n) { R.phase = "choose"; renderStep(); say(NUM[k]).then(() => say("Jadi, ada berapa?")); }
+  else { renderStep(); say(NUM[k] || String(k)); }
+}
+function chooseNumber(btn: HTMLButtonElement, k: number) {
+  const s = STEPS[R.si]; if (s.kind !== "count" || R.phase !== "choose") return;
+  const n = targetsOf(s.target).length;
+  if (k !== n) {
+    R.tries++; btn.classList.remove("salah"); void btn.offsetWidth; btn.classList.add("salah");
+    say("Hmm, coba hitung lagi angka terakhirnya.");
+    if (R.tries >= 3) el.panel.querySelector(`[data-n="${n}"]`)?.classList.add("petunjuk");
+    return;
+  }
+  R.phase = "done";
+  progress.record({ skill: "hitung", label: `${s.label} (${n})`, tries: R.tries });
+  renderStep(); if (s.target !== "mangga") cow!.hop();
+  say(`Betul! ${s.noun} ada ${NUM[n] || n}.`);
+}
+
+// ------------------------------------------------------------------- reading: build RU + MAH
+function tapCard(b: HTMLButtonElement) {
+  const s = STEPS[R.si]; if (s.kind !== "build") return;
+  const card = b.dataset.card!, want = s.parts[R.built.length];
+  if (card !== want) {
+    R.tries++; b.classList.remove("salah"); void b.offsetWidth; b.classList.add("salah");
+    say(`Itu ${card.toLowerCase()}. Cari yang lain.`);
+    if (R.tries >= 3) el.panel.querySelector(`[data-card="${want}"]`)?.classList.add("petunjuk");
+    return;
+  }
+  R.built.push(card); say(card.toLowerCase());
+  if (R.built.length === s.parts.length) {
+    R.phase = "done";
+    progress.record({ skill: "baca", label: s.parts.join("·"), tries: R.tries });
+    renderStep();
+    wait(700).then(() => say(`${s.parts.map((p) => p.toLowerCase()).join(", ")}, ${s.word}!`)).then(() => { world!.openDoor(); });
+  } else renderStep();
+}
+
+// ------------------------------------------------------------------- reading: pick the SA-PU
+function pickItem(item: Item, btn?: HTMLElement) {
+  const s = STEPS[R.si]; if (s.kind !== "pick" || R.phase === "done") return;
+  if (item !== s.answer) {
+    R.tries++;
+    if (btn) { btn.classList.remove("salah"); void (btn as HTMLElement).offsetWidth; btn.classList.add("salah"); }
+    say(`Itu ${item}. Coba baca lagi: ${s.parts.map((p) => p.toLowerCase()).join("... ")}.`);
+    if (R.tries >= 3) el.panel.querySelector(`[data-item="${s.answer}"]`)?.classList.add("petunjuk");
+    return;
+  }
+  R.phase = "done";
+  progress.record({ skill: "baca", label: s.parts.join("·"), tries: R.tries });
+  const it = world!.items.sapu; it.position.set(world!.ibu.position.x + 0.45, 0, world!.ibu.position.z + 0.2);
+  renderStep(); cow!.hop();
+  say("Betul! Itu sapu. Terima kasih, ya!");
+}
+
+async function nextStep() {
+  const s = STEPS[R.si];
+  if (R.si === STEPS.length - 1) { finish(); return; }
+  const n = STEPS[R.si + 1];
+  if (n.chapter !== s.chapter) {
+    el.panel.innerHTML = `<p class="pujian">Ayo jalan…</p>`;
+    clearBadges();
+    cow!.calm = 0;
+    const to = n.chapter === 1 ? STOPS.pohon - 1.2 : STOPS.rumah - 2.4;
+    if (n.kind === "pick") { openStep(R.si + 1); return; }
+    await walkTo(to);
+    if (!running) return;
+  }
+  openStep(R.si + 1);
+}
+
+function finish() {
+  clearBadges();
+  const png = board.snapshot(320);
+  progress.addSticker(png);
+  el.newSticker.src = png;
+  show("selesai");
+  say("Hore! Sapimu sudah membantu Ibu. Stikernya masuk ke kebun stiker.");
+}
+el.againBtn.addEventListener("click", () => { board.clear(); show("warnai"); });
+el.homeBtn.addEventListener("click", goHome);
+
+// ------------------------------------------------------------------- parent tools (also the keyboard path)
+function renderParentTools() {
+  const s = STEPS[R.si];
+  el.ortuMainIsi.innerHTML = s.kind === "count"
+    ? `<p>Biarkan anak mengetuk sendiri satu per satu, lalu memilih angkanya. Beri jeda sebelum membantu, dan puji usahanya.</p>
+       <button class="btn kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu</button>`
+    : s.kind === "build"
+      ? `<p>Tunjuk papan nama rumah, baca pelan bersama: ru, mah. Anak menyusun kartunya sendiri.</p>`
+      : `<p>Ajak anak membaca kartu: sa, pu. Jangan sebutkan bendanya dulu; biar anak yang memilih.</p>`;
+  document.getElementById("tandai")?.addEventListener("click", () => {
+    const st = STEPS[R.si]; if (st.kind !== "count" || R.phase !== "count") return;
+    const ts = targetsOf(st.target), i = ts.findIndex((_, k) => !R.counted.includes(k));
+    if (i >= 0) countOne(i, ts[i]);
+  });
+}
+
+// ------------------------------------------------------------------- taps and turning the cow
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function bindTaps() {
+  const c = renderer!.domElement;
+  let down: { x: number; y: number; rot: number; moved: boolean; id: number } | null = null;
+  c.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY, rot: cow!.group.rotation.y, moved: false, id: e.pointerId }; c.setPointerCapture(e.pointerId); });
+  c.addEventListener("pointermove", (e) => {
+    if (!down || e.pointerId !== down.id) return;
+    const dx = e.clientX - down.x;
+    if (Math.abs(dx) > 8 || Math.abs(e.clientY - down.y) > 8) down.moved = true;
+    const s = STEPS[R.si];
+    // the child may turn the cow while getting to know it
+    if (down.moved && s.kind === "count" && s.target !== "mangga") cow!.group.rotation.y = down.rot + dx * 0.012;
+  });
+  c.addEventListener("pointercancel", () => { down = null; });
+  c.addEventListener("pointerup", (e) => {
+    const d = down; down = null;
+    if (!d || d.moved) return;
+    const r = c.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    onTap();
+  });
+}
+function onTap() {
+  const s = STEPS[R.si];
+  if (s.kind === "count" && R.phase === "count") {
+    const ts = targetsOf(s.target);
+    const hit = ray.intersectObjects(ts, true)[0];
+    if (!hit) { if (s.target !== "mangga" && ray.intersectObject(cow!.group, true).length) { cow!.hop(); say("mooo", 0.7); } return; }
+    let o: THREE.Object3D | null = hit.object;
+    while (o && !ts.includes(o)) o = o.parent;
+    if (o) countOne(ts.indexOf(o), o);
+  } else if (s.kind === "pick") {
+    const hit = ray.intersectObjects(Object.values(world!.items), true)[0];
+    if (hit) pickItem(hit.object.userData.item as Item, el.panel.querySelector<HTMLElement>(`[data-item="${hit.object.userData.item}"]`) ?? undefined);
+  } else if (ray.intersectObject(cow!.group, true).length) { cow!.hop(); say("mooo", 0.7); }
+}
+
+// =================================================================== PWA + start
+registerSW({ immediate: true });
+let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e as typeof installEvt; el.installBtn.hidden = false; });
+el.installBtn.addEventListener("click", async () => { if (!installEvt) return; el.installBtn.hidden = true; await installEvt.prompt(); installEvt = null; });
+window.addEventListener("appinstalled", () => { el.installBtn.hidden = true; });
+
+show("home");
+history.replaceState({ rk: "home" }, "");
+
+// Handle for automated browser tests.
+(window as unknown as { __RK: unknown }).__RK = {
+  board, get cow() { return cow; }, get world() { return world; }, camera, THREE, anchorOf, get R() { return R; }, STEPS, get screen() { return current; },
+};
