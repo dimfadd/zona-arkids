@@ -12,6 +12,7 @@ import { registerSW } from "virtual:pwa-register";
 import * as C from "./core";
 import type { Mat3, RGBAImage, Vec3 } from "./core";
 import { AR } from "./vendor/aruco.js";
+import { readSheetQR, parseActivation, type QRRead } from "./qr";
 import rawConfig from "./content/config.json";
 
 // ----------------------------------------------------------------- config types
@@ -26,7 +27,7 @@ interface CountQuestion { id: string; prompt: string; noun: string; piece: strin
 type Task =
   | { type: "count"; prompt: string; answer: number; questions?: CountQuestion[] }
   | { type: "spell"; syllables: Syllable[]; word: { text: string; say: string } };
-interface Sheet { title: string; markers: Record<string, [number, number][]>; pieces: Piece[]; task: Task }
+interface Sheet { title: string; markers: Record<string, [number, number][]>; pieces: Piece[]; task: Task; qr?: [number, number, number] }
 interface Config { page: [number, number]; sheets: Record<string, Sheet> }
 
 const CFG = rawConfig as unknown as Config;
@@ -36,6 +37,8 @@ const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySele
 const DEG = Math.PI / 180;
 const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 const PX_PER_MM = 4;
+// ?debug=1 shows scan diagnostics on the stage (corners found, timings, QR) for testing on real phones.
+const DEBUG = new URLSearchParams(location.search).has("debug");
 
 // ----------------------------------------------------------------- dom
 const el = {
@@ -71,6 +74,8 @@ const S = {
   stream: null as MediaStream | null, lastSeen: 0, smooth: null as [number, number][] | null,
   liveH: null as Mat3 | null, liveKey: null as string | null, liveCount: 0, pageTex: null as THREE.Texture | null,
   savedPose: null as { R: Vec3[]; t: Vec3 } | null, photoUrl: null as string | null, pausedLive: false,
+  // QR on the sheet (per-buyer serial). Not enforced yet: read and reported only.
+  qr: null as QRRead | null, serial: null as string | null,
 };
 
 // ----------------------------------------------------------------- three
@@ -656,6 +661,7 @@ async function runPhoto(src: string) {
     await wait(30);
     const full = toImageData(im, S.W, S.H);
     const detW = Math.min(1100, S.W);
+    const tDet = performance.now();
     let corr = detect(im, S.W, S.H, detW);
     if (!corr || corr.count < 4) { const c2 = detect(im, S.W, S.H, Math.min(1600, S.W)); if (c2 && (!corr || c2.count > corr.count)) corr = c2; }
     if (!corr || corr.count < 2) {
@@ -663,8 +669,11 @@ async function runPhoto(src: string) {
       return;
     }
     if (corr.count < 4) toast(`Baru ${corr.count} dari 4 pojok terbaca. Hasilnya bisa sedikit meleset.`);
+    const detMs = performance.now() - tDet;
     S.sheetKey = corr.key; S.sheet = CFG.sheets[corr.key];
     const H = C.homography(corr.src, corr.dst)!;
+    scanQR(full, H);
+    showDebug(`${corr.count}/4 pojok · ${S.W}×${S.H} · deteksi ${Math.round(detMs)} ms · galat ${C.reprojError(H, corr.src, corr.dst).toFixed(1)} px`);
     const fe = C.estimateFocal(H, S.W, S.H);
     S.f = corr.count === 4 && fe.estimated ? fe.f : 0.78 * Math.max(S.W, S.H);
     setCameraFromIntrinsics();
@@ -687,6 +696,19 @@ async function runPhoto(src: string) {
     console.error(err);
     photoFailed("Foto tidak bisa dibuka", "Coba foto ulang atau pilih foto lain.");
   }
+}
+
+// ----------------------------------------------------------------- QR + diagnostics
+function scanQR(full: RGBAImage, H: Mat3) {
+  S.qr = S.sheet?.qr ? readSheetQR(full, H, S.sheet.qr) : null;
+  S.serial = S.qr ? parseActivation(S.qr.text)?.serial ?? null : null;
+}
+function showDebug(line: string) {
+  if (!DEBUG) return;
+  const qr = S.qr ? `QR terbaca (${Math.round(S.qr.ms)} ms)${S.serial ? " · serial " + S.serial : " · bukan link aktivasi"}` : "QR tidak terbaca";
+  el.chip.hidden = false; el.chip.classList.remove("ok");
+  el.chip.textContent = `${line} · ${qr}`;
+  console.info("[scan]", line, "|", qr, S.qr?.text ?? "");
 }
 
 // ----------------------------------------------------------------- live camera
@@ -790,6 +812,8 @@ async function captureLive() {
   const c = document.createElement("canvas"); c.width = S.W; c.height = S.H; c.getContext("2d")!.putImageData(full, 0, 0);
   const corr = detect(c, S.W, S.H, Math.min(1000, S.W));
   const H = (corr && corr.key === S.sheetKey && corr.count >= 2 && C.homography(corr.src, corr.dst)) || S.liveH;
+  scanQR(full, H);
+  showDebug(`${corr ? corr.count : 0}/4 pojok · video ${S.W}×${S.H}`);
   await document.fonts?.ready;
   await buildPieces(full, H);
   el.busy.hidden = true; outline.visible = false;

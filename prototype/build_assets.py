@@ -120,7 +120,7 @@ def page(sheet_key, colored=False):
             body.append(letter_tile(L, trace="#2f5fa8" if colored else None))
         tip_y = 222
     # parent instructions + QR
-    qr = qr_svg(APP_URL, 157, 236, 22) if APP_URL else ""
+    qr = qr_svg(APP_URL, *S.QR_BOX) if APP_URL else ""
     tx = 40
     steps = ["Untuk Ayah/Bunda:",
              "1. Setelah selesai, buka aplikasinya (pindai QR ini).",
@@ -201,7 +201,7 @@ def build_config():
                 if key == "warna-sapi" else
                 {"type": "spell", "syllables": S.SYLLABLES, "word": S.WORD})
         cfg["sheets"][key] = {"title": "Sapi" if key == "warna-sapi" else "SAPI",
-                              "markers": markers, "pieces": pieces, "task": task}
+                              "markers": markers, "pieces": pieces, "task": task, "qr": S.QR_BOX}
     return cfg
 
 

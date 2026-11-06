@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import jpeg from "jpeg-js";
 import * as core from "../src/core";
+import { readSheetQR, parseActivation, type QRBox } from "../src/qr";
 import { AR } from "../src/vendor/aruco.js";
 import cfg from "../src/content/config.json";
 
@@ -65,6 +66,10 @@ describe("marker detection on simulated phone photos", () => {
       const Pp = proto.pose(Hp, foc.f, img.width, img.height);
       P.t.forEach((v, i) => expect(v).toBeCloseTo(Pp.t[i], 6));
 
+      // the per-buyer QR is read from the same photo, cut out with the page homography
+      const qr = readSheetQR(img, H, (cfg.sheets as Record<string, { qr: number[] }>)[c.sheet].qr as QRBox);
+      expect(qr?.text).toBe("https://claude.ai/artifact/A2YL3M4At2BK3JFUwq3Nav");
+
       // rectified pieces come out with clean white paper after enhancement
       for (const pc of sheets[c.sheet].pieces) {
         const r = core.rectify(img, H, pc.box, 2, 1);
@@ -115,5 +120,17 @@ describe("content: counting questions", () => {
         }
       }
     }
+  });
+});
+
+describe("activation links", () => {
+  it("reads the serial from an activation URL", () => {
+    expect(parseActivation("https://gambarku.id/a/GH1-7K3Q-9XZD")).toEqual({ serial: "GH17K3Q9XZD" });
+    expect(parseActivation("HTTPS://GAMBARKU.ID/A/GH17K3Q9XZD")).toEqual({ serial: "GH17K3Q9XZD" });
+  });
+  it("rejects anything else", () => {
+    expect(parseActivation("https://claude.ai/artifact/A2YL3M4At2BK3JFUwq3Nav")).toBeNull();
+    expect(parseActivation("https://gambarku.id/a/x")).toBeNull();
+    expect(parseActivation("hello")).toBeNull();
   });
 });

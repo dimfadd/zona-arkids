@@ -15,6 +15,9 @@ MARKER_POS = {           # top-left of each marker
     "br": (PAGE_W - 10 - MARKER, PAGE_H - 10 - MARKER),
 }
 
+# Per-buyer QR code: [x, y, size] in mm. Same place on every sheet, >= 5 mm from the BR marker.
+QR_BOX = [157.0, 236.0, 22.0]
+
 SHEETS = {
     "warna-sapi": {"ids": {"tl": 101, "tr": 202, "bl": 303, "br": 404}},
     "tebal-sapi": {"ids": {"tl": 515, "tr": 626, "bl": 737, "br": 848}},

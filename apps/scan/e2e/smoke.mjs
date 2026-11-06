@@ -130,6 +130,12 @@ for (const vp of VIEWPORTS) {
   check(sw, "service worker aktif");
   const man = await (await page.request.get(URL + "manifest.webmanifest")).json();
   check(man.display === "standalone" && man.icons.length >= 3, "manifest PWA valid");
+  // ?debug=1 shows scan diagnostics (the demo photos have no QR printed on them)
+  await page.goto(URL + "?debug=1");
+  await page.click("[data-demo=warna]");
+  await page.waitForFunction(() => window.__GH?.S.pieces.length > 0, null, { timeout: 30000 });
+  const chip = await page.$eval("#chip", (e) => (e.hidden ? "" : e.textContent));
+  check(chip.includes("4/4 pojok") && chip.includes("QR"), `mode diagnosa: "${chip}"`);
   await ctx.close();
 }
 
