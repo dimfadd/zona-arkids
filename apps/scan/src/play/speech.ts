@@ -12,6 +12,7 @@ if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged 
 
 export function say(text: string, rate = 0.85): Promise<void> {
   return new Promise((res) => {
+    if (muted) { setTimeout(res, 250); return; }
     if (!("speechSynthesis" in window)) { setTimeout(res, 500 + text.length * 40); return; }
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "id-ID"; if (voice) u.voice = voice;
@@ -25,3 +26,8 @@ export function say(text: string, rate = 0.85): Promise<void> {
 export function hush() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
 
 export const NUM = ["nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh"];
+
+let muted = false;
+/** Parents can turn the voice off; prompts then resolve at once so the game keeps flowing. */
+export function setMuted(m: boolean) { muted = m; if (m) hush(); }
+export function isMuted() { return muted; }

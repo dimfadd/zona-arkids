@@ -58,16 +58,28 @@ for (const vp of VIEWPORTS) {
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   await page.goto(URL + "?mangga=5"); await page.waitForLoadState("networkidle");
-  await page.screenshot({ path: `${OUT}/${vp.name}-0-beranda.png`, fullPage: true });
-  check(await page.isVisible(".kosong"), "beranda: keadaan kosong kebun stiker tampil");
+  await page.screenshot({ path: `${OUT}/${vp.name}-0-peta.png`, fullPage: true });
+  check(await page.locator(".pulau").count() === 10, "peta: 10 pulau episode");
+  check(await page.locator(".pulau.kunci").count() === 9, "peta: episode 2-10 ditandai segera hadir");
   const noScroll = async (label) => {
     const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
     check(sw <= iw, `${label}: tidak ada scroll horizontal (${sw} <= ${iw})`);
   };
-  await noScroll("beranda");
+  await noScroll("peta");
+  // a locked episode explains itself and has no play button
+  await page.click('[data-ep="2"]');
+  check(await page.isVisible(".segera") && !(await page.isVisible("#playBtn")), "kartu episode terkunci: 'sedang dibuat', tanpa tombol main");
+  await page.click("#epTutup");
+  // the sticker book is empty at first
+  await page.click('[data-go="stiker"]');
+  check(await page.locator(".slot.ada").count() === 0, "buku stiker: kosong di awal");
+  await page.click('#stiker [data-go="peta"]'); await sleep(200);
 
-  // ---- colouring
-  await page.click("#startBtn");
+  // ---- open episode 1 from the map, then colour
+  await page.click('[data-ep="1"]');
+  await sleep(500); // let the sheet finish sliding in
+  await page.screenshot({ path: `${OUT}/${vp.name}-0b-kartu-episode.png` });
+  await page.click("#playBtn");
   const box = await page.locator(".papan-warna").boundingBox();
   // finger mode (default): a touch stroke that starts on the body and runs across the snout and off the cow
   // must colour the body only. The crayon tip sits 64 px above the finger.
@@ -169,12 +181,25 @@ for (const vp of VIEWPORTS) {
   await page.click("#nextBtn");
   await page.waitForFunction(() => window.__RK.screen === "selesai");
   check((await page.getAttribute("#newSticker", "src")).startsWith("data:image/png"), "stiker sapi dibuat");
+  await sleep(800); // let the sticker finish landing
   await page.screenshot({ path: `${OUT}/${vp.name}-7-selesai.png`, fullPage: true });
-  await page.click("#homeBtn"); await sleep(300);
-  check(await page.locator(".stiker").count() >= 1, "beranda: stiker muncul di kebun stiker");
-  await page.click("#laporan summary");
-  check(await page.locator(".laporan tbody tr").count() >= 5, "beranda: laporan berisi 5 soal");
-  await page.screenshot({ path: `${OUT}/${vp.name}-8-laporan.png`, fullPage: true });
+  await page.click("#toMapBtn"); await sleep(300);
+  check(await page.locator('.pulau.selesai[data-ep="1"]').count() === 1, "peta: episode 1 bertanda selesai");
+  await page.click('[data-go="stiker"]');
+  check(await page.locator(".slot.ada").count() === 1, "buku stiker: stiker sapi muncul");
+  await page.screenshot({ path: `${OUT}/${vp.name}-8-stiker.png`, fullPage: true });
+  await page.click('#stiker [data-go="peta"]'); await sleep(200);
+  // parents' room behind the gate: a wrong answer keeps it closed, the right one opens it
+  await page.click('#peta [data-go="ortu"]');
+  const [ga, gb] = (await page.textContent("#gateSoal")).match(/\d+/g).map(Number);
+  const wrongGate = await page.$(`[data-gate]:not([data-gate="${ga * gb}"])`);
+  await wrongGate.click(); await sleep(150);
+  check(await page.evaluate(() => window.__RK.screen === "peta"), "gerbang orang tua: jawaban salah tidak membuka");
+  await page.click(`[data-gate="${ga * gb}"]`);
+  check(await page.evaluate(() => window.__RK.screen === "ortu"), "gerbang orang tua: jawaban benar membuka ruang Ayah/Bunda");
+  check(await page.locator(".laporan tbody tr").count() >= 5, "ruang Ayah/Bunda: laporan berisi 5 soal");
+  await page.screenshot({ path: `${OUT}/${vp.name}-9-ortu.png`, fullPage: true });
+  await noScroll("ruang Ayah/Bunda");
 
   check(errors.length === 0, `tanpa error console${errors.length ? ": " + errors.join(" | ") : ""}`);
   await ctx.close();

@@ -14,21 +14,25 @@ import { CRAYONS } from "./cow-art";
 import { Cow3D, anchorOf, type Countable } from "./cow3d";
 import { World, STOPS, type Item } from "./world";
 import { progress, type Attempt } from "./progress";
-import { say, hush, NUM } from "./speech";
+import { say, hush, NUM, setMuted, isMuted } from "./speech";
+import { MUSIM_1, IKON, ikonSvg, type Episode } from "./episodes";
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
-const ICON_DENGAR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M19.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>`;
+const ICON_DENGAR = `<svg aria-hidden="true"><use href="#i-suara"/></svg>`;
 
 const el = {
-  home: $("#home"), warnai: $("#warnai"), main: $("#main"), selesai: $("#selesai"),
-  startBtn: $<HTMLButtonElement>("#startBtn"), stickers: $("#stickers"), report: $("#report"), clearData: $<HTMLButtonElement>("#clearData"),
+  peta: $("#peta"), stiker: $("#stiker"), ortu: $("#ortu"), warnai: $("#warnai"), main: $("#main"), selesai: $("#selesai"),
+  dunia: $("#dunia"), stickers: $("#stickers"), report: $("#report"), clearData: $<HTMLButtonElement>("#clearData"),
+  epSheet: $<HTMLDialogElement>("#epSheet"), epIkon: $("#epIkon"), epNo: $("#epNo"), epJudul: $("#epJudul"), epMenit: $("#epMenit"),
+  epBelajar: $("#epBelajar"), epAksi: $("#epAksi"),
+  gate: $<HTMLDialogElement>("#gate"), gateSoal: $("#gateSoal"), gatePilihan: $("#gatePilihan"),
   boardHost: $("#boardHost"), palette: $("#palette"), undoBtn: $<HTMLButtonElement>("#undoBtn"), clearBtn: $<HTMLButtonElement>("#clearBtn"),
   doneBtn: $<HTMLButtonElement>("#doneBtn"), stage: $("#stage3d"), loading: $("#loading3d"), panel: $("#panel"),
   chapters: $("#chapters"), ortuMain: $<HTMLDetailsElement>("#ortuMain"), ortuMainIsi: $("#ortuMainIsi"),
-  newSticker: $<HTMLImageElement>("#newSticker"), againBtn: $<HTMLButtonElement>("#againBtn"), homeBtn: $<HTMLButtonElement>("#homeBtn"),
+  newSticker: $<HTMLImageElement>("#newSticker"), againBtn: $<HTMLButtonElement>("#againBtn"), toMapBtn: $<HTMLButtonElement>("#toMapBtn"),
   toast: $("#toast"), installBtn: $<HTMLButtonElement>("#installBtn"),
 };
 
@@ -39,32 +43,165 @@ function toast(msg: string, ms = 3500) {
 }
 
 // =================================================================== screens
-type Screen = "home" | "warnai" | "main" | "selesai";
-let current: Screen = "home";
+type Screen = "peta" | "stiker" | "ortu" | "warnai" | "main" | "selesai";
+const SCREENS: Screen[] = ["peta", "stiker", "ortu", "warnai", "main", "selesai"];
+let current: Screen = "peta";
 function show(s: Screen) {
   current = s;
-  (["home", "warnai", "main", "selesai"] as Screen[]).forEach((k) => (el[k].hidden = k !== s));
-  document.body.classList.toggle("bermain", s === "main" || s === "warnai");
-  if (s !== "home" && history.state?.rk !== "in") history.pushState({ rk: "in" }, "");
-  if (s === "home") renderHome();
+  SCREENS.forEach((k) => (el[k].hidden = k !== s));
+  document.body.classList.toggle("di-ortu", s === "ortu");
+  if (s !== "peta" && history.state?.rk !== "in") history.pushState({ rk: "in" }, "");
+  if (s === "peta") renderMap();
+  if (s === "stiker") renderStickers();
+  if (s === "ortu") renderReport();
   window.scrollTo({ top: 0 });
 }
-function goHome() { hush(); running = false; if (history.state?.rk === "in") history.back(); else show("home"); }
-window.addEventListener("popstate", () => { if (current !== "home") { hush(); running = false; show("home"); } });
+function goHome() { hush(); running = false; if (history.state?.rk === "in") history.back(); else show("peta"); }
+window.addEventListener("popstate", () => { if (current !== "peta") { hush(); running = false; show("peta"); } });
 document.querySelectorAll<HTMLElement>("[data-back]").forEach((b) => b.addEventListener("click", goHome));
+document.querySelectorAll<HTMLElement>("[data-go]").forEach((b) => b.addEventListener("click", () => {
+  const to = b.dataset.go as Screen;
+  if (to === "peta") goHome();
+  else if (to === "ortu") openGate();
+  else show(to);
+}));
 
-// =================================================================== home: stickers + parent report
-function renderHome() {
+// sound on/off for the spoken prompts, remembered on this device
+function setSound(on: boolean, save = true) {
+  setMuted(!on);
+  document.querySelectorAll<HTMLElement>("[data-sound]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Suara menyala" : "Suara mati");
+    b.querySelector("use")!.setAttribute("href", on ? "#i-suara" : "#i-bisu");
+  });
+  if (save) try { localStorage.setItem("rk.suara", on ? "1" : "0"); } catch { /* storage blocked */ }
+}
+document.querySelectorAll<HTMLElement>("[data-sound]").forEach((b) => b.addEventListener("click", () => setSound(isMuted())));
+try { setSound(localStorage.getItem("rk.suara") !== "0", false); } catch { setSound(true, false); }
+
+// =================================================================== the map
+/** Where each island sits on the 400-wide map, and the winding road between them. */
+const MAP_W = 400, STEP_Y = 165, TOP_Y = 110;
+const ISLAND_X = [200, 300, 150, 92, 230, 312, 210, 100, 180, 290];
+function islandXY(i: number) { return { x: ISLAND_X[i], y: TOP_Y + i * STEP_Y }; }
+function episodeDone(no: number) { return no === 1 && progress.stickers().length > 0; }
+
+function renderMap() {
+  const n = MUSIM_1.length, H = TOP_Y + (n - 1) * STEP_Y + 140;
+  const pts = MUSIM_1.map((_, i) => islandXY(i));
+  let road = `M ${pts[0].x} ${pts[0].y - 60}`;
+  pts.forEach((p, i) => {
+    if (i === 0) { road += ` L ${p.x} ${p.y}`; return; }
+    const a = pts[i - 1], my = (a.y + p.y) / 2;
+    road += ` C ${a.x} ${my}, ${p.x} ${my}, ${p.x} ${p.y}`;
+  });
+  // cut-paper scenery: hill bands with a darker paper edge under each, clouds near the top, lollipop trees
+  const hills: string[] = [];
+  for (let k = 0, y = 260; y < H + 120; k++, y += 330) {
+    const c = k % 2 ? "var(--rumput-2)" : "var(--rumput)";
+    // the hills run far past the map's sides (the svg overflows), so on wide screens they reach the window edges
+    const d = `M -1600 ${y + 10} Q -1000 ${y - 80} -400 ${y - 10} T -10 ${y} Q 70 ${y - 70} 150 ${y - 20} T 300 ${y - 30} T 410 ${y - 10} T 1000 ${y - 40} T 2000 ${y} V ${H + 20} H -1600 Z`;
+    hills.push(`<path d="${d}" transform="translate(0 6)" fill="#3e7d3a" opacity=".35"/><path d="${d}" fill="${c}" stroke="#26231f" stroke-width="2"/>`);
+  }
+  const cloud = (x: number, y: number, s: number) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 18 Q0 4 14 6 Q20 -6 34 2 Q48 -2 50 12 Q62 14 58 26 H4 Q-4 26 0 18Z" fill="#fff" stroke="#26231f" stroke-width="2" /></g>`;
+  const trees = [[40, 250], [360, 420], [330, 120], [30, 600], [370, 760], [40, 930], [360, 1100], [30, 1290], [370, 1430], [50, 1580]]
+    .filter(([, y]) => y < H - 40)
+    .map(([x, y]) => `<g transform="translate(${x} ${y})"><rect x="-3" y="0" width="6" height="22" fill="#8b5a2b" stroke="#26231f" stroke-width="1.5"/><circle cx="0" cy="-6" r="16" fill="var(--rumput-3)" stroke="#26231f" stroke-width="2"/></g>`);
+  el.dunia.innerHTML = `
+    <svg viewBox="0 0 ${MAP_W} ${H}" aria-hidden="true">
+      ${cloud(20, 18, 1)}${cloud(300, 40, .8)}${cloud(250, 300, .7)}
+      ${hills.join("")}
+      ${trees.join("")}
+      <path d="${road}" fill="none" stroke="#26231f" stroke-width="40" stroke-linecap="round"/>
+      <path d="${road}" fill="none" stroke="var(--tanah)" stroke-width="34" stroke-linecap="round"/>
+      <path d="${road}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round"/>
+    </svg>`;
+  const firstOpen = MUSIM_1.findIndex((e) => e.siap && !episodeDone(e.no));
+  const here = firstOpen >= 0 ? firstOpen : 0;
+  MUSIM_1.forEach((ep, i) => {
+    const p = islandXY(i);
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.ep = String(ep.no);
+    b.className = `pulau ${!ep.siap ? "kunci" : ""} ${episodeDone(ep.no) ? "selesai" : ""} ${i === here ? "sekarang" : ""}`;
+    b.style.left = `${(p.x / MAP_W) * 100}%`; b.style.top = `${(p.y / H) * 100}%`;
+    b.setAttribute("aria-label", `Episode ${ep.no}: ${ep.judul}${ep.siap ? "" : ", segera hadir"}${episodeDone(ep.no) ? ", selesai" : ""}`);
+    b.innerHTML = `<span class="pulau-bulat">${ikonSvg(ep.ikon, 60)}<span class="pulau-no">${ep.no}</span>${ep.siap ? "" : `<span class="pulau-gembok"><svg><use href="#i-kunci"/></svg></span>`}</span>
+      <span class="pulau-label">${esc(ep.judul)}</span>`;
+    b.addEventListener("click", () => openEpisode(ep));
+    el.dunia.append(b);
+  });
+  // the paper rocket of the logo, drawn as a sticker (white cut edge), marks where the child is
+  const marker = document.createElement("span");
+  marker.className = "penanda"; marker.setAttribute("aria-hidden", "true");
+  marker.innerHTML = `<svg viewBox="0 0 64 64" width="64" height="64">
+    <path d="M32 3 Q47 15 46 40 L54 52 L44 50 L40 60 H24 L20 50 L10 52 L18 40 Q17 15 32 3Z" fill="#fff" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+    ${IKON.roket}</svg>`;
+  const hp = islandXY(here);
+  marker.style.left = `${((hp.x + 58) / MAP_W) * 100}%`; marker.style.top = `${((hp.y - 30) / H) * 100}%`;
+  el.dunia.append(marker);
+}
+
+function openEpisode(ep: Episode) {
+  el.epIkon.innerHTML = ikonSvg(ep.ikon, 64);
+  el.epNo.textContent = `Episode ${ep.no}`;
+  el.epJudul.textContent = ep.judul;
+  el.epMenit.textContent = ep.siap ? ep.menit ?? "" : "Segera hadir";
+  const row = (label: string, value: string, bg: string, mark: string) =>
+    `<li><span class="ikon-kecil" style="background:${bg}">${mark}</span><div><b>${label}</b><span>${esc(value)}</span></div></li>`;
+  const crayonMark = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 19 15 9l3 3-10 10H5zM15 9l2-2 3 3-2 2" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+  const penMark = `<svg width="20" height="20" aria-hidden="true" style="color:#fff"><use href="#i-pen"/></svg>`;
+  el.epBelajar.innerHTML = row("Mewarnai", ep.belajar.warnai, "var(--merah)", crayonMark)
+    + row("Membaca", ep.belajar.baca, "var(--biru)", "Aa")
+    + (ep.belajar.tulis ? row("Menulis", ep.belajar.tulis, "#6a43a3", penMark) : "")
+    + row("Berhitung", ep.belajar.hitung, "var(--hijau)", "12");
+  el.epAksi.innerHTML = ep.siap
+    ? `<button class="tombol merah besar" id="playBtn" type="button"><svg><use href="#i-main"/></svg>${episodeDone(ep.no) ? "Main lagi" : "Main"}</button>`
+    : `<p class="segera">Episode ini sedang dibuat. Selesaikan episode 1 dulu, ya.</p>`;
+  document.getElementById("playBtn")?.addEventListener("click", () => {
+    el.epSheet.close(); board.clear(); show("warnai");
+    say("Ayo warnai sapimu. Pilih krayon, lalu gosok di gambarnya.");
+  });
+  el.epSheet.showModal();
+  say(ep.judul);
+}
+document.getElementById("epTutup")!.addEventListener("click", () => el.epSheet.close());
+el.epSheet.addEventListener("click", (e) => { if (e.target === el.epSheet) el.epSheet.close(); }); // tap on the backdrop
+
+// =================================================================== sticker book
+function renderStickers() {
   const st = progress.stickers();
-  el.stickers.innerHTML = st.length
-    ? st.slice().reverse().map((s) => `<figure class="stiker"><img src="${s.png}" alt="Stiker sapi, ${new Date(s.at).toLocaleDateString("id-ID")}"></figure>`).join("")
-    : `<p class="kosong">Belum ada stiker. Selesaikan petualangan pertama untuk mendapat stiker sapimu.</p>`;
+  el.stickers.innerHTML = MUSIM_1.map((ep) => {
+    const mine = ep.no === 1 ? st : [];
+    const last = mine[mine.length - 1];
+    return `<div class="slot ${last ? "ada" : ""}">
+      <div class="slot-isi">${last ? `<img src="${last.png}" alt="Stiker ${esc(ep.judul)}">` : ikonSvg(ep.ikon, 64)}</div>
+      <span class="slot-label">${esc(ep.judul)}</span>
+      ${mine.length > 1 ? `<span class="slot-jumlah">${mine.length} stiker</span>` : ""}</div>`;
+  }).join("");
+}
+
+// =================================================================== parents: gate, report, settings
+function openGate() {
+  const a = 3 + Math.floor(Math.random() * 7), b = 3 + Math.floor(Math.random() * 7), right = a * b;
+  const opts = new Set([right]);
+  while (opts.size < 3) opts.add(right + (Math.floor(Math.random() * 9) - 4 || 5));
+  el.gateSoal.textContent = `${a} × ${b} = ?`;
+  el.gatePilihan.innerHTML = [...opts].sort((x, y) => x - y).map((v) => `<button class="tombol putih" type="button" data-gate="${v}">${v}</button>`).join("");
+  el.gatePilihan.querySelectorAll<HTMLButtonElement>("[data-gate]").forEach((btn) => btn.addEventListener("click", () => {
+    if (Number(btn.dataset.gate) === right) { el.gate.close(); show("ortu"); }
+    else { btn.classList.remove("salah"); void btn.offsetWidth; btn.classList.add("salah"); }
+  }));
+  el.gate.showModal();
+}
+document.getElementById("gateTutup")!.addEventListener("click", () => el.gate.close());
+el.gate.addEventListener("click", (e) => { if (e.target === el.gate) el.gate.close(); });
+
+function renderReport() {
   const log = progress.log();
-  if (!log.length) { el.report.innerHTML = `<p>Belum ada catatan. Laporan muncul setelah anak menyelesaikan soal pertama.</p>`; return; }
-  const first = (k: Attempt["skill"]) => log.filter((a) => a.skill === k);
-  const sum = (k: Attempt["skill"]) => { const a = first(k); return `${a.filter((x) => x.tries === 1).length} dari ${a.length}`; };
+  if (!log.length) { el.report.innerHTML = `<p class="kecil">Belum ada catatan. Laporan muncul setelah anak menyelesaikan soal pertama di episode 1.</p>`; return; }
+  const of = (k: Attempt["skill"]) => log.filter((a) => a.skill === k);
+  const tile = (k: Attempt["skill"], label: string) => { const a = of(k); return `<div><b>${a.filter((x) => x.tries === 1).length} dari ${a.length}</b><span>${label}, benar di percobaan pertama</span></div>`; };
   el.report.innerHTML = `
-    <div class="ringkas"><span>Berhitung, benar di percobaan pertama: <b>${sum("hitung")}</b></span><span>Membaca, benar di percobaan pertama: <b>${sum("baca")}</b></span></div>
+    <div class="ringkas">${tile("hitung", "Berhitung")}${tile("baca", "Membaca")}</div>
     <table class="laporan"><thead><tr><th>Soal</th><th>Kemampuan</th><th>Hasil</th><th>Tanggal</th></tr></thead><tbody>
     ${log.slice(-12).reverse().map((a) => `<tr><td class="kata">${esc(a.label)}</td><td>${a.skill === "hitung" ? "Berhitung" : "Membaca"}</td>
       <td class="${a.tries === 1 ? "hasil-1" : ""}">${a.tries === 1 ? "Benar langsung" : `Benar setelah ${a.tries} kali coba`}</td>
@@ -73,17 +210,20 @@ function renderHome() {
 }
 let clearArmed = 0;
 el.clearData.addEventListener("click", () => {
-  if (Date.now() - clearArmed > 4000) { clearArmed = Date.now(); el.clearData.textContent = "Ketuk lagi untuk menghapus"; return; }
-  progress.clear(); clearArmed = 0; el.clearData.textContent = "Hapus data di HP ini"; renderHome(); toast("Data di HP ini sudah dihapus.");
+  const label = el.clearData.lastChild!;
+  if (Date.now() - clearArmed > 4000) { clearArmed = Date.now(); label.textContent = "Ketuk lagi untuk menghapus"; return; }
+  progress.clear(); clearArmed = 0; label.textContent = "Hapus data"; renderReport(); toast("Data di HP ini sudah dihapus.");
 });
 
 // =================================================================== colouring
 const board = new ColoringBoard();
 el.boardHost.append(board.el);
+const crayonSvg = (hex: string) => `<svg viewBox="0 0 34 70" aria-hidden="true"><path d="M7 20 L17 2 L27 20Z" fill="${hex}" stroke="#26231f" stroke-width="2.4" stroke-linejoin="round"/><rect x="7" y="20" width="20" height="48" rx="3" fill="${hex}" stroke="#26231f" stroke-width="2.4"/><rect x="7" y="32" width="20" height="18" fill="#fff" opacity=".6"/><path d="M7 32 H27 M7 50 H27" stroke="#26231f" stroke-width="1.6"/></svg>`;
 CRAYONS.forEach((c, i) => {
   const b = document.createElement("button");
-  b.type = "button"; b.className = "krayon"; b.style.setProperty("--c", c.hex);
+  b.type = "button"; b.className = "krayon";
   b.setAttribute("role", "radio"); b.setAttribute("aria-checked", String(i === 0)); b.setAttribute("aria-label", `Krayon ${c.name}`);
+  b.innerHTML = crayonSvg(c.hex);
   b.addEventListener("click", () => {
     board.color = c.hex; if (board.tool === "hapus") setTool("besar");
     el.palette.querySelectorAll(".krayon").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
@@ -99,25 +239,21 @@ function setTool(t: "besar" | "kecil" | "hapus") {
 document.querySelectorAll<HTMLElement>("[data-tool]").forEach((b) => b.addEventListener("click", () => setTool(b.dataset.tool as "besar")));
 board.onChange = () => { el.undoBtn.disabled = !board.canUndo(); };
 
-// finger (virtual crayon, stays inside the part) or pen (paints where it touches); remembered on this device
+// finger (virtual crayon, stays inside the part) or pen (paints where it touches); set in the parents' room
 function setMode(m: "jari" | "pen", save = true) {
   board.inputMode = m;
   document.querySelectorAll<HTMLElement>("[data-mode]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.mode === m)));
   if (save) try { localStorage.setItem("rk.mode", m); } catch { /* storage blocked */ }
 }
-document.querySelectorAll<HTMLElement>("[data-mode]").forEach((b) => b.addEventListener("click", () => {
-  setMode(b.dataset.mode as "jari" | "pen");
-  say(b.dataset.mode === "jari" ? "Pakai jari. Gerakkan krayonnya." : "Pakai pen.", 1);
-}));
+document.querySelectorAll<HTMLElement>("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode as "jari" | "pen")));
 board.onPenDetected = () => { setMode("pen"); toast("Pen terdeteksi. Mewarnai langsung dengan pen."); };
 try { const saved = localStorage.getItem("rk.mode"); if (saved === "pen" || saved === "jari") setMode(saved, false); } catch { /* storage blocked */ }
 el.undoBtn.addEventListener("click", () => board.undo());
 let wipeArmed = 0;
 el.clearBtn.addEventListener("click", () => {
-  if (Date.now() - wipeArmed > 3000) { wipeArmed = Date.now(); el.clearBtn.textContent = "Yakin? Ketuk lagi"; setTimeout(() => (el.clearBtn.textContent = "Hapus semua"), 3000); return; }
-  wipeArmed = 0; el.clearBtn.textContent = "Hapus semua"; board.clear();
+  if (Date.now() - wipeArmed > 3000) { wipeArmed = Date.now(); toast("Ketuk sekali lagi untuk menghapus semua warna."); say("Ketuk sekali lagi untuk menghapus semua."); return; }
+  wipeArmed = 0; board.clear();
 });
-el.startBtn.addEventListener("click", () => { show("warnai"); say("Ayo warnai sapimu. Pilih krayon, lalu gosok di gambarnya."); });
 el.doneBtn.addEventListener("click", () => {
   if (board.coverage() < 0.04) { toast("Warnai dulu sapinya, ya."); say("Warnai dulu sapinya, ya."); return; }
   startAdventure();
@@ -323,14 +459,14 @@ function choices(n: number) { const start = Math.max(1, Math.min(n - 2, 6)); ret
 function renderStep() {
   const s = STEPS[R.si];
   const next = R.phase === "done"
-    ? `<button class="btn utama besar" id="nextBtn" type="button">${R.si === STEPS.length - 1 ? "Selesai!" : STEPS[R.si + 1].chapter !== s.chapter ? "Ayo jalan!" : "Lanjut"}</button>` : "";
-  const ask = (t: string) => `<div class="soal"><p class="soal-teks">${esc(t)}</p><button class="btn dengar" id="dengar" type="button" aria-label="Dengar lagi">${ICON_DENGAR}</button></div>`;
+    ? `<button class="tombol merah besar" id="nextBtn" type="button">${R.si === STEPS.length - 1 ? "Selesai!" : STEPS[R.si + 1].chapter !== s.chapter ? "Ayo jalan!" : "Lanjut"}</button>` : "";
+  const ask = (t: string) => `<div class="soal"><p class="soal-teks">${esc(t)}</p><button class="bulat dengar" id="dengar" type="button" aria-label="Dengar lagi">${ICON_DENGAR}</button></div>`;
   if (s.kind === "count") {
     const n = targetsOf(s.target).length, c = R.counted.length;
     const body = R.phase === "count"
       ? `<div class="ketuk" aria-label="${c} dari ${n} sudah diketuk">${Array.from({ length: n }, (_, i) => `<span class="${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</span>`).join("")}</div>`
       : R.phase === "choose"
-        ? `<div class="angka" role="group" aria-label="Pilih jumlahnya">${choices(n).map((k) => `<button class="btn" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
+        ? `<div class="angka" role="group" aria-label="Pilih jumlahnya">${choices(n).map((k) => `<button class="token" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
         : `<p class="pujian">Betul! ${esc(s.noun)} ada ${n}.</p>`;
     el.panel.innerHTML = `${R.phase === "done" ? "" : ask(R.phase === "count" ? s.prompt : "Jadi, ada berapa?")}${body}${next}`;
     el.panel.querySelectorAll<HTMLButtonElement>("[data-n]").forEach((b) => b.addEventListener("click", () => chooseNumber(b, Number(b.dataset.n))));
@@ -338,13 +474,13 @@ function renderStep() {
     const doneWord = R.built.length === s.parts.length;
     el.panel.innerHTML = `${doneWord ? `<p class="pujian">Betul! Ini RUMAH Budi.</p>` : ask("Susun kartunya, jadi nama tempat ini.")}
       <div class="slot-kata" aria-label="Kata yang disusun">${s.parts.map((_, i) => `<span>${R.built[i] ?? ""}</span>`).join("")}</div>
-      ${doneWord ? "" : `<div class="kartu-baris" role="group" aria-label="Kartu suku kata">${R.cards.map((c) => `<button class="btn kartu" type="button" data-card="${c}" ${R.built.includes(c) ? "disabled" : ""}>${c}</button>`).join("")}</div>`}
+      ${doneWord ? "" : `<div class="kartu-baris" role="group" aria-label="Kartu suku kata">${R.cards.map((c) => `<button class="kartu-suku" type="button" data-card="${c}" ${R.built.includes(c) ? "disabled" : ""}>${c}</button>`).join("")}</div>`}
       ${next}`;
     el.panel.querySelectorAll<HTMLButtonElement>("[data-card]").forEach((b) => b.addEventListener("click", () => tapCard(b)));
   } else {
     el.panel.innerHTML = `${R.phase === "done" ? `<p class="pujian">Betul! Itu SAPU. Terima kasih!</p>` : ask("Ibu minta tolong ambilkan:")}
       <p class="kata-besar" aria-label="${s.parts.join("")}"><span>${s.parts[0]}</span><span class="s2">${s.parts[1]}</span></p>
-      ${R.phase === "done" ? "" : `<div class="pilih-benda" role="group" aria-label="Pilih bendanya">${(["bola", "sapu", "topi"] as Item[]).map((k, i) => `<button class="btn" type="button" data-item="${k}" aria-label="Gambar ${i + 1}">${itemIcon(k)}</button>`).join("")}</div>`}
+      ${R.phase === "done" ? "" : `<div class="pilih-benda" role="group" aria-label="Pilih bendanya">${(["bola", "sapu", "topi"] as Item[]).map((k, i) => `<button class="benda" type="button" data-item="${k}" aria-label="Gambar ${i + 1}">${itemIcon(k)}</button>`).join("")}</div>`}
       ${next}`;
     el.panel.querySelectorAll<HTMLButtonElement>("[data-item]").forEach((b) => b.addEventListener("click", () => pickItem(b.dataset.item as Item, b)));
   }
@@ -443,17 +579,17 @@ function finish() {
   progress.addSticker(png);
   el.newSticker.src = png;
   show("selesai");
-  say("Hore! Sapimu sudah membantu Ibu. Stikernya masuk ke kebun stiker.");
+  say("Hore! Sapimu sudah membantu Ibu. Stikernya masuk ke buku stiker.");
 }
 el.againBtn.addEventListener("click", () => { board.clear(); show("warnai"); });
-el.homeBtn.addEventListener("click", goHome);
+el.toMapBtn.addEventListener("click", goHome);
 
 // ------------------------------------------------------------------- parent tools (also the keyboard path)
 function renderParentTools() {
   const s = STEPS[R.si];
   el.ortuMainIsi.innerHTML = s.kind === "count"
     ? `<p>Biarkan anak mengetuk sendiri satu per satu, lalu memilih angkanya. Beri jeda sebelum membantu, dan puji usahanya.</p>
-       <button class="btn kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu</button>`
+       <button class="tombol putih kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu</button>`
     : s.kind === "build"
       ? `<p>Tunjuk papan nama rumah, baca pelan bersama: ru, mah. Anak menyusun kartunya sendiri.</p>`
       : `<p>Ajak anak membaca kartu: sa, pu. Jangan sebutkan bendanya dulu; biar anak yang memilih.</p>`;
@@ -510,7 +646,7 @@ window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); inst
 el.installBtn.addEventListener("click", async () => { if (!installEvt) return; el.installBtn.hidden = true; await installEvt.prompt(); installEvt = null; });
 window.addEventListener("appinstalled", () => { el.installBtn.hidden = true; });
 
-show("home");
+show("peta");
 history.replaceState({ rk: "home" }, "");
 
 // Handle for automated browser tests.

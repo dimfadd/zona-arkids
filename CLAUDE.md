@@ -27,6 +27,10 @@ Prototipe pertama (sudah jalan, `apps/scan/index.html`): sapi.
 5. Ibu minta SA·PU: anak membaca kartu lalu memilih benda (bola / sapu / topi), di 3D atau tombol gambar.
 6. Selesai: gambar anak jadi stiker di "kebun stiker"; laporan untuk orang tua.
 
+Navigasi (sejak desain ulang): beranda = **Peta Petualangan** (pulau per episode dari `src/play/episodes.ts`),
+kartu episode dari bawah, **Buku Stiker**, **Ruang Ayah/Bunda** di balik gerbang orang tua (laporan,
+pengaturan mode mewarnai, hapus data), tombol suara on/off. Login dan landing page belum, sengaja ditunda.
+
 Mewarnai punya dua mode (`coloring.ts`): **Jari** (bawaan untuk sentuhan): krayon virtual dengan ujung
 64 px di atas jari, dan goresan terkunci di bagian gambar tempat goresan dimulai (tidak meluber).
 **Pen**: langsung di bawah pen/mouse, bebas. Pen stylus terdeteksi otomatis; pilihan diingat di HP.
@@ -98,6 +102,7 @@ aturan jarak 20 mm di kertas, AR kamera. Anti-bajak untuk produk digital = konte
 - [ ] Uji ke 3-5 anak: bagian mana yang diulang, di mana bingung, berapa lama bertahan.
 - [ ] Suara rekaman asli (sekarang suara bawaan HP).
 - [x] Mode mewarnai jari (krayon virtual + tidak meluber) dan pen.
+- [x] Desain ulang UI: dunia potongan kertas, peta episode, buku stiker, ruang Ayah/Bunda.
 - [x] Storyboard E01 lengkap, E02, peta musim 1.
 - [ ] Bangun komponen menebalkan huruf, lalu E01 versi lengkap sesuai storyboard.
 - [ ] Objek dan episode berikutnya (benda/kendaraan via sand3d, hewan via three.js).

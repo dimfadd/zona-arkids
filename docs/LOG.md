@@ -3,6 +3,19 @@
 Catatan keputusan dan perubahan, terbaru di atas. Setiap sesi kerja menambah satu entri:
 tanggal, apa yang diputuskan (dan oleh siapa), apa yang berubah, hasil uji, dan apa yang belum.
 
+## 2026-11-07 · Desain ulang UI: dunia potongan kertas + sistem episode
+- Pemilik: UI sebelumnya terasa "AI slop / khas Claude". Diagnosis: tampil seperti dokumen (latar putih,
+  judul bergaris, tombol kotak bergaris tinta, teks panjang), bukan dunia bermain.
+- Dibangun: beranda = Peta Petualangan Musim 1 (10 pulau sesuai `musim-1.md`; E01 bisa dimainkan,
+  E02-E10 jujur "segera hadir"), kartu episode dari bawah (yang dipelajari, durasi, tombol Main),
+  Buku Stiker bergaris buku tulis, Ruang Ayah/Bunda di balik gerbang orang tua (soal perkalian),
+  tombol suara on/off, krayon berbentuk batang krayon, token angka kuning, kartu soal.
+- Rupa: warna dari logo (merah roket, langit, rumput, kuning), tombol tebal bertingkat, satu tema siang
+  (dunia ilustrasi anak, disengaja). Semua kontras teks lolos WCAG AA.
+- Penanda posisi di peta: roket kertas digambar ulang sebagai SVG (memotong logo raster menyisakan kertas).
+- Login dan landing page ditunda (permintaan pemilik) sampai tampilan dinilai bagus.
+- Tes: unit 10/10, build, E2E game (peta, kartu terkunci, buku stiker, gerbang orang tua) dan arsip lulus.
+
 ## 2026-11-07 · SOP, log, agen desainer aset 3D
 - Dibuat `docs/SOP.md` (aturan kerja) dan file ini (log). `CLAUDE.md` tetap ringkasan keputusan + status.
 - Dibuat agen `asset-3d-designer`: wajib membandingkan model dengan 2-4 foto asli sebelum selesai.
