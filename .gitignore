@@ -15,3 +15,4 @@ apps/scan/e2e/out/
 
 # reference photos for 3D assets: compare only, never commit (licences)
 content3d/**/ref/
+apps/scan/e2e/out-play/
