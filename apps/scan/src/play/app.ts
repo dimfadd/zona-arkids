@@ -98,6 +98,19 @@ function setTool(t: "besar" | "kecil" | "hapus") {
 }
 document.querySelectorAll<HTMLElement>("[data-tool]").forEach((b) => b.addEventListener("click", () => setTool(b.dataset.tool as "besar")));
 board.onChange = () => { el.undoBtn.disabled = !board.canUndo(); };
+
+// finger (virtual crayon, stays inside the part) or pen (paints where it touches); remembered on this device
+function setMode(m: "jari" | "pen", save = true) {
+  board.inputMode = m;
+  document.querySelectorAll<HTMLElement>("[data-mode]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.mode === m)));
+  if (save) try { localStorage.setItem("rk.mode", m); } catch { /* storage blocked */ }
+}
+document.querySelectorAll<HTMLElement>("[data-mode]").forEach((b) => b.addEventListener("click", () => {
+  setMode(b.dataset.mode as "jari" | "pen");
+  say(b.dataset.mode === "jari" ? "Pakai jari. Gerakkan krayonnya." : "Pakai pen.", 1);
+}));
+board.onPenDetected = () => { setMode("pen"); toast("Pen terdeteksi. Mewarnai langsung dengan pen."); };
+try { const saved = localStorage.getItem("rk.mode"); if (saved === "pen" || saved === "jari") setMode(saved, false); } catch { /* storage blocked */ }
 el.undoBtn.addEventListener("click", () => board.undo());
 let wipeArmed = 0;
 el.clearBtn.addEventListener("click", () => {
@@ -168,12 +181,19 @@ function resize3D() {
   renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
 }
 
+let lastFrame = performance.now();
+/** True once the camera has reached the current shot (tests wait for this before tapping). */
+function cameraSettled() {
+  return camera.position.distanceTo(desiredCamera(shot)) < 0.01 && camTarget.distanceTo(shot.target) < 0.01;
+}
 function loop(now: number) {
   requestAnimationFrame(loop);
   if (!renderer || current !== "main" || document.hidden) return;
   cow!.update(now); world!.update(now);
   const want = desiredCamera(shot);
-  const k = reduceMotion ? 1 : 0.06;
+  // time-based easing: the camera arrives in about a second however fast the phone draws frames
+  const dt = Math.min(0.1, (now - lastFrame) / 1000); lastFrame = now;
+  const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 5);
   camera.position.lerp(want, k); camTarget.lerp(shot.target, k);
   camera.lookAt(camTarget);
   badges.forEach((b) => b.update());
@@ -199,20 +219,24 @@ function walkTo(x: number) {
 // ------------------------------------------------------------------- number badges that follow a part
 class Badge {
   sprite: THREE.Sprite;
-  constructor(public part: THREE.Object3D, n: number, size = 0.42) {
+  /** px: on-screen diameter, the same however close the camera is, so a badge never hides a neighbour. */
+  constructor(public part: THREE.Object3D, n: number, private px = 40) {
     const c = document.createElement("canvas"); c.width = c.height = 128;
     const x = c.getContext("2d")!;
     x.fillStyle = "#ffffff"; x.beginPath(); x.arc(64, 64, 60, 0, 7); x.fill();
     x.fillStyle = "#26231f"; x.beginPath(); x.arc(64, 64, 52, 0, 7); x.fill();
     x.fillStyle = "#ffffff"; x.font = "700 74px Andika, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(String(n), 64, 70);
-    this.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
-    this.sprite.scale.setScalar(size); this.sprite.renderOrder = 20;
+    this.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, sizeAttenuation: false }));
+    this.sprite.renderOrder = 20;
     scene.add(this.sprite); this.update();
   }
   update() {
     const p = anchorOf(this.part);
     const toCam = camera.position.clone().sub(p).normalize().multiplyScalar(0.35);
     this.sprite.position.copy(p.add(toCam));
+    // sizeAttenuation off: scale is in view units at distance 1; turn the wanted pixels into that
+    const h = Math.max(1, el.stage.clientHeight);
+    this.sprite.scale.setScalar((this.px / h) * 2 * Math.tan((camera.fov * Math.PI) / 360));
   }
   dispose() { scene.remove(this.sprite); this.sprite.material.map?.dispose(); this.sprite.material.dispose(); }
 }
@@ -252,7 +276,10 @@ async function startAdventure() {
   cow!.setColors(colors);
   cow!.group.position.set(STOPS.start, 0, 0); cow!.group.rotation.y = 0;
   world!.reset();
-  R = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes: 3 + Math.floor(Math.random() * 3) };
+  // 3 to 5 mangoes; ?mangga=N fixes the number (used by the tests to check the fullest tree)
+  const forced = Number(new URLSearchParams(location.search).get("mangga"));
+  const mangoes = forced >= 1 && forced <= 5 ? forced : 3 + Math.floor(Math.random() * 3);
+  R = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes };
   world!.setMangoes(R.mangoes);
   shot = shotFor("sapi");
   camera.position.copy(desiredCamera(shot)); camTarget.copy(shot.target);
@@ -339,7 +366,7 @@ function countOne(index: number, part: THREE.Object3D) {
   if (R.counted.includes(index)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
   R.counted.push(index);
   const k = R.counted.length, n = targetsOf(s.target).length;
-  badges.push(new Badge(part, k, s.target === "mangga" ? 0.5 : 0.4));
+  badges.push(new Badge(part, k, s.target === "mangga" ? 44 : 38));
   if (k >= n) { R.phase = "choose"; renderStep(); say(NUM[k]).then(() => say("Jadi, ada berapa?")); }
   else { renderStep(); say(NUM[k] || String(k)); }
 }
@@ -488,5 +515,5 @@ history.replaceState({ rk: "home" }, "");
 
 // Handle for automated browser tests.
 (window as unknown as { __RK: unknown }).__RK = {
-  board, get cow() { return cow; }, get world() { return world; }, camera, THREE, anchorOf, get R() { return R; }, STEPS, get screen() { return current; },
+  board, get cow() { return cow; }, get world() { return world; }, camera, THREE, anchorOf, cameraSettled, get R() { return R; }, STEPS, get screen() { return current; },
 };

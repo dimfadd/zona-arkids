@@ -57,7 +57,7 @@ for (const vp of VIEWPORTS) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-  await page.goto(URL); await page.waitForLoadState("networkidle");
+  await page.goto(URL + "?mangga=5"); await page.waitForLoadState("networkidle");
   await page.screenshot({ path: `${OUT}/${vp.name}-0-beranda.png`, fullPage: true });
   check(await page.isVisible(".kosong"), "beranda: keadaan kosong kebun stiker tampil");
   const noScroll = async (label) => {
@@ -66,14 +66,32 @@ for (const vp of VIEWPORTS) {
   };
   await noScroll("beranda");
 
-  // ---- colouring: one real finger stroke, then fill regions so the result is predictable
+  // ---- colouring
   await page.click("#startBtn");
   const box = await page.locator(".papan-warna").boundingBox();
+  // finger mode (default): a touch stroke that starts on the body and runs across the snout and off the cow
+  // must colour the body only. The crayon tip sits 64 px above the finger.
+  const fingerResult = await page.evaluate(({ bx, by, bw, bh }) => {
+    const c = document.querySelector(".papan-warna");
+    const fire = (type, x, y) => c.dispatchEvent(new PointerEvent(type, { pointerId: 7, pointerType: "touch", isPrimary: true, clientX: x, clientY: y, bubbles: true }));
+    const tipY = by + bh * 0.42, fingerY = tipY + 64;
+    fire("pointerdown", bx + bw * 0.40 + 10, fingerY);
+    const visible = !document.querySelector(".krayon-virtual").hidden;
+    for (let i = 1; i <= 30; i++) fire("pointermove", bx + bw * (0.40 + i * 0.019) + 10, fingerY);
+    fire("pointerup", bx + bw * 0.97, fingerY);
+    return { visible, counts: window.__RK.board.paintedByRegion() };
+  }, { bx: box.x, by: box.y, bw: box.width, bh: box.height });
+  const R_ = ["luar", "badan", "kepala", "moncong", "kuping", "tanduk", "kaki", "kuku", "ekor", "ambing", "corak"];
+  const painted = Object.fromEntries(fingerResult.counts.map((n, i) => [R_[i], n]).filter(([, n]) => n > 0));
+  check(fingerResult.visible, "mode jari: krayon virtual tampil saat mewarnai");
+  check(fingerResult.counts[1] > 2000 && Object.keys(painted).length === 1, `mode jari: goresan tetap di badan saja (${JSON.stringify(painted)})`);
+  await page.evaluate(() => window.__RK.board.clear());
+  // pen mode: paints where it touches, free
   const sx = box.x + box.width * 0.35, sy = box.y + box.height * 0.42;
   await page.mouse.move(sx, sy); await page.mouse.down();
   for (let i = 1; i <= 12; i++) await page.mouse.move(sx + i * box.width * 0.025, sy + Math.sin(i) * 6);
   await page.mouse.up();
-  check(await page.evaluate(() => window.__RK.board.coverage() > 0), "goresan jari mewarnai papan");
+  check(await page.evaluate(() => window.__RK.board.coverage() > 0), "goresan mouse (mode bebas) mewarnai papan");
   check(await page.isEnabled("#undoBtn"), "tombol urungkan aktif setelah mewarnai");
   await page.evaluate(() => {
     const b = window.__RK.board;
@@ -97,7 +115,8 @@ for (const vp of VIEWPORTS) {
 
   // ---- counting steps: kaki, tanduk, mangga
   for (let step = 0; step < 3; step++) {
-    await sleep(1500); // camera settles on the new shot
+    // wait until the camera has arrived (time-based easing; slow renderers take longer)
+    await page.waitForFunction(() => window.__RK.cameraSettled(), null, { timeout: 15000 });
     const pts = await targetsOnScreen(page, "count");
     const id = await page.evaluate(() => window.__RK.STEPS[window.__RK.R.si].id);
     let gap = 1e9;
@@ -105,8 +124,12 @@ for (const vp of VIEWPORTS) {
     check(pts.every((p) => p.visible), `${id}: semua sasaran terlihat, tidak tertutup (${pts.filter((p) => p.visible).length}/${pts.length})`);
     warn(gap >= 44, `${id}: jarak antar sasaran ${Math.round(gap)} px (min 44)`);
     for (const p of pts) { await tap(page, vp, p.x, p.y); await sleep(200); }
-    const counted = await page.evaluate(() => window.__RK.R.counted.length);
-    check(counted === pts.length, `${id}: ${counted}/${pts.length} terhitung lewat ketukan`);
+    const counted = await page.evaluate(() => window.__RK.R.counted.slice());
+    check(counted.length === pts.length, `${id}: ${counted.length}/${pts.length} terhitung lewat ketukan`);
+    if (counted.length !== pts.length) {
+      console.log("    titik layar:", JSON.stringify(pts.map((p) => [Math.round(p.x), Math.round(p.y)])), "terhitung:", JSON.stringify(counted));
+      await page.screenshot({ path: `${OUT}/${vp.name}-gagal-${id}.png` });
+    }
     if (step === 1) await page.screenshot({ path: `${OUT}/${vp.name}-3-tanduk.png` });
     if (step === 0) { // one wrong number first
       const wrong = await page.$(`[data-n]:not([data-n="${pts.length}"])`);
@@ -121,7 +144,7 @@ for (const vp of VIEWPORTS) {
   }
 
   // ---- reading: build RU + MAH (one wrong card first)
-  await sleep(1500);
+  await page.waitForFunction(() => window.__RK.cameraSettled(), null, { timeout: 15000 });
   await page.click('[data-card="BU"]'); await sleep(150);
   check(await page.evaluate(() => window.__RK.R.built.length === 0), "rumah: kartu BU tidak diterima");
   await page.click('[data-card="RU"]'); await page.click('[data-card="MAH"]');
@@ -132,7 +155,7 @@ for (const vp of VIEWPORTS) {
   await page.click("#nextBtn");
 
   // ---- reading: pick SA-PU (a wrong picture first, then tap the broom in 3D)
-  await sleep(1600);
+  await page.waitForFunction(() => window.__RK.cameraSettled(), null, { timeout: 15000 });
   await page.click('[data-item="bola"]'); await sleep(150);
   check(await page.evaluate(() => window.__RK.R.phase !== "done"), "sapu: memilih bola tidak diterima");
   const [sapu] = await targetsOnScreen(page, "items");

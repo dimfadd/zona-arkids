@@ -12,6 +12,14 @@ const INK = "#26231f";
 const MIN_COVER = 0.12;                  // a region counts as coloured from 12% coverage
 
 export type Tool = "kuas" | "hapus";
+/**
+ * How the child colours:
+ * - "jari": a finger on glass is fat and hides what it paints, so a virtual crayon is drawn with its tip
+ *   a little above the finger, and the stroke stays inside the part where it started (no spilling over).
+ * - "pen": a stylus (or a mouse) paints right where it touches, free, like real colouring.
+ */
+export type InputMode = "jari" | "pen";
+const TIP_OFFSET = { x: -10, y: -64 }; // CSS px from the finger to the crayon tip
 
 export class ColoringBoard {
   readonly el: HTMLDivElement;
@@ -26,7 +34,16 @@ export class ColoringBoard {
   color = CRAYONS[0].hex;
   size: "besar" | "kecil" = "besar";
   tool: Tool = "kuas";
+  inputMode: InputMode = "jari";
   onChange: () => void = () => {};
+  /** Called once when a stylus is first used, so the UI can switch to pen mode. */
+  onPenDetected: () => void = () => {};
+  private crayonEl: HTMLDivElement;
+  private scratch: HTMLCanvasElement;
+  private masks = new Map<number, HTMLCanvasElement>();
+  /** Region (1-based) the current finger stroke is kept inside; 0 = free stroke. */
+  private strokeRegion = 0;
+  private strokeIgnored = false;
 
   constructor() {
     this.el = document.createElement("div");
@@ -36,7 +53,13 @@ export class ColoringBoard {
     this.lines.setAttribute("aria-hidden", "true");
     this.paint.setAttribute("role", "img");
     this.paint.setAttribute("aria-label", "Gambar sapi untuk diwarnai. Geser jari untuk mewarnai.");
-    this.el.append(this.paint, this.lines);
+    this.crayonEl = document.createElement("div");
+    this.crayonEl.className = "krayon-virtual"; this.crayonEl.hidden = true;
+    this.crayonEl.setAttribute("aria-hidden", "true");
+    // a crayon pointing down-left: its tip is the element's bottom-left corner
+    this.crayonEl.innerHTML = `<svg viewBox="0 0 40 120" width="22" height="66"><path d="M8 34 h24 v80 a4 4 0 0 1 -4 4 h-16 a4 4 0 0 1 -4 -4z" fill="var(--k)" stroke="#26231f" stroke-width="3"/><path d="M8 34 L20 4 L32 34z" fill="var(--k)" stroke="#26231f" stroke-width="3" stroke-linejoin="round"/><rect x="8" y="56" width="24" height="26" fill="#fff" opacity=".55"/></svg>`;
+    this.scratch = this.makeCanvas("papan-scratch");
+    this.el.append(this.paint, this.lines, this.crayonEl);
     this.px = this.paint.getContext("2d", { willReadFrequently: true })!;
     this.drawLines();
     this.bindPointer();
@@ -82,40 +105,113 @@ export class ColoringBoard {
     return p;
   }
 
-  private point(e: PointerEvent) {
+  /** Canvas point of a pointer; with the virtual crayon, the crayon's tip rather than the finger. */
+  private point(e: PointerEvent, crayonTip: boolean) {
     const r = this.paint.getBoundingClientRect();
-    return { x: (e.clientX - r.left) / r.width * BOARD_W, y: (e.clientY - r.top) / r.height * BOARD_H };
+    const cx = e.clientX + (crayonTip ? TIP_OFFSET.x : 0), cy = e.clientY + (crayonTip ? TIP_OFFSET.y : 0);
+    if (crayonTip) this.moveCrayon(cx - r.left, cy - r.top);
+    return { x: (cx - r.left) / r.width * BOARD_W, y: (cy - r.top) / r.height * BOARD_H };
   }
 
-  private stroke(a: { x: number; y: number }, b: { x: number; y: number }) {
-    const x = this.px;
-    x.save();
-    x.globalCompositeOperation = this.tool === "hapus" ? "destination-out" : "source-over";
+  private moveCrayon(x: number, y: number) {
+    this.crayonEl.style.setProperty("--k", this.tool === "hapus" ? "#ffffff" : this.color);
+    // tip of the drawing at (11, 2); turned so the crayon leans over the page with its tip down
+    this.crayonEl.style.transform = `translate(${x - 11}px, ${y - 2}px) rotate(160deg)`;
+  }
+
+  /** Region number (1-based, 0 = outside the cow) under a canvas point. */
+  private regionAt(p: { x: number; y: number }) {
+    const x = Math.round(p.x), y = Math.round(p.y);
+    if (x < 0 || y < 0 || x >= BOARD_W || y >= BOARD_H) return 0;
+    const id = this.ids(), i = (y * BOARD_W + x) * 4;
+    return id[i + 1] === 0 ? Math.round(id[i] / 20) : 0;
+  }
+
+  /** White where a region is visible (later shapes cover earlier ones), transparent elsewhere. */
+  private mask(region: number) {
+    let m = this.masks.get(region);
+    if (m) return m;
+    m = document.createElement("canvas"); m.width = BOARD_W; m.height = BOARD_H;
+    const x = m.getContext("2d")!, img = x.createImageData(BOARD_W, BOARD_H), id = this.ids();
+    for (let i = 0; i < id.length; i += 4) {
+      if (id[i] > 0 && id[i + 1] === 0 && Math.round(id[i] / 20) === region) { img.data[i] = img.data[i + 1] = img.data[i + 2] = img.data[i + 3] = 255; }
+    }
+    x.putImageData(img, 0, 0);
+    this.masks.set(region, m);
+    return m;
+  }
+
+  private styleStroke(x: CanvasRenderingContext2D) {
     x.strokeStyle = this.tool === "hapus" ? "#000" : this.crayon(this.color);
     x.lineWidth = (this.size === "besar" ? 9 : 4) * SCALE;
     x.lineCap = "round"; x.lineJoin = "round";
-    x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x + 0.01, b.y); x.stroke();
-    x.restore();
+  }
+
+  private stroke(a: { x: number; y: number }, b: { x: number; y: number }) {
+    const erase = this.tool === "hapus";
+    if (!this.strokeRegion) {
+      const x = this.px;
+      x.save(); x.globalCompositeOperation = erase ? "destination-out" : "source-over"; this.styleStroke(x);
+      x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x + 0.01, b.y); x.stroke(); x.restore();
+      return;
+    }
+    // kept inside one region: draw on scratch, cut it to the region, then lay it on the page
+    const s = this.scratch.getContext("2d")!;
+    const pad = (this.size === "besar" ? 9 : 4) * SCALE / 2 + 3;
+    const x0 = Math.max(0, Math.floor(Math.min(a.x, b.x) - pad)), y0 = Math.max(0, Math.floor(Math.min(a.y, b.y) - pad));
+    const w = Math.min(BOARD_W, Math.ceil(Math.max(a.x, b.x) + pad)) - x0, h = Math.min(BOARD_H, Math.ceil(Math.max(a.y, b.y) + pad)) - y0;
+    if (w <= 0 || h <= 0) return;
+    s.clearRect(x0, y0, w, h);
+    s.save(); this.styleStroke(s); s.beginPath(); s.moveTo(a.x, a.y); s.lineTo(b.x + 0.01, b.y); s.stroke(); s.restore();
+    s.save(); s.globalCompositeOperation = "destination-in"; s.drawImage(this.mask(this.strokeRegion), x0, y0, w, h, x0, y0, w, h); s.restore();
+    const x = this.px;
+    x.save(); x.globalCompositeOperation = erase ? "destination-out" : "source-over"; x.drawImage(this.scratch, x0, y0, w, h, x0, y0, w, h); x.restore();
+    s.clearRect(x0, y0, w, h);
   }
 
   private bindPointer() {
     const c = this.paint;
+    let crayon = false;
     c.addEventListener("pointerdown", (e) => {
       if (this.activePointer !== null) return; // one finger paints, a second finger is ignored
-      this.activePointer = e.pointerId; c.setPointerCapture(e.pointerId);
+      if (e.pointerType === "pen" && this.inputMode !== "pen") { this.inputMode = "pen"; this.onPenDetected(); }
+      crayon = e.pointerType === "touch" && this.inputMode === "jari";
+      this.activePointer = e.pointerId;
+      try { c.setPointerCapture(e.pointerId); } catch { /* not an active pointer (old browsers, synthetic events) */ }
       this.pushUndo();
-      const p = this.point(e); this.last = p; this.stroke(p, p);
+      const p = this.point(e, crayon);
+      this.crayonEl.hidden = !crayon;
+      // a finger stroke belongs to the part under the crayon tip; until the tip reaches a part, nothing is painted
+      this.strokeRegion = crayon ? this.regionAt(p) : 0;
+      this.strokeIgnored = crayon && this.strokeRegion === 0;
+      this.last = p;
+      if (!this.strokeIgnored) this.stroke(p, p);
     });
     c.addEventListener("pointermove", (e) => {
       if (e.pointerId !== this.activePointer || !this.last) return;
-      const p = this.point(e); this.stroke(this.last, p); this.last = p;
+      const p = this.point(e, crayon);
+      if (this.strokeIgnored) {
+        const r = this.regionAt(p);
+        if (r) { this.strokeRegion = r; this.strokeIgnored = false; this.last = p; }
+        else { this.last = p; return; }
+      }
+      this.stroke(this.last, p); this.last = p;
     });
     const end = (e: PointerEvent) => {
       if (e.pointerId !== this.activePointer) return;
-      this.activePointer = null; this.last = null; this.onChange();
+      this.activePointer = null; this.last = null; this.strokeRegion = 0; this.strokeIgnored = false;
+      this.crayonEl.hidden = true; this.onChange();
     };
     c.addEventListener("pointerup", end);
     c.addEventListener("pointercancel", end);
+  }
+
+  /** Painted pixels per region (index 0 = outside the cow). For tests. */
+  paintedByRegion() {
+    const id = this.ids(), p = this.px.getImageData(0, 0, BOARD_W, BOARD_H).data;
+    const out = new Array(REGIONS.length + 1).fill(0);
+    for (let i = 0; i < id.length; i += 4) if (p[i + 3] > 100) out[id[i + 1] === 0 ? Math.round(id[i] / 20) : 0]++;
+    return out;
   }
 
   private pushUndo() {

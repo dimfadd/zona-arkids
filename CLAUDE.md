@@ -22,6 +22,10 @@ Prototipe pertama (sudah jalan, `apps/scan/index.html`): sapi.
 5. Ibu minta SA·PU: anak membaca kartu lalu memilih benda (bola / sapu / topi), di 3D atau tombol gambar.
 6. Selesai: gambar anak jadi stiker di "kebun stiker"; laporan untuk orang tua.
 
+Mewarnai punya dua mode (`coloring.ts`): **Jari** (bawaan untuk sentuhan): krayon virtual dengan ujung
+64 px di atas jari, dan goresan terkunci di bagian gambar tempat goresan dimulai (tidak meluber).
+**Pen**: langsung di bawah pen/mouse, bebas. Pen stylus terdeteksi otomatis; pilihan diingat di HP.
+
 Aturan permainan:
 - Tidak pernah buntu: salah → bunyi/geleng + petunjuk; setelah 2 kali salah, jawaban benar disorot.
 - Setelah menghitung, anak MEMILIH jumlahnya (kardinalitas), bukan aplikasi yang menyebutkan.
@@ -35,6 +39,14 @@ Yang DITOLAK dan alasannya (jangan diusulkan ulang tanpa data baru):
   pendek berjalur dengan hewan buatan anak sebagai tokoh, satu bab per objek.
 - Skor/nilai angka untuk anak: risiko menurunkan minat alami dan memicu pembandingan.
 
+## Episode
+Storyboard dirancang oleh agen `.claude/agents/storyboard-episode.md` (format dan aturan ada di sana),
+hasilnya di `docs/episodes/`: `E01-sapi-ke-rumah-budi.md` (versi lengkap, 8 adegan, 11-15 menit, dengan
+menebalkan huruf S A), `E02-astronot-roket-kertas.md`, dan `musim-1.md` (peta 10 episode Tingkat 1:
+15 huruf, 21 kata KV-KV, angka 1-5 lalu 1-10). Prototipe yang jalan sekarang masih E01 versi pendek.
+Komponen yang dipakai semua episode dan belum dibangun: **menebalkan huruf** (titik mulai, panah, cek
+arah goresan) dan **lihat sekilas** (subitizing). Urutan goresan huruf perlu disahkan guru TK.
+
 ## Struktur repo
 ```
 apps/scan/            PWA (Vite + TS + three.js r128) yang di-deploy ke Vercel
@@ -46,6 +58,7 @@ apps/scan/            PWA (Vite + TS + three.js r128) yang di-deploy ke Vercel
   src/play/world.ts   jalan, pohon mangga, rumah Budi, Ibu, sapu/bola/topi
   src/play/app.ts     alur layar dan langkah petualangan
   e2e/play.mjs        memainkan seluruh petualangan di 4 ukuran layar
+content3d/sand3d/     program model 3D sand3d (sepeda, sapi) + hasil uji; lihat README di sana
 prototype/            prototipe asli + pipeline konten Python (arsip AR kertas)
 docs/brand/           logo asli + prompt logo
 ```
@@ -79,5 +92,8 @@ aturan jarak 20 mm di kertas, AR kamera. Anti-bajak untuk produk digital = konte
 - [x] Prototipe game sapi (warnai → 3D → petualangan → stiker + laporan), lulus E2E 4 ukuran layar.
 - [ ] Uji ke 3-5 anak: bagian mana yang diulang, di mana bingung, berapa lama bertahan.
 - [ ] Suara rekaman asli (sekarang suara bawaan HP).
-- [ ] Objek 2-10 Tingkat 1 (gambar garis + model 3D + bab petualangan).
+- [x] Mode mewarnai jari (krayon virtual + tidak meluber) dan pen.
+- [x] Storyboard E01 lengkap, E02, peta musim 1.
+- [ ] Bangun komponen menebalkan huruf, lalu E01 versi lengkap sesuai storyboard.
+- [ ] Objek dan episode berikutnya (benda/kendaraan via sand3d, hewan via three.js).
 - [ ] Akun, pembayaran Midtrans, penguncian konten, toko + pixel Meta (server-side Purchase).
