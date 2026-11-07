@@ -8,6 +8,11 @@ Merek, domain, dan akun sosial belum dicek; pemilik perlu cek PDKI kelas 9, 16, 
 pertama, label keyakinan [Pasti] / [Kemungkinan Besar] / [Menebak], tanpa basa-basi. Keputusan teknis
 yang wajar diambil langsung; keputusan bisnis ditanyakan.
 
+**Wajib dibaca setiap sesi:** `docs/SOP.md` (aturan kerja: tes sebelum push, isi belajar, rupa/antislop,
+aset 3D dengan referensi foto, privasi anak, agen) dan entri terbaru `docs/LOG.md` (riwayat keputusan).
+Setiap sesi diakhiri dengan entri baru di `docs/LOG.md` dan Status di bawah diperbarui.
+Agen proyek: `.claude/agents/storyboard-episode.md`, `.claude/agents/asset-3d-designer.md`.
+
 ## Arah produk (sejak Nov 2026)
 **Produk digital murni, tanpa kertas.** Anak mewarnai gambar garis di layar, gambarnya menjadi
 objek 3D (warna anak terbawa ke bagian yang sama), lalu ikut petualangan pendek 3-5 menit yang

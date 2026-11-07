@@ -12,3 +12,6 @@ apps/scan/dist/
 apps/scan/dev-dist/
 apps/scan/e2e/out/
 .vercel/
+
+# reference photos for 3D assets: compare only, never commit (licences)
+content3d/**/ref/
