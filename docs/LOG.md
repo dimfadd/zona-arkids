@@ -10,6 +10,7 @@ tanggal, apa yang diputuskan (dan oleh siapa), apa yang berubah, hasil uji, dan 
   untuk foto referensi. Hasil uji: satu pencarian berhasil (200), lalu berulang kali 429 dan sempat 403
   dari proxy. Jalur cadangan di SOP: pemilik mengirim 2-4 foto lewat chat.
 - Tes sebelum push: unit 10/10, build, E2E game dan arsip lulus (WARN kaki 35-40 px di arsip AR kertas).
+- Kesalahan: screenshot E2E (e2e/out-play) sempat ter-commit; dihapus di `928f871`, aturan cek `git status` ditambahkan ke SOP.
 - Diluruskan ke pemilik: sand3d bukan perpustakaan aset jadi; setiap objek ditulis sebagai program.
   "Realistis" = proporsi benar menurut foto, gaya tetap krayon + tinta.
 

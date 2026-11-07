@@ -10,9 +10,11 @@ lalu aturan ini diperbarui.
 2. Kerjakan di branch yang ditentukan sesi. Jangan push ke branch lain.
 3. Sebelum push: `cd apps/scan && npm test && npm run build && npm run e2e`. Semua harus lulus.
    "WARN" (sasaran ketuk < 44 px) dicatat; perbaikannya di aset atau sudut kamera, bukan di tes.
-4. Push ke GitHub = Vercel deploy ulang otomatis (Root Directory `apps/scan`). Setelah push, minta
+4. Sebelum commit, periksa `git status`: jangan ikut meng-commit screenshot tes (`e2e/out*`), foto
+   referensi (`ref/`), venv, atau file besar lain. Kalau terlanjur, hapus dengan commit baru.
+5. Push ke GitHub = Vercel deploy ulang otomatis (Root Directory `apps/scan`). Setelah push, minta
    pemilik membuka ulang aplikasi; PWA bisa menampilkan versi lama sekali sebelum memuat yang baru.
-5. Akhiri sesi dengan: entri baru di `docs/LOG.md`, `CLAUDE.md` bagian Status diperbarui, dan aturan
+6. Akhiri sesi dengan: entri baru di `docs/LOG.md`, `CLAUDE.md` bagian Status diperbarui, dan aturan
    baru (kalau ada) ditambahkan di file ini.
 
 ## 2. Cara berkomunikasi dengan pemilik
