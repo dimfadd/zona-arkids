@@ -105,6 +105,8 @@ aturan jarak 20 mm di kertas, AR kamera. Anti-bajak untuk produk digital = konte
 - [x] Desain ulang UI: dunia potongan kertas, peta episode, buku stiker, ruang Ayah/Bunda.
 - [x] Storyboard E01 lengkap, E02, peta musim 1.
 - [x] Katalog aktivitas (26 jenis) + E01/E02 versi bervariasi + pola pembuka musim 1.
-- [ ] Bangun komponen dari `docs/episodes/katalog-aktivitas.md` (terberat: TULIS-TEBAL), lalu E01 versi baru.
+- [ ] Bangun komponen dari `docs/episodes/katalog-aktivitas.md` bertahap (paling sering dipakai dulu,
+  terberat TULIS-TEBAL) dan pasang langsung ke E01 versi baru. Diputuskan: 15-18 menit dengan titik
+  simpan, E01 = episode gratis untuk iklan, huruf kapital campur kecil boleh.
 - [ ] Objek dan episode berikutnya (benda/kendaraan via sand3d, hewan via three.js).
 - [ ] Akun, pembayaran Midtrans, penguncian konten, toko + pixel Meta (server-side Purchase).

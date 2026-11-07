@@ -3,6 +3,16 @@
 Catatan keputusan dan perubahan, terbaru di atas. Setiap sesi kerja menambah satu entri:
 tanggal, apa yang diputuskan (dan oleh siapa), apa yang berubah, hasil uji, dan apa yang belum.
 
+## 2026-11-07 · Keputusan pemilik soal durasi dan rilis
+- Durasi episode tetap 15-18 menit dengan titik simpan per babak (pemilik: masih normal).
+- E01 menjadi episode gratis untuk iklan Meta.
+- E01 versi baru dirilis bertahap: komponen dibangun satu per satu, mulai dari yang paling sering
+  dipakai di musim 1, dan langsung dipasang ke E01.
+- E02 boleh didominasi berhitung (6 dari 14 aktivitas).
+- Huruf: kapital campur huruf kecil diperbolehkan.
+- Catatan deploy: dua commit terakhir (`df4096d`, `9985350`) hanya dokumen, jadi tampilan web tidak
+  berubah. Perubahan tampilan terakhir ada di `7828ae6` (desain ulang). Semua sudah di-push.
+
 ## 2026-11-07 · Episode bervariasi + katalog aktivitas
 - Pemilik: urutan warnai, petualangan, selesai yang selalu sama akan membuat anak bosan; minta episode
   kreatif, mewarnai tidak selalu di awal dan boleh lebih dari sekali, banyak aktivitas, 10-20 menit.
