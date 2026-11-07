@@ -32,6 +32,10 @@ lalu aturan ini diperbarui.
 - Tidak pernah buntu: salah → petunjuk; 2 kali salah → jawaban disorot.
 - Tanpa skor, poin, nyawa, batas waktu, atau streak. Anak dapat stiker; orang tua dapat laporan.
 - Episode dirancang oleh agen `storyboard-episode` dan disimpan di `docs/episodes/` sebelum dibangun.
+- Episode 10-20 menit, dibagi 3-4 babak dengan titik simpan. Pembuka (sapaan) dan penutup (stiker) tetap;
+  isi di tengah bervariasi: tidak selalu dimulai mewarnai, mewarnai boleh 1-3 kali, 10-16 aktivitas dari
+  `docs/episodes/katalog-aktivitas.md`, baca/tulis/hitung masing-masing minimal 3 kali, dua aktivitas
+  berurutan tidak sejenis, dan dua episode berurutan tidak dibuka dengan jenis yang sama.
 - Urutan goresan huruf untuk menebalkan disahkan guru TK sebelum dipakai.
 - Hindari BABI dan ANJING; tokoh dan benda lokal Indonesia; tanpa merek.
 
