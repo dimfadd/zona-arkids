@@ -3,6 +3,17 @@
 Catatan keputusan dan perubahan, terbaru di atas. Setiap sesi kerja menambah satu entri:
 tanggal, apa yang diputuskan (dan oleh siapa), apa yang berubah, hasil uji, dan apa yang belum.
 
+## 2026-11-07 · Episode bervariasi + katalog aktivitas
+- Pemilik: urutan warnai, petualangan, selesai yang selalu sama akan membuat anak bosan; minta episode
+  kreatif, mewarnai tidak selalu di awal dan boleh lebih dari sekali, banyak aktivitas, 10-20 menit.
+- Aturan baru (SOP + agen storyboard): sapaan dan stiker tetap; isi tengah bervariasi; 3-4 babak dengan
+  titik simpan; 10-16 aktivitas; baca/tulis/hitung masing-masing minimal 3 kali; pembuka beda antar episode.
+- Agen storyboard menulis `katalog-aktivitas.md` (26 jenis + 2 ritual, sekaligus daftar komponen) dan
+  merevisi E01 (pembuka HITUNG, 3 babak, 13 aktivitas, ±16,5 menit), E02 (pembuka BACA, 4 babak,
+  14 aktivitas, ±17,5 menit), musim-1 (pola pembuka H B W T B W H T B W, ±166 menit).
+- Risiko dicatat: 16-18 menit melewati daya tahan anak 4 tahun sekali duduk, jadi titik simpan wajib;
+  E01 versi baru butuh 15 komponen, terberat TULIS-TEBAL. Prototipe yang jalan masih E01 versi pendek.
+
 ## 2026-11-07 · Desain ulang UI: dunia potongan kertas + sistem episode
 - Pemilik: UI sebelumnya terasa "AI slop / khas Claude". Diagnosis: tampil seperti dokumen (latar putih,
   judul bergaris, tombol kotak bergaris tinta, teks panjang), bukan dunia bermain.

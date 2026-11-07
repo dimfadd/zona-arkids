@@ -1,234 +1,336 @@
 # E01 · Sapi ke Rumah Budi
 
-Tingkat 1 (4-5 tahun) · Musim 1, episode pertama · Revisi dari prototipe `apps/scan/index.html`
+Tingkat 1 (4-5 tahun) · Musim 1, episode pertama · Revisi 2 (format variasi + katalog aktivitas)
+
+**Yang berubah dari revisi 1:** episode tidak lagi dibuka dengan mewarnai. Sapi muncul dulu sebagai
+sapi kertas putih yang berdiri dari buku; anak menghitung kakinya dan membaca kalungnya, baru
+mewarnainya. Mewarnai muncul dua kali (sapi di babak 1, atap kandang di babak 3). Menulis dipecah:
+jalan berkelok (pra-menulis), S di keranjang mangga, A di papan nama kandang. Soal hitung-ketuk
+mangga dihapus demi durasi; mangga kini dipakai untuk soal "ambil dua". 3 babak, 13 aktivitas, ±16 menit.
 
 ## 1. Ringkasan
-Anak mewarnai seekor sapi kecil. Sapi itu hidup dalam 3D dan diundang Budi untuk tinggal di kandang
-barunya. Di perjalanan sapi memetik mangga untuk Budi, takut menyeberangi sungai kecil sampai anak
-membantunya lewat batu bernomor, lalu di rumah Budi anak menulis nama SAPI di papan kandang dan
-membantu Ibu menyapu kandang. Episode ditutup malam hari: sapi tidur di kandang bernama tulisan anak.
+Budi punya kandang baru tetapi belum punya sapi. Sebuah sapi kertas putih berdiri dari halaman buku
+tulis; anak berkenalan dengannya, memberinya warna, lalu mengantarnya ke rumah Budi: memetik mangga,
+menyeberangi sungai lewat batu bernomor, membuka pintu rumah, menulis nama di papan kandang, dan
+membantu Ibu menyapu. Episode ditutup malam hari: sapi tidur di kandang bernama tulisan anak.
 
-- **Tokoh:** sapi buatan anak (tokoh utama, tidak bicara, hanya "mooo"), Budi (anak laki-laki ±6 th),
-  Ibu (ibu Budi). Narator: suara perempuan hangat.
+- **Tokoh:** sapi buatan anak (tokoh utama, tidak bicara, hanya "mooo"), Budi (anak laki-laki ±6 th,
+  pemandu sapaan), Ibu (ibu Budi). Narator: suara perempuan hangat.
 - **Tujuan cerita untuk anak:** "Antar sapimu ke kandang barunya di rumah Budi."
-- **Ketegangan kecil:** sapi takut menyeberang sungai (adegan 4). Penyelesaian: anak menunjukkan batu
+- **Ketegangan kecil:** sapi takut menyeberangi sungai (babak 2). Penyelesaian: anak menunjukkan batu
   yang benar, sapi berhasil dan menjadi berani.
-- **Durasi:** 11-15 menit (anak cepat ±10 menit). Ada titik simpan otomatis setelah adegan 5, jadi
-  boleh dilanjutkan besok tanpa mengulang.
+- **Durasi:** ±16 menit (anak cepat ±12, anak lambat ±20). 3 babak dengan titik simpan.
+- **Pembuka:** HITUNG (HITUNG-KETUK kaki sapi). **Bentuk baru:** semua (episode pertama), lihat 2.
 
 ## 2. Tujuan belajar
 | Bidang | Isi |
 |---|---|
 | Membaca (SAS) | Suku kata SA, PI, PU. Kata **SAPI**, **SAPU** (KV-KV). Membedakan SAPI dan SAPU dari suku kedua. RUMAH tetap kata tujuan yang disusun dari kartu RU + MAH dan dibacakan (MAH suku tertutup, tidak dituntut dibaca sendiri). |
-| Menulis | Menebalkan huruf **S** (1 goresan) dan **A** (3 goresan) menjadi suku kata SA di papan nama kandang. |
-| Berhitung | Rentang 1-5. Lima jenis soal: hitung ketuk lalu pilih (kaki 4, mangga 3-5), lihat sekilas/subitisasi (tanduk 2), mengambil sejumlah benda (2 mangga ke keranjang), mengenali lambang angka berurutan 1-5 (batu sungai). |
+| Menulis | Pra-menulis garis lengkung (jalan berkelok). Menebalkan **S** (1 goresan) dan **A** (3 goresan); bersama PI tulisan Budi menjadi papan **SAPI**. |
+| Berhitung | Rentang 1-5. Hitung-ketuk lalu pilih (kaki 4), lihat sekilas (tanduk 2), ambil sejumlah (2 mangga), urutan lambang angka 1-5 (batu sungai). |
 | Sosial-emosional | Menolong teman yang takut (sapi), berterima kasih (Budi, Ibu). |
 
-**Kaitan:** ini episode pertama, jadi semua mekanik dikenalkan di sini (mewarnai, hitung-ketuk, kartu
-suku kata, menebalkan). E02 (Astronot Roket Kertas) memakai ulang SAPI/SAPU sebagai kartu pengecoh,
-menambah huruf T dan O, dan membalik urutan hitung (hitung mundur 5-1). Adegan terakhir E01 memberi
-cuplikan roket kertas yang melintas di langit malam.
+**Bentuk aktivitas yang dikenalkan:** HITUNG-KETUK, HITUNG-SEKILAS, HITUNG-AMBIL, HITUNG-URUT,
+BACA-KETUK-SUKU, BACA-SUSUN, BACA-PILIH-BENDA, TULIS-JALUR, TULIS-TEBAL, TULIS-LENGKAPI, WARNA-TOKOH,
+WARNA-BENDA-KECIL, dan momen RINGAN-TOMBOL, RINGAN-SERET, RINGAN-GOSOK.
 
-## 3. Adegan
+**Kaitan:** E02 (Astronot Roket Kertas) dibuka dengan membaca (bukan menghitung), memakai ulang SAPI
+dan SAPU sebagai label pengecoh, menambah huruf T dan O, dan membalik urutan hitung (mundur 5-1).
+Penutup E01 memberi cuplikan roket kertas yang melintas di langit malam.
 
-### Adegan 1 · Sapi tanpa warna (±2,5 menit)
-- **Latar & kamera:** layar mewarnai 2D (halaman buku tulis: garis biru, margin merah). Tidak ada 3D.
+## 3. Alur ringkas
+Ritual dan momen ringan tidak dihitung sebagai aktivitas (lihat katalog bagian 0).
+
+| Babak | No | Kode | Isi | Menit |
+|---|---|---|---|---|
+| Pembuka | - | RITUAL-SAPA | Budi menyapa dari halaman buku, sebut tujuan | 0,5 |
+| **1 · Sapi dari buku** | 1 | HITUNG-KETUK | Sapi kertas putih: hitung kakinya, pilih 4 | 1,0 |
+| | 2 | BACA-KETUK-SUKU | Kalung sapi SA · PI → "sapi" | 0,75 |
+| | r | RINGAN-TOMBOL | Ketuk sapi: "mooo", melompat | 0,25 |
+| | 3 | WARNA-TOKOH | Warnai sapi; warna mengalir ke sapi 3D | 2,0 |
+| | r | RINGAN-SERET | Putar sapi berwarna | 0,25 |
+| | 4 | HITUNG-SEKILAS | Tanduk: lihat sebentar, pilih 2 | 0,5 |
+| | | | *Titik simpan 1* · **subtotal babak 1 (dengan sapaan)** | **5,25** |
+| **2 · Jalan ke sungai** | 5 | TULIS-JALUR | Tunjukkan jalan berkelok ke pohon mangga | 0,75 |
+| | 6 | HITUNG-AMBIL | Ambil 2 mangga ke keranjang, "Sudah?" | 1,25 |
+| | 7 | TULIS-TEBAL | Tulis S di keranjang ("S untuk Sapi") | 1,25 |
+| | r | (lihat) | Sapi berjalan, berhenti di sungai, takut | 0,25 |
+| | 8 | HITUNG-URUT | Batu titian 1 sampai 5 | 1,5 |
+| | r | RINGAN-TOMBOL | Ketuk sapi yang berani: lompat girang | 0,25 |
+| | | | *Titik simpan 2* · **subtotal babak 2** | **5,25** |
+| **3 · Kandang di rumah Budi** | 9 | BACA-SUSUN | Susun RU + MAH (pengecoh BU), pintu terbuka | 1,0 |
+| | r | RINGAN-SERET | Seret keranjang mangga ke Budi | 0,25 |
+| | 10 | TULIS-LENGKAPI | Papan nama S _ PI: tulis A | 1,25 |
+| | 11 | BACA-PILIH-BENDA | Ibu minta SA · PU: pilih sapu (bola/sapu/topi) | 0,75 |
+| | r | RINGAN-GOSOK | Sapu daun keluar kandang | 0,5 |
+| | 12 | WARNA-BENDA-KECIL | Warnai atap dan pintu kandang | 1,0 |
+| | 13 | BACA-KETUK-SUKU | Malam: ketuk papan SA · PI, baca bersama (jeda) | 0,5 |
+| Penutup | - | RITUAL-STIKER | Stiker sapi, tiga cap, cuplikan roket | 0,75 |
+| | | | **subtotal babak 3 (dengan penutup)** | **6,0** |
+| | | | **Total episode** | **±16,5** |
+
+**Pemeriksaan aturan variasi**
+| Aturan | Hasil |
+|---|---|
+| 10-16 aktivitas | 13 ✓ |
+| Baca ≥ 3 | 4 (no 2, 9, 11, 13) ✓ |
+| Tulis ≥ 3 | 3 (no 5, 7, 10) ✓ |
+| Hitung ≥ 3 | 4 (no 1, 4, 6, 8) ✓ |
+| Warnai 1-3 | 2 (no 3, 12) ✓ |
+| Dua berurutan tidak berkode sama | ✓ (kode yang sama: 2 dan 13, tidak bersebelahan) |
+| Pembuka bukan mewarnai; berbeda dari E02 | HITUNG ✓ (E02: BACA) |
+| Momen ringan di antara aktivitas berpikir | 6 momen ✓ |
+| Babak 4-6 menit | 5,25 / 5,25 / 6,0 ✓ |
+| Kesulitan naik, ditutup pasti berhasil | babak 1 ketuk dan dengar; babak 2 ambil-n, S, urutan 1-5; babak 3 menulis A (3 goresan) dan membedakan SAPI/SAPU; ditutup mewarnai dan baca bersama ✓ |
+
+## 4. Adegan
+
+### Pembuka · RITUAL-SAPA (±30 detik)
+- **Latar & kamera:** halaman buku tulis (garis biru, margin merah) sebagai lantai panggung 3D. Di
+  halaman tergambar sapi dengan tinta saja. Potret Budi masuk dari tepi kanan (potongan kertas).
 - **Narasi:**
-  - "Halo! Ini sapi kecil. Dia belum punya warna."
-  - "Ayo warnai sapimu. Pilih krayon, lalu gosok di gambarnya."
-  - Setelah ±70% wilayah berwarna: "Wah, sapimu cantik. Ketuk tombol merah kalau sudah selesai."
-  - Jika anak menekan selesai terlalu cepat: "Warnai dulu sapinya, ya."
-- **Aktivitas:** mewarnai bebas (10 krayon, kuas besar/kecil, penghapus, urungkan, hapus semua).
-- **Jawaban benar:** tidak ada; semua warna benar.
-- **Aset:** dipakai ulang (`cow-art.ts`, `coloring.ts`). Tidak ada aset baru.
-- **Untuk Ayah/Bunda:** "Sebelum mulai, tanya: sapi yang pernah kamu lihat warnanya apa? Biarkan anak
-  memilih warna apa saja, sapi ungu juga boleh."
+  - Budi: "Halo! Aku Budi. Aku punya kandang baru, tapi belum ada sapinya."
+  - Budi: "Hari ini, ayo antar seekor sapi ke kandangku!"
+  - Peta kecil 3 titik (buku, sungai, rumah) tampil 3 detik.
+- **Aset baru:** `halaman_buku` (panggung pembuka/penutup semua episode), potret Budi 2D (3 ekspresi),
+  peta babak kecil.
 
-### Adegan 2 · Halo, Sapi! (±2 menit)
-- **Latar & kamera:** padang rumput di awal jalan. Kamera `sapi` (setengah badan, bisa diputar geser),
-  lalu `kaki` (samping agak rendah), lalu `kepala` (depan-samping kepala).
-- **Narasi & aktivitas:**
-  1. "Ini sapimu! Dia bisa bergerak. Geser untuk memutarnya."
-  2. Kalung muncul di leher sapi dengan label dua kartu: **SA** (biru) · **PI** (merah).
-     "Sapimu pakai kalung. Ada tulisannya. Ketuk kartunya satu per satu."
-     Ketuk SA → "sa". Ketuk PI → "pi". Lalu otomatis: "sa... pi... sapi! Namanya SAPI."
-  3. "Ada berapa kaki sapimu? Ketuk kakinya satu per satu." (mekanik yang sudah ada) → anak memilih 4.
-  4. Tanduk, **lihat sekilas**: "Sekarang lihat kepalanya. Tanpa mengetuk, ada berapa tanduk?"
-     Pilihan hanya 1, 2, 3 (subitisasi).
-- **Jawaban benar:** kaki 4, tanduk 2.
-- **Petunjuk saat salah:**
-  - Kaki: "Hmm, coba hitung lagi angka terakhirnya." 2 kali salah → kartu 4 disorot.
-  - Tanduk salah: "Kita hitung bersama, yuk. Ketuk tanduknya." Beralih ke mode hitung-ketuk (tanpa
-    hukuman), lalu pilih lagi. 2 kali salah → kartu 2 disorot.
-- **Aset baru:** `kalung` (torus tipis + label pipih) dengan dua bagian yang bisa diketuk:
-  `label_SA`, `label_PI` (tekstur `wordTexture`, warna suku seperti papan RU MAH).
-  Bagian sapi yang bisa diketuk (sudah ada): `kaki[0..3]`, `tanduk[0..1]`.
-- **Untuk Ayah/Bunda:** "Saat anak mengetuk kaki, ikut menghitung dengan suara pelan. Setelah selesai,
-  tanya: jadi semuanya ada berapa? Jawaban ini yang penting, bukan urutan hitungnya."
+### Babak 1 · Sapi dari buku (±5 menit)
 
-### Adegan 3 · Pohon mangga (±2 menit)
-- **Latar & kamera:** sapi berjalan ke pohon (`walkTo` yang ada). Kamera `pohon`, lalu turun sedikit
-  supaya keranjang di samping sapi ikut terlihat.
-- **Narasi & aktivitas:**
-  1. "Ayo jalan ke rumah Budi! Lihat, ada pohon mangga."
-     "Ada berapa mangga di pohon? Ketuk satu per satu." (acak 3-5, mekanik yang ada) → pilih jumlahnya.
-  2. "Budi suka mangga. Ambil **dua** mangga, masukkan ke keranjang."
-     Anak menyeret mangga dari pohon ke keranjang. Setiap mangga yang masuk diberi angka kecil (1, 2).
-     Lalu anak mengetuk tombol centang di keranjang: "Sudah?"
-- **Jawaban benar:** jumlah mangga di pohon; tepat 2 mangga di keranjang.
-- **Petunjuk saat salah:**
-  - Isi keranjang 1: "Baru satu. Budi minta dua." Isi 3 atau lebih: "Coba hitung isi keranjangnya.
-    Budi minta dua saja." Mangga berlebih tidak dibuang otomatis; anak boleh menyeretnya kembali.
-  - 2 kali salah: dua mangga di keranjang disorot hijau, sisanya melayang pelan kembali ke pohon,
-    narator: "Satu, dua. Dua mangga. Pas!"
-- **Aset baru:** `keranjang` (silinder terbuka + pegangan, toon + tinta) dengan zona jatuh yang besar
-  (≥ 88 px). Mangga yang ada perlu bisa diseret (bukan hanya diketuk) dan menempel di keranjang.
-- **Untuk Ayah/Bunda:** "Mengambil sejumlah benda ('ambil dua') lebih sulit daripada menghitung yang
-  sudah ada. Kalau anak mengambil terlalu banyak, cukup tanya: Budi minta berapa?"
+**Adegan 1.1 · Sapi kertas berdiri** · HITUNG-KETUK (±1 menit)
+- **Latar & kamera:** gambar sapi terangkat dari halaman, terlipat, berdiri sebagai sapi kertas putih
+  (badan putih kertas, garis tinta). Lalu kamera `kaki` (samping agak rendah).
+- **Narasi:** "Wah! Sapi ini keluar dari buku. Dia masih putih seperti kertas."
+  "Ayo kenalan. Ada berapa kaki sapi ini? Ketuk kakinya satu per satu." → "Jadi, ada berapa kaki?"
+- **Jawaban benar:** 4.
+- **Petunjuk saat salah:** "Hmm, coba lihat angka terakhir yang kamu sebut." 2 kali salah → tombol 4 disorot.
+- **Aset:** sapi 3D yang ada dengan warna `UNPAINTED` diganti putih kertas (#fbf6e9) + garis tinta;
+  `kaki[0..3]` sudah bisa diketuk. Animasi baru **lipat-berdiri dari kertas** (dipakai juga E02).
+- **Untuk Ayah/Bunda:** "Saat anak mengetuk, ikut menghitung pelan. Setelah selesai tanya: jadi
+  semuanya ada berapa? Jawaban inilah yang penting."
 
-### Adegan 4 · Sungai kecil (±1,5 menit) · ketegangan
-- **Latar & kamera:** sungai dangkal memotong jalan antara pohon dan rumah. Kamera tinggi dari depan
-  (sudut ±45°) supaya semua batu terlihat sekaligus. Dua lajur batu: tiap langkah ada dua batu
-  berdampingan dengan angka berbeda.
-- **Narasi & aktivitas:**
-  - Sapi berhenti, mundur, menggeleng: "Mooo..." Narator: "Oh! Ada sungai kecil. Sapimu takut basah."
-  - "Lihat, ada batu bernomor. Bantu sapimu melompat dari batu **satu** sampai batu **lima**.
-    Ketuk batu nomor satu."
-  - Setiap batu benar: sapi melompat ke sana, narator menyebut angkanya, lalu "Sekarang nomor...?"
-    (diam 2 detik, lalu "dua").
-  - Pasangan batu per langkah: 1 / 3, 2 / 5, 3 / 1, 4 / 2, 5 / 4 (urutan kiri-kanan diacak).
-  - Sampai seberang: sapi melompat senang. "Hore! Sapimu berhasil menyeberang. Sapimu berani!"
-- **Jawaban benar:** urutan 1, 2, 3, 4, 5.
-- **Petunjuk saat salah:** batu goyang "blup", "Itu batu nomor tiga. Kita cari nomor dua." 2 kali salah
-  → batu yang benar berdenyut hijau.
-- **Aset baru:** `sungai` (bidang biru dengan tekstur riak sederhana, animasi geser UV), `batu_titian[0..9]`
-  (silinder pipih, angka 1-5 dicetak dengan Andika di permukaan atas). Setiap batu bisa diketuk
-  sendiri; jarak antar batu di layar ≥ 44 px pada layar terkecil (cek di E2E). Animasi sapi: mundur +
-  geleng (baru), lompat (pakai `hop` yang ada + lintasan busur).
-- **Untuk Ayah/Bunda:** "Tanya: sapinya kenapa berhenti? Bagaimana kalau kamu yang takut? Ini latihan
-  mengenal lambang angka 1 sampai 5 secara berurutan."
+**Adegan 1.2 · Kalung nama** · BACA-KETUK-SUKU (±45 detik)
+- **Latar & kamera:** kamera `kepala` agak jauh, kalung di leher sapi terlihat jelas.
+- **Narasi:** "Sapi ini pakai kalung. Ada tulisannya. Ketuk kartunya dari kiri."
+  Ketuk SA → "sa". Ketuk PI → "pi". Lalu: "sa... pi... sapi! Namanya SAPI."
+- **Jawaban benar:** urutan SA lalu PI.
+- **Petunjuk saat salah:** "Kita mulai dari kiri, ya." Kartu SA berdenyut. 2 kali salah → SA disorot terus.
+- **Aset baru:** `kalung` (torus tipis + label pipih) dengan bagian `label_SA`, `label_PI`
+  (`wordTexture`, warna suku seperti papan RU MAH).
+- **Untuk Ayah/Bunda:** "Ini cara membaca suku kata: sa, pi, lalu digabung. Ucapkan bersama anak."
 
-### Adegan 5 · Rumah Budi (±1,5 menit)
-- **Latar & kamera:** depan rumah Budi, kamera `rumah` yang ada.
-- **Narasi & aktivitas:**
-  1. "Ini rumah siapa, ya? Susun kartunya, jadi nama tempat ini." Kartu RU, MAH, pengecoh BU (yang ada).
-     Benar: "ru... mah... rumah!" Pintu terbuka.
-  2. Budi keluar: "Halo, Sapi! Wah, kamu bawa mangga?" Anak menyeret keranjang ke Budi.
-     Budi: "Terima kasih! Dua mangga, pas untuk aku dan Ibu."
+**Momen ringan · RINGAN-TOMBOL** (±15 detik): "Ketuk sapinya!" Ketuk → "mooo", sapi melompat kecil.
+Boleh diketuk berkali-kali; lanjut otomatis setelah 15 detik atau saat anak berhenti.
+
+**Adegan 1.3 · Sapi diberi warna** · WARNA-TOKOH (±2 menit)
+- **Latar & kamera:** sapi berbaring kembali ke halaman; layar menjadi papan mewarnai 2D.
+- **Narasi:** "Sapimu masih putih. Ayo beri warna! Pilih krayon, lalu gosok di gambarnya."
+  Di 70% luas: "Wah, sapimu cantik. Ketuk tombol merah kalau sudah selesai."
+  Selesai terlalu cepat: "Warnai dulu sedikit lagi, ya."
+- **Jawaban benar:** tidak ada; semua warna benar (sapi ungu juga boleh).
+- **Aset:** dipakai ulang (`cow-art.ts`, `coloring.ts`). Animasi baru: warna "mengalir" dari kertas
+  ke sapi 3D per wilayah (badan, kepala, kaki, ...) saat sapi berdiri lagi.
+- **Untuk Ayah/Bunda:** "Tanya: sapi yang pernah kamu lihat warnanya apa? Biarkan anak memilih warna
+  apa saja."
+
+**Momen ringan · RINGAN-SERET** (±15 detik): "Ini sapimu! Geser untuk memutarnya." (yang ada)
+
+**Adegan 1.4 · Tanduk** · HITUNG-SEKILAS (±30 detik)
+- **Latar & kamera:** kamera `kepala` (depan-samping kepala). Tanduk disorot 2,5 detik, lalu cahaya
+  sorot redup (tanduk tetap terlihat, tidak bisa diketuk).
+- **Narasi:** "Lihat kepalanya. Tanpa mengetuk, ada berapa tanduk?" Pilihan 1, 2, 3.
+- **Jawaban benar:** 2.
+- **Petunjuk saat salah:** "Kita lihat sekali lagi." Sorot 5 detik. Salah kedua → "Kita hitung bersama,
+  yuk. Ketuk tanduknya." (mode HITUNG-KETUK), lalu tombol 2 disorot.
+- **Aset:** `tanduk[0..1]` (ada).
+- **Titik simpan 1.** Sapi berjalan keluar dari halaman buku ke padang rumput.
+- **Untuk Ayah/Bunda:** "Mengenali jumlah kecil sekilas, seperti titik dadu, adalah dasar berhitung
+  cepat."
+
+### Babak 2 · Jalan ke sungai (±5 menit)
+
+**Adegan 2.1 · Jalan berkelok** · TULIS-JALUR (±45 detik)
+- **Latar & kamera:** kamera tinggi dari atas-depan (±60°). Jalan setapak berkelok seperti lengkung S
+  dari sapi ke pohon mangga, ditandai titik-titik. Titik mulai hijau di depan sapi.
+- **Narasi:** "Ayo jalan ke rumah Budi. Jalannya berkelok. Taruh jarimu di titik hijau, lalu ikuti
+  jalannya sampai ke pohon."
+- **Jawaban benar:** jari sampai ujung jalur di dalam koridor (≥ 56 px).
+- **Petunjuk:** jari keluar jalur → sapi berhenti dan menoleh, "Sapimu menunggu di jalan." Tiga kali
+  keluar → jalur melebar dan tangan contoh menunjukkan arah.
+- **Aset baru:** `jalan_berkelok` (bidang jalan dengan titik-titik, path yang sama dipakai untuk
+  jalur jari). `walkTo` yang ada diubah agar sapi mengikuti parameter jarak di jalur.
+- **Untuk Ayah/Bunda:** "Garis lengkung ini latihan sebelum menulis huruf S nanti."
+
+**Adegan 2.2 · Mangga untuk Budi** · HITUNG-AMBIL (±1 menit 15 detik)
+- **Latar & kamera:** kamera `pohon`, turun sedikit supaya keranjang di samping sapi terlihat. Pohon
+  berbuah 3-5 mangga (acak, yang ada).
+- **Narasi:** "Lihat, pohon mangga! Budi suka mangga. Ambil **dua** mangga, masukkan ke keranjang."
+  Setiap mangga masuk diberi badge 1, 2. "Sudah? Ketuk tanda centang."
+- **Jawaban benar:** tepat 2 mangga di keranjang.
+- **Petunjuk saat salah:** 1 mangga: "Baru satu. Budi minta dua." 3 atau lebih: "Coba hitung isinya.
+  Dua saja." Mangga berlebih boleh diseret kembali. 2 kali salah → dua mangga disorot hijau, sisanya
+  melayang kembali ke pohon: "Satu, dua. Dua mangga. Pas!"
+- **Aset baru:** `keranjang` (silinder terbuka + pegangan) dengan zona jatuh ≥ 88 px dan permukaan
+  `label_keranjang` (kanvas untuk huruf S). `mangga[]` perlu bisa diseret.
+- **Untuk Ayah/Bunda:** "Mengambil sejumlah benda lebih sulit daripada menghitung yang sudah ada.
+  Kalau terlalu banyak, cukup tanya: Budi minta berapa?"
+
+**Adegan 2.3 · S untuk Sapi** · TULIS-TEBAL (±1 menit 15 detik)
+- **Latar & kamera:** close-up keranjang, lalu layar beralih ke kanvas tulis 2D (latar anyaman
+  keranjang samar).
+- **Narasi:** "Supaya Budi tahu mangga ini dari sapimu, tulis huruf S di keranjang. S untuk sapi."
+  Anak memilih krayon. "Huruf S. Mulai dari titik hijau, ikuti panahnya, melengkung seperti jalan
+  tadi." Selesai: "sss..." dan huruf berkilau; S pindah ke `label_keranjang`.
+- **Jawaban benar:** 1 goresan sesuai jalur dan arah (katalog TULIS-TEBAL).
+- **Petunjuk saat salah:** "Coba mulai dari titik hijau." 2 kali salah → tangan contoh menggambar,
+  anak menelusuri jalur yang sudah ditebalkan samar.
+- **Aset baru:** data goresan huruf S (dari komponen TULIS-TEBAL).
+- **Untuk Ayah/Bunda:** "Yang dilatih adalah titik mulai dan arah, bukan kerapian."
+
+**Momen ringan · lihat** (±15 detik): sapi berjalan membawa keranjang di punggung, berhenti di tepi
+sungai, mundur, menggeleng: "Mooo..." Narator: "Oh! Ada sungai kecil. Sapimu takut basah."
+
+**Adegan 2.4 · Batu titian** · HITUNG-URUT (±1 menit 30 detik) · ketegangan
+- **Latar & kamera:** sungai dangkal memotong jalan. Kamera tinggi dari depan (±45°), semua batu
+  terlihat. Tiap langkah ada dua batu berdampingan dengan angka berbeda.
+- **Narasi:** "Lihat, ada batu bernomor. Bantu sapimu melompat dari batu **satu** sampai batu **lima**.
+  Ketuk batu nomor satu." Setiap batu benar: sapi melompat, narator menyebut angkanya, lalu
+  "Sekarang nomor...?" (diam 2 detik) "dua". Sampai seberang: "Hore! Sapimu berhasil. Sapimu berani!"
+- **Pasangan batu per langkah:** 1/3, 2/5, 3/1, 4/2, 5/4 (kiri-kanan diacak).
+- **Jawaban benar:** 1, 2, 3, 4, 5.
+- **Petunjuk saat salah:** batu goyang "blup", "Itu batu nomor tiga. Kita cari nomor dua." 2 kali
+  salah → batu benar berdenyut hijau.
+- **Aset baru:** `sungai` (bidang biru, riak geser UV), `batu_titian[0..9]` (silinder pipih, angka
+  Andika di permukaan atas, bisa diketuk sendiri, jarak ≥ 44 px di layar terkecil, dicek E2E).
+  Animasi sapi: mundur + geleng, lompat busur.
+- **Untuk Ayah/Bunda:** "Tanya: sapinya kenapa berhenti? Bagaimana kalau kamu yang takut?"
+
+**Momen ringan · RINGAN-TOMBOL** (±15 detik): "Ketuk sapimu yang berani!" Sapi melompat girang.
+- **Titik simpan 2.**
+
+### Babak 3 · Kandang di rumah Budi (±6 menit)
+
+**Adegan 3.1 · Rumah siapa?** · BACA-SUSUN (±1 menit)
+- **Latar & kamera:** depan rumah Budi, kamera `rumah` yang ada. Papan di atas pintu dengan slot kosong.
+- **Narasi:** "Ini rumah siapa, ya? Susun kartunya, jadi nama tempat ini." Kartu RU, MAH, pengecoh BU.
+  Benar: "ru... mah... rumah!" Pintu terbuka.
 - **Jawaban benar:** RU lalu MAH.
-- **Petunjuk saat salah:** (yang ada) "Itu bu. Cari yang lain." 2 kali salah → kartu benar disorot.
-- **Aset baru:** `budi` (anak bergaya mainan: badan kapsul, kepala bola, rambut hitam setengah bola,
-  kaus berwarna polos, tanpa logo). Animasi: lambai, terima keranjang.
-- **Titik simpan:** setelah adegan ini kemajuan disimpan di HP. Jika aplikasi ditutup, lanjut di
-  adegan 6 dengan sapi berwarna sama.
-- **Untuk Ayah/Bunda:** "Kata RUMAH disusun dari kartu, belum perlu dibaca sendiri. Cukup dengarkan
-  anak menyebut ru... mah bersama suara."
+- **Petunjuk saat salah:** "Itu bu. Cari yang lain." 2 kali salah → kartu benar disorot.
+- **Aset:** dipakai ulang (papan RU MAH, pintu).
+- **Untuk Ayah/Bunda:** "RUMAH cukup disusun dan didengar; anak belum perlu membacanya sendiri."
 
-### Adegan 6 · Papan nama kandang (±2,5 menit) · menulis
-- **Latar & kamera:** halaman samping rumah, kandang kayu kecil baru. Di atas pintunya ada papan nama
-  kosong dengan dua kotak bergaris: kotak 1 kosong (bertitik-titik untuk S dan A), kotak 2 sudah
-  tertulis **PI** oleh Budi. Kamera close-up papan, lalu layar beralih ke papan menulis 2D yang besar.
-- **Narasi & aktivitas:**
-  1. Budi: "Ini kandang baru untuk sapimu. Tapi papan namanya belum selesai. Aku sudah tulis PI.
-     Kamu tulis SA, ya?"
-  2. Anak memilih satu krayon (warna tulisan = warna krayon pilihan anak).
-  3. **S:** "Huruf S. Mulai dari titik hijau, ikuti panahnya, melengkung seperti ular." 1 goresan.
-     Selesai: "sss..." (bunyi huruf) dan huruf berkilau sebentar.
-  4. **A:** "Huruf A. Garis miring turun ke kiri... garis miring turun ke kanan... lalu garis datar di
-     tengah." 3 goresan, masing-masing dimulai dari titik hijau.
-  5. Tulisan anak pindah ke papan 3D. "SA... dan PI. Ayo baca bersama. Ketuk kartunya."
-     Ketuk SA → "sa", ketuk PI → "pi", lalu "sapi! Ini kandang SAPI."
-- **Jawaban benar:** goresan mengikuti jalur dari titik mulai sampai titik akhir (toleransi lebar,
-  ±12% tinggi huruf); arah goresan benar.
-- **Petunjuk saat salah:** goresan keluar jalur atau mulai dari ujung salah → goresan memudar, titik
-  mulai berdenyut, "Coba mulai dari titik hijau." 2 kali salah → tangan contoh menggambar goresannya,
-  lalu anak cukup menelusuri jalur yang sudah ditebalkan (selalu bisa selesai).
-- **Aset baru:**
-  - 3D: `kandang` (kotak terbuka di depan + atap pelana, warna kayu) dengan bagian `papan_nama`
-    (tekstur kanvas yang menerima tulisan anak) dan `label_SA`, `label_PI` yang bisa diketuk.
-  - 2D: **komponen menebalkan** (dipakai ulang di semua episode): kerangka huruf S dan A dalam
-    bentuk jalur bergaris putus-putus, titik mulai hijau, panah arah, deteksi urutan goresan.
-- **Untuk Ayah/Bunda:** "Biarkan anak menulis sendiri walau tidak rapi. Yang dilatih adalah titik
-  mulai dan arah goresan. Setelah selesai, minta anak menunjuk huruf S di benda lain di rumah."
+**Momen ringan · RINGAN-SERET** (±15 detik): Budi keluar: "Halo, Sapi! Kamu bawa mangga?" Anak
+menyeret keranjang ke tangan Budi. Budi: "Terima kasih! Ada huruf S. Ini dari sapimu, ya?"
+- **Aset baru:** `budi` 3D (badan kapsul, kepala bola, rambut hitam setengah bola, kaus polos tanpa
+  logo). Animasi: lambai, terima keranjang.
 
-### Adegan 7 · Ibu minta sapu (±1,5 menit)
-- **Latar & kamera:** depan kandang, kamera `dapur` yang ada digeser ke kandang. Benda bola, sapu, topi
-  berjajar di bangku.
-- **Narasi & aktivitas:**
-  1. Ibu datang: "Halo, Sapi! Kandangnya masih kotor, banyak daun. Tolong ambilkan benda ini."
-     Kartu besar **SA · PU** (yang ada). Anak memilih bendanya di 3D atau tombol gambar.
-  2. Benar: "Betul! Itu sapu." Ibu menyerahkan sapu ke anak: "Ayo bantu Ibu. Sapu daunnya keluar."
-     Anak menyeret sapu di lantai kandang; 5 daun terbang keluar satu per satu (bermain, tanpa soal).
+**Adegan 3.2 · Papan nama kandang** · TULIS-LENGKAPI (±1 menit 15 detik)
+- **Latar & kamera:** halaman samping rumah, kandang kayu kecil. Papan nama di atas pintu berisi
+  tiga kotak: **S** (salinan huruf S anak dari keranjang), kotak **A** bertitik-titik, dan **PI**
+  (tulisan Budi). Close-up papan, lalu kanvas tulis 2D dengan S dan PI tetap terlihat sebagai konteks.
+- **Narasi:** Budi: "Ini kandang untuk sapimu. Huruf S-mu sudah kupasang. Aku tulis PI. Masih kurang
+  satu huruf. Kamu tulis A, ya?"
+  "Huruf A. Garis miring turun ke kiri... garis miring turun ke kanan... lalu garis datar di tengah."
+  Selesai: tulisan pindah ke papan 3D.
+- **Jawaban benar:** 3 goresan dengan urutan dan arah benar.
+- **Petunjuk saat salah:** sama dengan TULIS-TEBAL; 2 kali salah pada satu goresan → tangan contoh.
+- **Aset baru:** `kandang` (kotak terbuka di depan + atap pelana) dengan bagian `papan_nama` (kanvas
+  yang menerima tekstur tulisan anak), `atap`, `pintu_kandang` (wilayah warna untuk adegan 3.4),
+  `label_SA`, `label_PI` (bisa diketuk di adegan 3.5). Data goresan huruf A.
+- **Untuk Ayah/Bunda:** "A punya tiga goresan; ini yang paling sulit hari ini. Tidak apa-apa kalau
+  dibantu tangan contoh."
+
+**Adegan 3.3 · Ibu minta sapu** · BACA-PILIH-BENDA (±45 detik)
+- **Latar & kamera:** depan kandang. Bola, sapu, topi berjajar di bangku (yang ada).
+- **Narasi:** Ibu: "Halo, Sapi! Kandangnya masih kotor, banyak daun. Tolong ambilkan benda ini."
+  Kartu besar **SA · PU**. Anak memilih benda di 3D atau tombol gambar. Benar: "Betul! Itu sapu."
 - **Jawaban benar:** sapu.
-- **Petunjuk saat salah:** "Itu bola. Coba baca lagi: sa... pu." Jika memilih karena mengira SAPI:
-  "Ini bukan sapi. Dengar suku terakhirnya: pu. Sa... pu." 2 kali salah → sapu disorot.
-- **Aset baru:** `daun[0..4]` (bidang kecil berbentuk daun, toon). Sapu yang ada perlu bisa diseret
-  di lantai kandang (jalur geser satu bidang).
-- **Untuk Ayah/Bunda:** "SAPI dan SAPU hanya beda suku terakhir. Tanya: apa bedanya sapi dan sapu?
-  Coba sebutkan kata lain yang diawali sa."
+- **Petunjuk saat salah:** "Itu bola. Coba baca lagi: sa... pu." Bila ragu karena mirip SAPI: "Ini
+  bukan sapi. Dengar suku terakhirnya: pu." 2 kali salah → sapu disorot.
+- **Untuk Ayah/Bunda:** "SAPI dan SAPU hanya beda suku terakhir. Tanya: apa bedanya?"
 
-### Adegan 8 · Selamat tidur, Sapi (±1 menit) · penutup
-- **Latar & kamera:** langit berubah senja lalu malam (warna latar dan cahaya berganti, total cahaya
-  tetap ±1 supaya warna krayon tetap sama). Kamera lebar: kandang dengan papan SAPI tulisan anak,
-  Budi dan Ibu melambai.
-- **Narasi & aktivitas:**
-  1. Sapi berjalan masuk kandang di bawah papan nama. "Sapimu sudah sampai di kandang barunya."
-  2. "Ketuk papan namanya, lalu baca bersama." Ketuk → narator berhenti sebentar sebelum membaca
-     supaya anak sempat membaca dulu: "...sa · pi · sapi."
-  3. Budi: "Selamat tidur, Sapi. Terima kasih sudah membantu!" Sapi: "mooo" pelan, menguap.
-  4. Cuplikan: roket kertas kecil melintas di langit. "Eh, apa itu? Roket kertas! Besok kita
-     terbang bersamanya."
-  5. Layar selesai: gambar sapi anak jadi stiker di kebun stiker. Tiga cap bergambar (buku = membaca,
-     pensil = menulis, jari = menghitung) muncul satu per satu, tanpa angka atau nilai.
-     "Hari ini kamu membaca SAPI dan SAPU, menulis SA, dan menghitung sampai lima. Hebat!"
-- **Aset baru:** `langit_malam` (preset warna latar + cahaya), `bintang` (sprite sederhana, hiasan),
-  animasi sapi masuk dan menguap, `roket_kecil` (dipakai ulang dari model E02, skala kecil).
-- **Untuk Ayah/Bunda (setelah main):** "Tanya: tadi sapimu takut apa? Siapa yang menolongnya?
-  Ajak anak mencari tulisan SA di rumah, misalnya di bungkus makanan."
+**Momen ringan · RINGAN-GOSOK** (±30 detik): "Ayo bantu Ibu. Usap lantai kandangnya." Anak mengusap
+lantai; 5 daun terbang keluar satu per satu; selesai di 70% luas tersapu.
+- **Aset baru:** `daun[0..4]` (bidang kecil berbentuk daun, toon), topeng luas lantai.
 
-## 4. Daftar aset
-**Dipakai ulang:** gambar garis sapi + region, papan mewarnai, sapi 3D (`kaki`, `tanduk` bisa diketuk),
+**Adegan 3.4 · Atap kandang** · WARNA-BENDA-KECIL (±1 menit)
+- **Latar & kamera:** kamera lebar ke kandang; panel mewarnai setengah layar di bawah berisi gambar
+  garis kandang: `atap`, `pintu_kandang`, `dinding` (3 wilayah).
+- **Narasi:** Budi: "Kandangnya masih polos. Mau warna apa atapnya?" Warna langsung tampil di
+  kandang 3D. "Kandang yang bagus untuk sapimu."
+- **Jawaban benar:** tidak ada.
+- **Aset baru:** gambar garis kandang 3 wilayah (pemetaan ke `atap`, `pintu_kandang`, `dinding`).
+- **Untuk Ayah/Bunda:** "Tanya: kenapa memilih warna itu?"
+
+**Adegan 3.5 · Selamat tidur, Sapi** · BACA-KETUK-SUKU varian jeda (±30 detik)
+- **Latar & kamera:** langit senja lalu malam (cahaya total tetap ≈ 1 supaya warna krayon sama).
+  Sapi berjalan masuk kandang di bawah papan nama. Kamera ke papan.
+- **Narasi:** "Sapimu sudah sampai di kandang barunya. Ketuk papan namanya, lalu baca bersama."
+  Ketuk SA, ketuk PI → jeda 2 detik → "...sa · pi · sapi."
+- **Jawaban benar:** urutan SA lalu PI (pasti berhasil: kartu SA sudah berdenyut sejak awal).
+- **Untuk Ayah/Bunda:** "Saat jeda, biarkan anak membaca dulu sebelum suara membaca. Tekan 'Anak
+  membaca sendiri' kalau ia berhasil."
+
+### Penutup · RITUAL-STIKER (±45 detik)
+- Budi: "Selamat tidur, Sapi. Terima kasih sudah membantu!" Sapi: "mooo" pelan, menguap.
+- Cuplikan: roket kertas kecil melintas di langit. "Eh, apa itu? Roket kertas! Besok kita terbang
+  bersamanya."
+- Kembali ke halaman buku; gambar sapi anak jadi stiker di kebun stiker. Tiga cap (buku, pensil,
+  jari) muncul satu per satu, tanpa angka. "Hari ini kamu membaca SAPI dan SAPU, menulis S dan A, dan
+  menghitung sampai lima. Hebat!"
+- **Aset baru:** preset `langit_malam` + `bintang` hiasan, animasi sapi masuk kandang dan menguap,
+  `roket_kecil` (dipakai ulang dari model E02, skala kecil).
+- **Untuk Ayah/Bunda (setelah main):** "Tanya: tadi sapimu takut apa? Siapa yang menolongnya? Ajak
+  anak mencari huruf S dan A di rumah."
+
+## 5. Daftar aset
+**Dipakai ulang:** gambar garis sapi + wilayah, papan mewarnai, sapi 3D (`kaki`, `tanduk` bisa diketuk),
 jalan + bunga, pohon mangga + `mangga[]`, rumah Budi + pintu, Ibu, sapu/bola/topi, kartu suku kata,
-papan RU MAH, `wordTexture`, mekanik hitung-ketuk + pilih angka, stiker dan laporan.
+papan RU MAH, `wordTexture`, hitung-ketuk + pilih angka, stiker dan laporan.
 
-**Baru (3D):** kalung + `label_SA`, `label_PI`; keranjang (zona jatuh); sungai; `batu_titian[0..9]`
-dengan angka; Budi; kandang + `papan_nama` (tekstur tulisan anak) + label yang bisa diketuk;
+**Baru (3D):** `halaman_buku` (panggung semua episode); kalung + `label_SA`, `label_PI`;
+`jalan_berkelok`; keranjang (zona jatuh + `label_keranjang`); sungai; `batu_titian[0..9]` bernomor;
+Budi; kandang (`papan_nama`, `atap`, `pintu_kandang`, `dinding`, `label_SA`, `label_PI`);
 `daun[0..4]`; preset langit malam + bintang; roket kecil (dari E02).
 
-**Baru (2D / mekanik):** komponen menebalkan huruf (S, A; nanti semua huruf) dengan titik mulai, panah,
-deteksi arah dan urutan goresan; mode "lihat sekilas" (pilihan angka tanpa ketuk, jatuh ke mode
-hitung-ketuk saat salah); seret benda ke wadah + tombol "Sudah?"; titik simpan antar-adegan.
+**Baru (2D):** potret Budi (3 ekspresi), peta babak kecil, gambar garis kandang 3 wilayah, data goresan
+huruf S dan A.
 
-**Animasi baru:** sapi mundur + geleng, lompat busur antar batu, masuk kandang, menguap; Budi lambai.
+**Komponen dari katalog yang harus ada untuk E01:** lihat katalog bagian 7 butir 1.
 
-## 5. Laporan untuk orang tua
-Dicatat per kemampuan dengan tiga keadaan: **lancar** (benar tanpa petunjuk), **dengan bantuan**
-(benar setelah petunjuk), **belum** (jawaban disorot). Tanpa angka/skor.
-- Menyebut jumlah setelah menghitung (kardinalitas): kaki 4, mangga 3-5.
-- Mengenali jumlah kecil tanpa menghitung (tanduk 2), dan apakah perlu beralih ke mode ketuk.
-- Mengambil sejumlah benda (2 mangga).
-- Mengenal lambang angka 1-5 berurutan (batu sungai): angka mana yang tertukar.
-- Membaca suku SA, PI, PU dan kata SAPI, SAPU; membedakan SAPI/SAPU.
-- Menyusun RU + MAH.
-- Menulis S dan A: mulai dari titik yang benar? arah benar? berapa kali dibantu tangan contoh.
-  Ditampilkan juga gambar kecil tulisan anak (disimpan di HP).
-- Lama bermain per adegan (untuk melihat bagian yang diulang atau membosankan).
-- Saran kegiatan di rumah: cari huruf S dan A; hitung sendok di meja; "ambil dua" saat makan.
+**Animasi baru:** lipat-berdiri dari kertas, warna mengalir ke 3D, sapi mengikuti jalur, mundur +
+geleng, lompat busur antar batu, lompat girang, masuk kandang, menguap; Budi lambai dan menerima.
 
-## 6. Pertanyaan terbuka untuk pemilik
-1. **Durasi:** dengan 8 adegan, anak lambat bisa 15 menit lebih. Setuju ada titik simpan setelah
-   adegan 5 (boleh berhenti dan lanjut besok), atau episode harus selesai dalam satu duduk?
-2. **Huruf kapital saja di Tingkat 1?** Usul: kapital dulu (lebih mudah ditulis); huruf kecil mulai
-   Tingkat 2. Perlu dicek dengan 1-2 guru TK tentang buku menulis yang umum dipakai. [Kemungkinan Besar]
-   banyak TK langsung mengajarkan huruf kecil, jadi bisa jadi pengaturan orang tua.
-3. **Urutan goresan:** S satu goresan dari kanan atas; A tiga goresan (miring kiri, miring kanan,
-   datar). Perlu disahkan guru TK sebelum dibangun. [Menebak] bahwa ini sesuai kebiasaan TK Indonesia.
-4. **Bunyi huruf saat menulis:** pakai bunyi ("sss") atau nama huruf ("es")? Usul: bunyi, dengan nama
-   huruf sebagai pengaturan orang tua (sesuai metode SAS).
-5. **RUMAH** tetap dipertahankan (suku tertutup MAH) karena sudah dibangun dan berfungsi sebagai kata
-   tujuan, atau diganti kata KV-KV murni?
-6. **Subitisasi tanduk** menggantikan hitung-ketuk tanduk yang sekarang. Setuju?
-7. **Suara:** perlu 3 suara (narator, Budi, Ibu). Rekam dengan pengisi suara, atau satu orang dengan
-   variasi?
-8. **Nama sapi:** tetap "SAPI" (agar bisa dibaca), atau anak boleh memilih dari 3 nama KV-KV
-   (mis. "PIPI", "MUMU")? Memilih nama menambah rasa memiliki tetapi menambah rekaman suara.
+## 6. Laporan untuk orang tua
+Tiga keadaan per kemampuan (dari catatan hasil di katalog): **lancar**, **dengan bantuan**,
+**belum** (jawaban sempat disorot). Tanpa angka atau skor.
+- Kardinalitas: kaki 4 (HITUNG-KETUK).
+- Mengenali jumlah kecil tanpa menghitung: tanduk 2, dan apakah perlu beralih ke mode ketuk.
+- Mengambil sejumlah benda: 2 mangga.
+- Lambang angka 1-5 berurutan: angka mana yang tertukar.
+- Membaca suku SA, PI, PU; kata SAPI, SAPU; membedakan SAPI/SAPU; menyusun RU + MAH.
+- Membaca sendiri saat jeda (hanya bila orang tua menandai).
+- Pra-menulis: jalan berkelok (berapa kali keluar jalur).
+- Menulis S dan A: titik mulai, arah, bantuan tangan contoh; gambar kecil tulisan anak.
+- Lama per babak dan di babak mana anak berhenti (untuk melihat bagian yang membosankan).
+- Saran di rumah: cari huruf S dan A; hitung sendok di meja; "ambil dua" saat makan.
+
+## 7. Pertanyaan terbuka untuk pemilik
+1. **Durasi episode pertama ±16 menit** (3 babak). Untuk anak yang baru pertama kali mencoba, ini di
+   atas rata-rata perhatian anak 4 tahun [Kemungkinan Besar] 10-15 menit sekali duduk. Titik simpan
+   menangani ini, tetapi kalau E01 juga episode gratis/iklan, babak 1 (5 menit) harus sudah terasa
+   utuh dan memuaskan. Setuju, atau E01 dipotong ke 2 babak (±11 menit) khusus versi gratis?
+2. **Sapi kertas putih sebelum diwarnai:** anak berkenalan (hitung, baca) dengan sapi putih dulu, baru
+   mewarnai. Risiko [Menebak]: sebagian anak ingin langsung mewarnai. Perlu dilihat di uji ke 3-5 anak.
+3. **Hitung-ketuk mangga dihapus** (sudah ada di prototipe). Gantinya "ambil dua". Setuju?
+4. **Huruf kapital saja di Tingkat 1?** Usul kapital dulu; huruf kecil mulai Tingkat 2. Perlu dicek
+   dengan 1-2 guru TK. [Kemungkinan Besar] banyak TK langsung mengajarkan huruf kecil.
+5. **Urutan goresan:** S satu goresan dari kanan atas; A tiga goresan (miring kiri, miring kanan,
+   datar). Perlu disahkan guru TK sebelum dibangun. [Menebak] ini sesuai kebiasaan TK Indonesia.
+6. **Bunyi huruf saat menulis:** bunyi ("sss") atau nama huruf ("es")? Usul: bunyi, nama huruf sebagai
+   pengaturan orang tua (sesuai SAS).
+7. **RUMAH** tetap dipertahankan (suku tertutup MAH) sebagai kata tujuan, atau diganti kata KV-KV murni?
+8. **Suara:** 3 suara (narator, Budi, Ibu). Rekam dengan pengisi suara, atau satu orang dengan variasi?
+9. **Nama sapi:** tetap "SAPI" (agar bisa dibaca dan ditulis), atau anak memilih dari 3 nama KV-KV
+   (mis. "PIPI", "MUMU")? Memilih nama menambah rasa memiliki tetapi menambah rekaman dan merusak
+   papan nama SAPI.

@@ -1,223 +1,344 @@
 # E02 · Astronot Roket Kertas
 
-Tingkat 1 (4-5 tahun) · Musim 1, episode kedua
+Tingkat 1 (4-5 tahun) · Musim 1, episode kedua · Revisi 2 (format variasi + katalog aktivitas)
+
+**Yang berubah dari revisi 1:** episode dibuka dengan **membaca** (nama roket TOTO tertulis pensil
+tipis), bukan mewarnai, supaya berbeda dari E01 (dibuka menghitung). Menulis TO kini punya alasan di
+cerita (nama tertutup krayon, ditulis ulang). Mewarnai dua kali: roket di babak 1, bendera di bulan di
+babak 3. Ditambah: jalur terbang (pra-menulis) dan menulis O di bendera. 4 babak, 14 aktivitas,
+±17,5 menit.
 
 ## 1. Ringkasan
-Anak menjadi astronot. Ia mewarnai roket kertas di halaman buku tulis, roket itu berdiri dari kertas
-(seperti logo Roket Kertas), lalu anak memberi nama roketnya dengan menulis huruf T dan O. Setelah
-persiapan dan hitung mundur 5 sampai 1, roket terbang ke bulan, mendarat, dan anak mengumpulkan batu
-bulan untuk Kak Tika. Satu batu hilang dan harus dicari dulu.
+Anak menjadi astronot. Di halaman buku tulis berdiri roket kertas putih bernama TOTO. Anak membaca
+namanya, mewarnainya, menulis ulang namanya, menyiapkan bekal, dan menghitung mundur sampai roket
+meluncur. Di angkasa anak menuntun roket ke bulan, menancapkan bendera, lalu mengumpulkan batu bulan
+untuk Kak Tika. Satu batu hilang dan harus dicari dulu.
 
-- **Tokoh:** anak sebagai astronot (avatar sederhana; warna baju mengikuti warna badan roket), roket
-  **TOTO** buatan anak, **Kak Tika** (pengendali misi, muncul di layar bulat di sudut layar).
+- **Tokoh:** anak sebagai astronot (avatar sederhana, helm menutupi wajah; warna baju mengikuti badan
+  roket), roket **TOTO** buatan anak, **Kak Tika** (pengendali misi, potret 2D di layar bulat, pemandu
+  sapaan).
 - **Tujuan cerita untuk anak:** "Terbangkan roketmu ke bulan dan bawa lima batu bulan untuk Kak Tika."
-- **Ketegangan kecil:** di bulan baru ada empat batu, padahal Kak Tika minta lima (adegan 7).
-  Penyelesaian: anak mencari di kawah, menemukan batu kelima, "empat, satu lagi, jadi lima".
-- **Durasi:** 11-15 menit. Titik simpan setelah adegan 4 (roket sudah meluncur).
+- **Ketegangan kecil:** di bulan baru ada empat batu, padahal Kak Tika minta lima (babak 4).
+  Penyelesaian: anak mencari di kawah, menemukan batu kelima: "empat, satu lagi, jadi lima".
+- **Durasi:** ±17,5 menit (cepat ±13, lambat ±21). 4 babak dengan titik simpan.
+- **Pembuka:** BACA (BACA-KETUK-SUKU nama TOTO). **Bentuk baru:** HITUNG-MUNDUR, HITUNG-SATU-LAGI,
+  BACA-LABEL, RINGAN-CARI.
 
 ## 2. Tujuan belajar
 | Bidang | Isi |
 |---|---|
-| Membaca (SAS) | Huruf vokal baru **O**, konsonan baru **T**, **B**. Suku kata TO, BA, TU. Kata **TOTO** (nama roket), **BATU**. Ulangan E01: SAPI, SAPU muncul sebagai label kotak pengecoh (membedakan suku pertama BA/SA). BULAN dibacakan sebagai kata tujuan (suku tertutup, tidak dituntut). |
-| Menulis | Menebalkan **T** (2 goresan) dan **O** (1 goresan) menjadi suku kata TO, nama roket. O dikaitkan dengan jendela bundar roket. |
-| Berhitung | Rentang 1-5, arah baru: **hitung mundur 5-1** (mengetuk lambang angka berurutan mundur). Subitisasi 3 dan 4 (sirip, bintang). Mengambil sejumlah benda (4 kotak bekal). Hitung-ketuk lalu pilih (4 batu). Konsep **satu lagi** (4 lalu tambah 1 = 5) sebagai jembatan ke penjumlahan di Tingkat 2. |
-| Sosial-emosional | Menyelesaikan tugas walau ada masalah (batu hilang), bersiap sebelum berangkat. |
+| Membaca (SAS) | Huruf vokal baru **O**, konsonan baru **T**, **B**. Suku kata TO, BA, TU. Kata **TOTO** (nama roket), **BATU**. Ulangan E01: SAPI, SAPU sebagai label pengecoh (membedakan suku pertama BA/SA). BULAN dibacakan sebagai kata tujuan (suku tertutup, tidak dituntut). |
+| Menulis | Pra-menulis busur (jalur terbang). Menebalkan **T** (2 goresan) dan **O** (1 goresan) menjadi TO; menulis O lagi di dalam kata (bendera TOTO). |
+| Berhitung | Rentang 1-5, arah baru **hitung mundur 5-1**. Lihat sekilas 3 (sirip) dan 3-4 (bintang). Ambil sejumlah (4 bekal). Hitung-ketuk lalu pilih (4 batu). **Satu lagi** (4 lalu 5) sebagai jembatan ke penjumlahan di Tingkat 2. |
+| Sosial-emosional | Bersiap sebelum berangkat; tetap menyelesaikan tugas walau ada masalah (batu hilang). |
 
-**Kaitan:** E01 mengenalkan S, A, P, I, U dan angka 1-5 maju. E02 menambah T, O, B dan hitung mundur,
-serta mengulang SA dari E01 lewat kotak pengecoh. E03 (Kupu-kupu di Kebun Nenek) menambah K dan U
-tulis, dan menaikkan rentang hitung ke 6. Akhir E02 memberi cuplikan kupu-kupu di margin buku.
+**Kaitan:** E01 dibuka dengan menghitung dan mengenalkan S, A, P, I, U serta angka 1-5 maju. E02 dibuka
+dengan membaca, menambah T, O, B dan hitung mundur, dan mengulang SA dari E01 lewat label pengecoh.
+E03 (Kupu-kupu di Kebun Nenek) dibuka dengan mewarnai, menambah K dan U, naik ke 6, dan mengenalkan
+pasangan satu lawan satu. Penutup E02 memberi cuplikan kupu-kupu di margin buku.
 
-## 3. Adegan
+## 3. Alur ringkas
+Ritual dan momen ringan tidak dihitung sebagai aktivitas (lihat katalog bagian 0).
 
-### Adegan 1 · Roket di halaman buku (±2,5 menit)
-- **Latar & kamera:** layar mewarnai 2D. Halaman buku tulis; gambar garis roket kertas berbaring
-  miring di halaman (tampak samping, hidung ke kanan atas).
-- **Narasi:**
-  - Kak Tika (di layar bulat): "Halo, Astronot! Aku Kak Tika dari ruang kendali. Hari ini kamu akan
-    terbang ke bulan."
-  - "Tapi roketmu belum berwarna. Ayo warnai roketmu!"
-  - Setelah ±70% berwarna: "Roketmu keren sekali. Ketuk tombol merah kalau sudah selesai."
-- **Aktivitas:** mewarnai bebas.
-- **Gambar garis baru:** roket dengan region `hidung`, `badan`, `jendela` (lingkaran), `pintu`,
-  `sirip` (3 buah: kiri, kanan, depan; satu region), `garis` (pita melingkar di badan), `api`
-  (nyala di bawah; anak boleh memberi warna api apa saja). Semua region tertutup dan cukup besar untuk
-  kuas besar.
-- **Untuk Ayah/Bunda:** "Tanya: kalau kamu naik roket, mau pergi ke mana? Apa yang mau kamu bawa?"
+| Babak | No | Kode | Isi | Menit |
+|---|---|---|---|---|
+| Pembuka | - | RITUAL-SAPA | Kak Tika menyapa, sebut tujuan | 0,5 |
+| **1 · Roket di halaman buku** | 1 | BACA-KETUK-SUKU | Nama di roket putih: TO · TO → "Toto" | 0,75 |
+| | 2 | WARNA-TOKOH | Warnai roket; warna mengalir ke roket 3D | 2,0 |
+| | r | RINGAN-SERET | Putar roket berwarna | 0,25 |
+| | 3 | HITUNG-SEKILAS | Sirip: lihat sebentar, pilih 3 | 0,5 |
+| | | | *Titik simpan 1* · **subtotal babak 1 (dengan sapaan)** | **4,0** |
+| **2 · Siap terbang** | 4 | TULIS-TEBAL | Nama tertutup krayon: tulis ulang TO | 1,5 |
+| | 5 | HITUNG-AMBIL | Masukkan 4 kotak bekal, "Sudah?" | 1,0 |
+| | r | RINGAN-TOMBOL | Ketuk helm: astronot siap, naik roket | 0,25 |
+| | 6 | HITUNG-MUNDUR | Panel kendali 5, 4, 3, 2, 1 | 1,5 |
+| | r | RINGAN-TOMBOL | Tekan tombol merah: roket meluncur | 0,25 |
+| | | | *Titik simpan 2* · **subtotal babak 2** | **4,5** |
+| **3 · Ke bulan** | 7 | TULIS-JALUR | Tuntun roket mengikuti jalur bintang | 0,75 |
+| | 8 | HITUNG-SEKILAS | Bintang di jendela, 2 putaran (3, lalu 4) | 1,0 |
+| | r | RINGAN-SERET | Seret roket turun ke landasan O | 0,5 |
+| | 9 | WARNA-BENDA-KECIL | Warnai bendera roketmu | 1,0 |
+| | 10 | TULIS-LENGKAPI | Bendera T O T _: tulis O | 1,0 |
+| | r | RINGAN-TOMBOL | Ketuk bendera: tertancap di bulan | 0,25 |
+| | | | *Titik simpan 3* · **subtotal babak 3** | **4,5** |
+| **4 · Batu bulan** | 11 | HITUNG-KETUK | Hitung batu bulan: 4 | 1,0 |
+| | r | RINGAN-CARI | Cari batu yang hilang di kawah | 0,5 |
+| | 12 | HITUNG-SATU-LAGI | Empat, satu lagi, jadi 5 | 0,75 |
+| | 13 | BACA-LABEL | Masukkan batu ke kotak BA · TU (pengecoh SAPU, SAPI) | 0,75 |
+| | r | (lihat) | Roket pulang ke halaman buku | 0,25 |
+| | 14 | BACA-KETUK-SUKU | Ketuk nama roket, baca bersama (jeda) | 0,5 |
+| Penutup | - | RITUAL-STIKER | Stiker roket, tiga cap, cuplikan kupu-kupu | 0,75 |
+| | | | **subtotal babak 4 (dengan penutup)** | **4,5** |
+| | | | **Total episode** | **±17,5** |
 
-### Adegan 2 · Roketku berdiri (±2,5 menit) · menulis
-- **Latar & kamera:** 3D. Halaman buku tulis menjadi lantai landasan. Gambar roket terangkat dari
-  kertas, terlipat, lalu berdiri tegak (momen logo). Kamera depan-samping, sedikit rendah, menatap
-  badan roket.
-- **Narasi & aktivitas:**
-  1. "Wah! Roketmu berdiri dari buku. Setiap roket punya nama. Ayo tulis nama roketmu di badannya."
-  2. Layar beralih ke papan menulis 2D besar (latar: badan roket dengan warna anak).
-  3. **T:** "Huruf T. Garis datar dari kiri ke kanan... lalu garis lurus turun dari tengah." 2 goresan.
-     Selesai: "t... t..."
-  4. **O:** "Huruf O bulat, seperti jendela roketmu. Mulai dari titik hijau di atas, putar ke kiri,
-     sampai kembali ke atas." 1 goresan. Jendela roket berkedip saat O selesai.
-  5. Tulisan TO pindah ke badan roket 3D, lalu TO kedua muncul sendiri di sebelahnya (ditulis
-     "Kak Tika"). "TO... dan TO lagi. Ketuk kartunya, baca bersama."
-     Ketuk TO → "to", ketuk TO → "to", lalu "to · to · Toto! Roketmu bernama TOTO."
-- **Jawaban benar:** goresan mengikuti jalur dan arah (toleransi sama dengan E01).
-- **Petunjuk saat salah:** "Coba mulai dari titik hijau." 2 kali salah → tangan contoh menggambar,
-  anak menelusuri jalur yang ditebalkan.
-- **Aset baru (3D):** `halaman_buku` (bidang dengan tekstur garis biru + margin merah; dipakai ulang
-  sebagai panggung pembuka/penutup semua episode), `roket` dari bentuk sederhana: badan silinder,
-  hidung kerucut, 3 sirip prisma tipis berjarak 120°, jendela (torus + cakram), pintu (kotak tipis
-  berengsel), nosel (kerucut terpotong), api (kerucut berkedip, warna dari region `api`).
-  Bagian yang bisa diketuk: `sirip[0..2]`, `jendela`, `pintu`, `label_nama` (dua kartu `TO`, `TO`).
-- **Animasi baru:** lipat-berdiri dari kertas (rotasi dari datar ke tegak + skala ketebalan).
-- **Untuk Ayah/Bunda:** "Huruf O dan T termasuk yang paling mudah ditulis. Setelah main, ajak anak
-  mencari benda bulat seperti O di rumah."
+**Pemeriksaan aturan variasi**
+| Aturan | Hasil |
+|---|---|
+| 10-16 aktivitas | 14 ✓ |
+| Baca ≥ 3 | 3 (no 1, 13, 14) ✓ |
+| Tulis ≥ 3 | 3 (no 4, 7, 10) ✓ |
+| Hitung ≥ 3 | 6 (no 3, 5, 6, 8, 11, 12) ✓ (fokus episode: hitung mundur dan satu lagi) |
+| Warnai 1-3 | 2 (no 2, 9) ✓ |
+| Dua berurutan tidak berkode sama | ✓ (kode yang sama: 3 dan 8, 1 dan 14, tidak bersebelahan) |
+| Pembuka berbeda dari E01 | BACA (E01: HITUNG) ✓ |
+| Bentuk baru ≥ 1 | 4 ✓ |
+| Momen ringan di antara aktivitas berpikir | 7 momen ✓ |
+| Babak 4-6 menit | 4,0 / 4,5 / 4,5 / 4,5 ✓ |
+| Kesulitan naik, ditutup pasti berhasil | babak 1 ketuk-dengar dan sekilas 3; babak 2 menulis 2 huruf, mundur; babak 3 sekilas 4 dan O di dalam kata; babak 4 satu lagi dan BA/SA; ditutup baca nama sendiri ✓ |
 
-### Adegan 3 · Siap terbang (±2 menit)
-- **Latar & kamera:** landasan di halaman buku. Kamera tinggi (±50° dari atas) memutar ke belakang
-  roket supaya ketiga sirip terlihat terpisah. Lalu kamera ke pintu roket yang terbuka.
-- **Narasi & aktivitas:**
-  1. Kak Tika: "Sebelum terbang, cek siripnya. Lihat sebentar. Ada berapa sirip?"
-     Pilihan 1-4 (lihat sekilas, tanpa ketuk).
-  2. "Astronot perlu bekal. Masukkan **empat** kotak bekal ke dalam roket." Ada 6 kotak bekal
-     (warna berbeda) di samping roket. Anak menyeret ke pintu; tiap kotak masuk diberi angka (1, 2, 3, 4).
-     Lalu ketuk tombol centang di pintu: "Sudah?"
-- **Jawaban benar:** sirip 3; tepat 4 kotak.
-- **Petunjuk saat salah:**
-  - Sirip salah: "Kita hitung bersama, yuk. Ketuk siripnya." (beralih ke hitung-ketuk). 2 kali salah →
-    kartu 3 disorot.
-  - Kotak kurang: "Baru tiga. Kak Tika minta empat." Lebih: "Coba hitung bekal di roket. Empat saja."
-    Kotak berlebih bisa diseret keluar. 2 kali salah → empat kotak disorot hijau, sisanya keluar sendiri.
+## 4. Adegan
+
+### Pembuka · RITUAL-SAPA (±30 detik)
+- **Latar & kamera:** halaman buku tulis (panggung dari E01). Gambar roket kertas berbaring miring di
+  halaman. Layar bulat Kak Tika muncul di sudut kanan atas.
+- **Narasi:** Kak Tika: "Halo, Astronot! Aku Kak Tika dari ruang kendali. Hari ini kamu terbang ke
+  bulan dan membawa pulang lima batu bulan." Peta babak 4 titik (buku, landasan, bulan, batu).
+- **Aset baru:** potret Kak Tika 2D (3 ekspresi: senyum, berpikir, senang), layar bulat.
+
+### Babak 1 · Roket di halaman buku (±3,5 menit + sapaan)
+
+**Adegan 1.1 · Siapa nama roketmu?** · BACA-KETUK-SUKU (±45 detik)
+- **Latar & kamera:** gambar roket terangkat dari halaman dan berdiri sebagai roket kertas putih
+  (animasi lipat-berdiri dari E01). Kamera depan-samping, sedikit rendah. Di badan roket tertulis
+  **TO · TO** dengan pensil abu tipis.
+- **Narasi:** "Ini roketmu! Lihat, ada namanya. Kak Tika menulisnya dengan pensil. Ketuk kartunya dari
+  kiri." Ketuk TO → "to". Ketuk TO → "to". "to... to... Toto! Roketmu bernama TOTO."
+- **Jawaban benar:** urutan kiri lalu kanan.
+- **Petunjuk saat salah:** "Kita mulai dari kiri, ya." 2 kali salah → kartu kiri disorot terus.
+- **Aset baru:** `roket` dari bentuk sederhana: badan silinder, hidung kerucut, 3 sirip prisma tipis
+  berjarak 120°, jendela (torus + cakram), pintu (kotak tipis berengsel), nosel, api. Bagian yang bisa
+  diketuk: `sirip[0..2]`, `jendela`, `pintu`, `label_nama` (dua kartu `TO`, `TO`, tekstur bisa diganti
+  tulisan anak).
+- **Untuk Ayah/Bunda:** "TO adalah suku kata baru. Ucapkan bersama: to, to, Toto."
+
+**Adegan 1.2 · Roketku berwarna** · WARNA-TOKOH (±2 menit)
+- **Latar & kamera:** roket berbaring kembali; layar papan mewarnai 2D.
+- **Narasi:** Kak Tika: "Roketmu masih putih. Ayo warnai!" Di 70%: "Roketmu keren sekali. Ketuk tombol
+  merah kalau sudah selesai."
+- **Gambar garis baru:** roket dengan wilayah `hidung`, `badan`, `jendela`, `pintu`, `sirip` (satu
+  wilayah untuk 3 sirip), `garis` (pita melingkar), `api`. Semua tertutup dan cukup besar untuk kuas
+  besar. Wilayah `badan` sengaja menimpa tulisan pensil TO TO (lihat adegan 2.1).
+- **Untuk Ayah/Bunda:** "Tanya: kalau kamu naik roket, mau pergi ke mana?"
+
+**Momen ringan · RINGAN-SERET** (±15 detik): roket berdiri lagi, berwarna. "Geser untuk memutar roketmu."
+
+**Adegan 1.3 · Cek sirip** · HITUNG-SEKILAS (±30 detik)
+- **Latar & kamera:** kamera tinggi (±50° dari atas) di belakang roket supaya ketiga sirip terpisah.
+  Sirip disorot 2,5 detik, lalu redup.
+- **Narasi:** Kak Tika: "Sebelum terbang, cek siripnya. Lihat sebentar. Ada berapa sirip?" Pilihan 1-4.
+- **Jawaban benar:** 3.
+- **Petunjuk saat salah:** "Kita lihat sekali lagi." Salah kedua → "Kita hitung bersama. Ketuk
+  siripnya." (mode ketuk), lalu tombol 3 disorot.
+- **Titik simpan 1.**
+- **Untuk Ayah/Bunda:** "Kemarin anak melihat 2 tanduk sekilas; hari ini 3 sirip."
+
+### Babak 2 · Siap terbang (±4,5 menit)
+
+**Adegan 2.1 · Nama roket hilang** · TULIS-TEBAL (±1 menit 30 detik)
+- **Latar & kamera:** close-up badan roket: tulisan pensil TOTO tertutup warna krayon.
+- **Narasi:** Kak Tika: "Oh! Nama roketmu tertutup krayon. Dari bulan nanti tidak terbaca. Tulis lagi
+  dengan krayonmu, ya." Layar beralih ke kanvas tulis 2D (latar badan roket dengan warna anak).
+  - **T:** "Huruf T. Garis datar dari kiri ke kanan... lalu garis lurus turun dari tengah." 2 goresan.
+  - **O:** "Huruf O bulat, seperti jendela roketmu. Mulai dari titik hijau di atas, putar ke kiri,
+    sampai kembali ke atas." 1 goresan. Jendela roket berkedip saat O selesai.
+  - Tulisan TO pindah ke badan roket, lalu TO kedua tersalin sendiri: "TO dan TO. Toto!"
+- **Jawaban benar:** 3 goresan sesuai jalur, urutan, dan arah.
+- **Petunjuk saat salah:** "Coba mulai dari titik hijau." 2 kali salah pada satu goresan → tangan
+  contoh, anak menelusuri jalur yang ditebalkan samar.
+- **Aset baru:** data goresan T dan O; pemasangan tekstur tulisan anak ke `label_nama`.
+- **Untuk Ayah/Bunda:** "T dan O termasuk huruf yang paling mudah. Ajak anak mencari benda bulat
+  seperti O di rumah."
+
+**Adegan 2.2 · Bekal astronot** · HITUNG-AMBIL (±1 menit)
+- **Latar & kamera:** landasan di halaman buku, pintu roket terbuka. 6 kotak bekal warna berbeda di
+  samping roket.
+- **Narasi:** "Astronot perlu bekal. Masukkan **empat** kotak bekal ke dalam roket." Tiap kotak masuk
+  diberi badge 1-4. "Sudah? Ketuk tanda centang."
+- **Jawaban benar:** tepat 4 kotak.
+- **Petunjuk saat salah:** kurang: "Baru tiga. Kak Tika minta empat." Lebih: "Coba hitung bekal di
+  roket. Empat saja." 2 kali salah → empat kotak disorot, sisanya keluar sendiri.
 - **Aset baru:** `kotak_bekal[0..5]` (kubus membulat, tutup berwarna), zona jatuh di `pintu`.
-- **Untuk Ayah/Bunda:** "Tanya: kalau kamu pergi jauh, bekal apa yang kamu bawa? Saat anak memasukkan
-  kotak, biarkan ia menghitung sendiri dulu."
+- **Untuk Ayah/Bunda:** "Biarkan anak menghitung sendiri saat memasukkan."
 
-### Adegan 4 · Hitung mundur (±1,5 menit)
-- **Latar & kamera:** roket di landasan dari depan, agak jauh (seluruh roket terlihat). Panel kendali
-  2D di bawah layar: lima tombol angka besar 1-5, posisinya diacak, dan satu tombol merah bergambar
-  roket (terkunci sampai hitung mundur selesai).
-- **Narasi & aktivitas:**
-  1. Kak Tika: "Semua siap! Kita hitung mundur dari lima. Ketuk angka **lima**!"
-  2. Tiap angka benar: suara menyebut angkanya, roket bergetar makin kuat, asap kertas makin banyak.
-     Setelah 5: "Lalu...?" (diam 2 detik) "empat". Dan seterusnya sampai 1.
-  3. "Satu! Sekarang tekan tombol merah!" Roket meluncur menembus garis-garis buku, naik ke langit.
+**Momen ringan · RINGAN-TOMBOL** (±15 detik): "Pakai helmmu! Ketuk helmnya." Astronot memakai helm,
+melambai, naik tangga, pintu tertutup.
+- **Aset baru:** `astronot` (badan kapsul, kepala bola dengan helm kaca, ransel kotak; warna baju dari
+  wilayah `badan` roket), animasi pakai helm + naik tangga.
+
+**Adegan 2.3 · Hitung mundur** · HITUNG-MUNDUR (±1 menit 30 detik)
+- **Latar & kamera:** roket dari depan, agak jauh (seluruh roket terlihat). Panel kendali 2D di bawah:
+  lima tombol angka 1-5 posisi acak + satu tombol merah bergambar roket (terkunci).
+- **Narasi:** Kak Tika: "Semua siap! Kita hitung mundur dari lima. Ketuk angka **lima**!" Tiap angka
+  benar: suara menyebutnya, roket bergetar makin kuat, asap kertas bertambah. "Lalu...?" (diam 2 detik)
+  "empat." Dan seterusnya sampai 1.
 - **Jawaban benar:** 5, 4, 3, 2, 1.
 - **Petunjuk saat salah:** tombol bergoyang, "Itu dua. Setelah empat, kita sebut tiga." 2 kali salah →
-  tombol yang benar berdenyut hijau. Anak tidak pernah gagal meluncur.
+  tombol benar berdenyut. Anak tidak pernah gagal meluncur.
 - **Aset baru:** panel kendali 2D (tombol angka Andika, tombol merah ikon roket), `asap` (bulatan
-  kertas putih yang membesar lalu pudar), animasi getar + meluncur.
-- **Titik simpan** setelah meluncur.
-- **Untuk Ayah/Bunda:** "Hitung mundur melatih urutan angka terbalik. Ikut berseru keras bersama anak;
-  besok coba hitung mundur sebelum makan atau mandi."
+  kertas putih membesar lalu pudar), animasi getar.
+- **Untuk Ayah/Bunda:** "Ikut berseru bersama anak. Besok coba hitung mundur sebelum mandi."
 
-### Adegan 5 · Di angkasa (±1,5 menit)
-- **Latar & kamera:** langit gelap biru tua (bukan hitam pekat), bumi kecil mengecil di belakang.
-  Kamera mengikuti roket dari samping. Bintang muncul di depan jendela.
-- **Narasi & aktivitas:**
-  1. "Kita sudah di angkasa! Lihat bintang-bintang dari jendela O."
-  2. **Lihat sekilas, 2 putaran:** sekelompok bintang menyala 2 detik lalu meredup.
-     "Ada berapa bintang tadi?" Pilihan 1-4. Putaran 1: 3 bintang (pola segitiga). Putaran 2: 4 bintang
-     (pola persegi seperti dadu).
-  3. Bulan membesar di depan. "Itu tujuan kita: bu · lan. BULAN!"
+**Momen ringan · RINGAN-TOMBOL** (±15 detik): "Satu! Sekarang tekan tombol merah!" Roket meluncur
+menembus garis-garis buku, naik ke langit.
+- **Titik simpan 2.**
+
+### Babak 3 · Ke bulan (±4,5 menit)
+
+**Adegan 3.1 · Jalur bintang** · TULIS-JALUR (±45 detik)
+- **Latar & kamera:** langit biru tua (bukan hitam pekat), bumi mengecil di belakang. Kamera dari
+  samping. Jalur titik-titik berupa busur lebar dari roket ke bulan, ditandai bintang kecil.
+- **Narasi:** "Kita di angkasa! Bawa roketmu ke bulan. Taruh jarimu di roket, ikuti jalur bintangnya."
+  Roket mengikuti jari. Di ujung: "Itu tujuan kita: bu · lan. BULAN!"
+- **Jawaban benar:** sampai ujung jalur di dalam koridor.
+- **Petunjuk:** keluar jalur → roket melayang menunggu, "Roketmu menunggu di jalur bintang."
+- **Aset baru:** `bumi` (bola biru-hijau toon), `langit_angkasa`, jalur busur (path), `bulan` (bola
+  besar abu-krem dengan kawah).
+- **Untuk Ayah/Bunda:** "Kemarin jalan berkelok, hari ini busur. Keduanya latihan sebelum menulis."
+
+**Adegan 3.2 · Bintang di jendela** · HITUNG-SEKILAS (±1 menit)
+- **Latar & kamera:** dari dalam roket, menghadap jendela bundar. Sekelompok bintang menyala lalu redup.
+- **Narasi:** "Lihat bintang dari jendela. Ada berapa bintang tadi?" Pilihan 1-4.
+  Putaran 1: 3 bintang (pola segitiga), tampil 2,5 detik. Putaran 2: 4 bintang (pola persegi seperti
+  dadu), tampil 2 detik.
 - **Jawaban benar:** 3, lalu 4.
-- **Petunjuk saat salah:** "Kita lihat sekali lagi, ya." Bintang menyala lagi lebih lama (4 detik).
-  2 kali salah → bintang tetap menyala dan anak mengetuknya satu per satu, lalu kartu benar disorot.
-- **Aset baru:** `bumi` (bola biru-hijau toon), `langit_angkasa` (warna latar + bintang hiasan),
-  `bintang_soal[0..3]` (sprite bintang besar, pola tetap), `bulan` (bola besar abu-krem dengan kawah).
-- **Untuk Ayah/Bunda:** "Mengenali jumlah kecil sekilas (seperti titik dadu) adalah dasar berhitung
-  cepat. Kalau anak menjawab salah, tidak apa-apa; tanya: kamu lihat bentuk apa?"
+- **Petunjuk saat salah:** "Kita lihat sekali lagi, ya." Bintang tampil 5 detik. Salah kedua → bintang
+  tetap menyala, anak mengetuknya satu per satu, lalu tombol benar disorot.
+- **Aset baru:** `bintang_soal[0..3]` (sprite bintang besar, pola tetap).
+- **Untuk Ayah/Bunda:** "Kalau anak salah, tanya: kamu lihat bentuk apa? Segitiga atau kotak?"
 
-### Adegan 6 · Mendarat (±1 menit)
-- **Latar & kamera:** permukaan bulan dari atas-samping. Lingkaran pendaratan bertanda **O** besar.
-  Roket melayang di atasnya.
-- **Narasi & aktivitas:**
-  1. "Pelan-pelan... Seret roketmu turun ke lingkaran O."
-  2. Roket bergerak naik-turun saja mengikuti jari (jalur tetap, tidak bisa keluar jalur). Dilepas di
-     tengah jalan: roket melayang diam, menunggu. Menyentuh lingkaran: debu mengepul pelan.
-  3. Pintu terbuka, astronot (anak) turun lewat tangga, melompat ringan. "Kamu sampai di bulan!"
-- **Jawaban benar:** roket sampai di lingkaran (tidak bisa salah).
-- **Aset baru:** `landasan_O` (cakram pipih dengan huruf O), `debu` (partikel bulatan), `astronot`
-  (badan kapsul, kepala bola dengan helm kaca, ransel kotak; warna baju dari region `badan` roket),
-  animasi turun tangga + lompat bulan.
-- **Untuk Ayah/Bunda:** "Tanya: kalau berjalan di bulan, rasanya bagaimana? Coba lompat pelan
-  seperti astronot."
+**Momen ringan · RINGAN-SERET** (±30 detik): "Pelan-pelan... seret roketmu turun ke lingkaran O."
+Roket hanya bergerak naik-turun (jalur tetap). Dilepas di tengah → melayang menunggu. Menyentuh
+lingkaran → debu mengepul. Astronot turun, melompat ringan: "Kamu sampai di bulan!"
+- **Aset baru:** `landasan_O` (cakram pipih bertanda O), `debu` (partikel bulatan), animasi turun
+  tangga + lompat bulan.
 
-### Adegan 7 · Batu bulan (±2,5 menit) · ketegangan
-- **Latar & kamera:** dataran bulan dengan 3 kawah. Kamera tinggi menghadap dataran supaya batu dan
-  kawah terpisah jelas (≥ 44 px).
-- **Narasi & aktivitas:**
-  1. Kak Tika: "Kak Tika perlu **lima** batu bulan. Ketuk batunya satu per satu."
-     Hanya ada 4 batu terlihat. Hitung-ketuk → "Jadi, ada berapa?" Anak memilih 4.
-  2. "Empat. Hmm... Kak Tika minta lima. Masih kurang satu. Ke mana satu batu lagi?"
-     Astronot menggaruk helm. "Coba cari di kawah. Ketuk kawahnya."
-  3. Kawah pertama yang diketuk kosong ("Tidak ada."), kawah kedua berisi batu berkilau (urutan
-     acak, tapi paling lambat ketukan kedua selalu menemukan, supaya tidak berlarut).
-     "Ketemu! Tadi empat... satu lagi... jadi berapa?" Pilihan 3-7. Anak memilih 5.
-  4. "Sekarang masukkan batunya ke kotak yang benar. Baca tulisannya." Tiga kotak berlabel
-     **BA · TU**, **SA · PU**, **SA · PI**. Anak mengetuk kotak BATU; kelima batu melompat masuk.
-     "ba · tu · batu! Betul!"
-- **Jawaban benar:** 4; 5; kotak BATU.
-- **Petunjuk saat salah:**
-  - Jumlah: "Hmm, coba hitung lagi angka terakhirnya." 2 kali salah → kartu benar disorot.
-  - Kotak SAPU/SAPI: "Itu sa... pu, sapu. Cari yang dimulai dengan ba." 2 kali salah → kotak BATU
-    disorot.
-- **Aset baru:** `batu_bulan[0..4]` (bola penyok abu, satu berkilau), `kawah[0..2]` (cincin cekung, bisa
-  diketuk), `kotak_label[0..2]` (kotak terbuka dengan label `wordTexture`, bisa diketuk).
-- **Untuk Ayah/Bunda:** "'Empat, satu lagi, jadi lima' adalah awal penjumlahan. Di rumah, coba: ada
-  tiga sendok, Ibu tambah satu, jadi berapa?"
+**Adegan 3.3 · Bendera roketmu** · WARNA-BENDA-KECIL (±1 menit)
+- **Latar & kamera:** astronot memegang bendera putih bertiang. Panel mewarnai setengah layar: bendera
+  dengan wilayah `kain_atas`, `kain_bawah`, `tiang` (3 wilayah).
+- **Narasi:** Kak Tika: "Setiap astronot menancapkan bendera. Warnai benderamu!" Warna langsung tampil
+  di bendera 3D.
+- **Aset baru:** `bendera` 3D (`kain_atas`, `kain_bawah`, `tiang`, `tulisan_bendera`), gambar garis
+  bendera 3 wilayah.
+- **Untuk Ayah/Bunda:** "Tanya: benderamu warna apa? Kenapa?"
 
-### Adegan 8 · Pulang ke buku (±1 menit) · penutup
-- **Latar & kamera:** roket terbang kembali, turun ke halaman buku tulis, lalu terbaring dan kembali
-  menjadi gambar berwarna di kertas. Kamera dari atas halaman.
-- **Narasi & aktivitas:**
-  1. Kak Tika: "Misi selesai! Lima batu bulan sudah sampai. Terima kasih, Astronot!"
-  2. "Ketuk nama roketmu." → "...to · to · Toto." (jeda dulu supaya anak membaca sendiri).
-  3. Stiker roket TOTO masuk ke kebun stiker, di samping stiker sapi E01. Tiga cap bergambar (baca,
-     tulis, hitung), tanpa angka.
-     "Hari ini kamu menulis TO, membaca TOTO dan BATU, dan menghitung mundur dari lima. Hebat!"
-  4. Cuplikan: seekor kupu-kupu garis (belum berwarna) hinggap di margin halaman. "Siapa itu?
-     Sampai jumpa di kebun Nenek!"
-- **Aset baru:** animasi kembali ke kertas (kebalikan adegan 2), gambar garis kupu-kupu kecil (cuplikan E03).
-- **Untuk Ayah/Bunda (setelah main):** "Tanya: tadi batunya hilang di mana? Bagaimana kamu
-  menemukannya? Minta anak menceritakan perjalanan roketnya dari awal."
+**Adegan 3.4 · Nama di bendera** · TULIS-LENGKAPI (±1 menit)
+- **Latar & kamera:** close-up bendera: tertulis **T O T** dan satu kotak O bertitik-titik.
+  Kanvas tulis 2D dengan T O T tetap terlihat.
+- **Narasi:** "Kak Tika sudah menulis nama roketmu di bendera. Satu huruf belum ada. Huruf apa, ya?
+  O! Tulis O di kotak terakhir." Selesai: "to · to. Toto!"
+- **Jawaban benar:** 1 goresan O, arah benar (putar ke kiri dari atas).
+- **Petunjuk saat salah:** "Mulai dari titik hijau di atas, putar ke kiri." 2 kali salah → tangan contoh.
+- **Untuk Ayah/Bunda:** "Ini O kedua hari ini. Lihat apakah anak masih ingat arahnya tanpa panah."
 
-## 4. Daftar aset
-**Dipakai ulang dari E01:** papan mewarnai + krayon, toon shader + garis tinta, mekanik hitung-ketuk +
-pilih angka, mode lihat sekilas, seret ke wadah + "Sudah?", komponen menebalkan huruf, kartu suku
-kata + `wordTexture`, titik simpan, stiker dan laporan.
+**Momen ringan · RINGAN-TOMBOL** (±15 detik): "Ketuk benderanya!" Bendera tertancap, berkibar pelan.
+- **Titik simpan 3.**
 
-**Baru (3D):** `halaman_buku` (panggung, dipakai semua episode), `roket` (`sirip[0..2]`, `jendela`,
-`pintu`, `label_nama`, nosel, api), `kotak_bekal[0..5]`, `asap`, `bumi`, `bulan`, `bintang_soal[0..3]`,
-`landasan_O`, `debu`, `astronot`, `batu_bulan[0..4]`, `kawah[0..2]`, `kotak_label[0..2]`.
+### Babak 4 · Batu bulan (±3,75 menit + penutup)
 
-**Baru (2D):** gambar garis roket + region; panel kendali (5 tombol angka + tombol merah); potret
-Kak Tika di layar bulat (2D, bukan 3D: cukup 3 ekspresi: senyum, berpikir, senang); kerangka huruf T, O.
+**Adegan 4.1 · Batu untuk Kak Tika** · HITUNG-KETUK (±1 menit)
+- **Latar & kamera:** dataran bulan dengan 3 kawah. Kamera tinggi menghadap dataran; batu dan kawah
+  terpisah ≥ 44 px.
+- **Narasi:** Kak Tika: "Kak Tika perlu **lima** batu bulan. Ketuk batunya satu per satu." Hanya 4 batu
+  terlihat. "Jadi, ada berapa?"
+- **Jawaban benar:** 4.
+- **Petunjuk saat salah:** "Hmm, coba lihat angka terakhir yang kamu sebut." 2 kali salah → tombol 4 disorot.
+- **Aset baru:** `batu_bulan[0..4]` (bola penyok abu; satu berkilau, tersembunyi).
 
-**Animasi baru:** lipat-berdiri dan kembali ke kertas, getar + meluncur, terbang (jalur tetap), turun
-mengikuti jari, astronot turun tangga + lompat.
+**Momen ringan · RINGAN-CARI** (±30 detik) · ketegangan: "Empat. Hmm... Kak Tika minta lima. Masih
+kurang satu. Ke mana batu itu?" Astronot menggaruk helm. "Coba cari di kawah. Ketuk kawahnya."
+Kawah pertama yang diketuk kosong ("Tidak ada."); ketukan kedua selalu menemukan batu berkilau.
+- **Aset baru:** `kawah[0..2]` (cincin cekung, bisa diketuk).
 
-## 5. Laporan untuk orang tua
+**Adegan 4.2 · Satu lagi** · HITUNG-SATU-LAGI (±45 detik)
+- **Narasi:** Batu berkilau melayang bergabung dengan empat batu. "Ketemu! Tadi empat... satu lagi...
+  jadi berapa?" Pilihan 3-7.
+- **Jawaban benar:** 5.
+- **Petunjuk saat salah:** "Kita hitung semuanya, ya." Mode ketuk pada kelima batu. 2 kali salah →
+  tombol 5 disorot.
+- **Untuk Ayah/Bunda:** "'Empat, satu lagi, jadi lima' adalah awal penjumlahan. Di rumah: ada tiga
+  sendok, Ibu tambah satu, jadi berapa?"
+
+**Adegan 4.3 · Kotak yang benar** · BACA-LABEL (±45 detik)
+- **Latar & kamera:** tiga kotak terbuka berlabel **BA · TU**, **SA · PU**, **SA · PI** (posisi acak).
+- **Narasi:** "Masukkan batunya ke kotak yang benar. Baca tulisannya." Anak mengetuk kotak; kelima batu
+  melompat masuk. "ba · tu · batu! Betul!"
+- **Jawaban benar:** kotak BATU.
+- **Petunjuk saat salah:** "Itu sa... pu, sapu. Cari yang dimulai dengan ba." 2 kali salah → kotak
+  BATU disorot.
+- **Aset baru:** `kotak_label[0..2]` (kotak terbuka, label `wordTexture`, bisa diketuk).
+- **Untuk Ayah/Bunda:** "SAPU dan SAPI dari episode sapi muncul lagi di sini. Kalau anak memilihnya,
+  tanya: itu bacanya apa?"
+
+**Momen ringan · lihat** (±15 detik): roket terbang pulang, turun ke halaman buku, berdiri di landasan.
+
+**Adegan 4.4 · Pulang** · BACA-KETUK-SUKU varian jeda (±30 detik)
+- **Narasi:** Kak Tika: "Misi selesai! Ketuk nama roketmu." Ketuk TO, TO (tulisan anak) → jeda 2 detik
+  → "...to · to · Toto."
+- **Jawaban benar:** pasti berhasil (kartu kiri berdenyut sejak awal).
+- **Untuk Ayah/Bunda:** "Biarkan anak membaca dulu saat jeda. Tekan 'Anak membaca sendiri' kalau bisa."
+
+### Penutup · RITUAL-STIKER (±45 detik)
+- Kak Tika: "Lima batu bulan sudah sampai. Terima kasih, Astronot!"
+- Roket berbaring dan kembali menjadi gambar berwarna di kertas. Stiker roket TOTO masuk ke kebun
+  stiker di samping stiker sapi E01. Tiga cap (buku, pensil, jari), tanpa angka.
+  "Hari ini kamu membaca TOTO dan BATU, menulis T dan O, dan menghitung mundur dari lima. Hebat!"
+- Cuplikan: kupu-kupu garis (belum berwarna) hinggap di margin halaman. "Siapa itu? Sampai jumpa di
+  kebun Nenek!"
+- **Aset baru:** animasi kembali ke kertas (kebalikan lipat-berdiri), gambar garis kupu-kupu kecil.
+- **Untuk Ayah/Bunda (setelah main):** "Tanya: tadi batunya hilang di mana? Minta anak menceritakan
+  perjalanan roketnya dari awal."
+
+## 5. Daftar aset
+**Dipakai ulang dari E01:** `halaman_buku`, animasi lipat-berdiri, papan mewarnai + krayon (mode penuh
+dan panel), toon + garis tinta, hitung-ketuk + pilih angka, HITUNG-SEKILAS, HITUNG-AMBIL (seret ke
+zona + "Sudah?"), TULIS-TEBAL, TULIS-LENGKAPI, TULIS-JALUR, kartu suku kata + `wordTexture`, titik
+simpan, ritual sapa dan stiker.
+
+**Baru (3D):** `roket` (`sirip[0..2]`, `jendela`, `pintu`, `label_nama`, nosel, api), `kotak_bekal[0..5]`,
+`asap`, `astronot`, `bumi`, `langit_angkasa`, `bulan`, `bintang_soal[0..3]`, `landasan_O`, `debu`,
+`bendera` (`kain_atas`, `kain_bawah`, `tiang`, `tulisan_bendera`), `batu_bulan[0..4]`, `kawah[0..2]`,
+`kotak_label[0..2]`.
+
+**Baru (2D):** gambar garis roket + wilayah, gambar garis bendera, panel kendali (5 tombol angka +
+tombol merah), potret Kak Tika (3 ekspresi), data goresan T dan O, jalur busur.
+
+**Komponen baru dari katalog:** HITUNG-MUNDUR, HITUNG-SATU-LAGI, BACA-LABEL, RINGAN-CARI.
+
+**Animasi baru:** getar + meluncur, terbang mengikuti jari, turun mengikuti jari, astronot pakai helm,
+naik/turun tangga, lompat bulan, bendera berkibar, kembali ke kertas.
+
+## 6. Laporan untuk orang tua
 Tiga keadaan per kemampuan: lancar / dengan bantuan / belum. Tanpa skor.
 - Hitung mundur 5-1: angka mana yang tertukar.
-- Mengenali jumlah sekilas: 3 (sirip, bintang), 4 (bintang); apakah perlu diulang lebih lama.
+- Mengenali jumlah sekilas: 3 (sirip, bintang), 4 (bintang); dibandingkan dengan tanduk 2 di E01.
 - Mengambil sejumlah benda (4 kotak).
-- Kardinalitas 4 (batu) dan konsep "satu lagi" (4 + 1 = 5).
+- Kardinalitas 4 (batu) dan "satu lagi" (4 lalu 5).
 - Membaca TO, BA, TU; kata TOTO dan BATU; membedakan BATU dari SAPU/SAPI (ulangan E01).
-- Menulis T dan O: titik mulai, arah, bantuan tangan contoh; gambar kecil tulisan anak.
+- Membaca sendiri saat jeda (hanya bila orang tua menandai).
+- Pra-menulis: jalur busur.
+- Menulis T dan O, lalu O di dalam kata: titik mulai, arah, bantuan; apakah O kedua lebih lancar dari
+  O pertama. Gambar kecil tulisan anak.
 - Perbandingan dengan E01 untuk kemampuan yang sama (mis. "membaca suku kata: E01 dengan bantuan,
-  E02 lancar") supaya orang tua melihat kemajuan antar-episode.
+  E02 lancar").
 - Saran di rumah: hitung mundur sebelum kegiatan; cari benda bulat (O); "ada tiga, tambah satu".
 
-## 6. Pertanyaan terbuka untuk pemilik
-1. **Nama roket TOTO** (nama klasik buku membaca) atau anak memilih dari beberapa nama KV-KV? TOTO
-   dipilih karena hanya memakai satu suku kata baru, jadi bisa dibaca sendiri.
-2. **Kak Tika sebagai potret 2D** (lebih murah, lebih ekspresif) di dalam dunia 3D. Setuju, atau semua
-   tokoh harus 3D?
-3. **Avatar astronot:** netral (helm menutupi wajah, tanpa jenis kelamin jelas) supaya semua anak bisa
-   merasa dirinya. Atau orang tua memilih avatar (laki-laki/perempuan, kerudung)?
-4. **Urutan goresan T:** usul garis datar dulu lalu garis turun. Sebagian buku menulis mengajarkan
-   garis turun dulu. Perlu disahkan guru TK. [Menebak] mana yang lebih umum di TK Indonesia.
-5. **"Satu lagi jadi lima"** sudah menyentuh penjumlahan. Setuju dimasukkan di Tingkat 1 sebagai
-   pengenalan (tanpa tanda +), atau tunggu Tingkat 2?
-6. **Gelap di angkasa:** memakai biru tua (bukan hitam) agar tidak menakutkan dan warna krayon tetap
-   terbaca. Mode gelap aplikasi = papan tulis; perlu dicek apakah adegan angkasa tetap terbaca di dua
-   mode.
-7. **Episode ini cocok jadi episode iklan Meta** (roket = merek)? Kalau ya, mungkin E02 lebih baik
-   menjadi episode gratis/percobaan daripada E01.
+## 7. Pertanyaan terbuka untuk pemilik
+1. **Durasi ±17,5 menit**, lebih panjang dari E01, dengan 4 babak. Babak sengaja pendek (4-4,5 menit)
+   supaya tiap titik simpan terasa sebagai "misi kecil" selesai. Setuju, atau dipangkas ke 3 babak
+   (mis. menggabungkan bendera dan batu, ±14 menit)?
+2. **Hitung terasa dominan** (6 dari 14 aktivitas) karena tema hitung mundur. Baca dan tulis tetap 3.
+   Setuju, atau satu soal hitung (sirip) diganti membaca?
+3. **Nama roket TOTO** atau anak memilih dari beberapa nama KV-KV? TOTO hanya memakai satu suku kata
+   baru, jadi bisa dibaca dan ditulis sendiri.
+4. **Kak Tika sebagai potret 2D** (lebih murah, lebih ekspresif) di dalam dunia 3D. Setuju?
+5. **Avatar astronot netral** (helm menutupi wajah) atau orang tua memilih avatar (laki-laki,
+   perempuan, berkerudung)?
+6. **Urutan goresan T:** garis datar dulu lalu garis turun. Sebagian buku mengajarkan garis turun dulu.
+   Perlu disahkan guru TK. [Menebak] mana yang lebih umum di TK Indonesia.
+7. **"Satu lagi jadi lima"** sudah menyentuh penjumlahan. Dimasukkan di Tingkat 1 sebagai pengenalan
+   (tanpa tanda +), atau tunggu Tingkat 2?
+8. **Angkasa biru tua** (bukan hitam) agar tidak menakutkan dan krayon terbaca. Perlu dicek di mode
+   terang dan mode gelap (papan tulis).
+9. **Episode gratis/iklan:** E02 paling dekat dengan merek (roket). Kalau E02 jadi episode percobaan,
+   anak baru langsung bertemu SAPI/SAPU sebagai pengecoh tanpa pernah main E01; itu tetap bisa dibaca
+   (KV-KV), tapi ulangan antar-episode hilang.
