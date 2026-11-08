@@ -13,8 +13,8 @@ export interface Episode {
 }
 
 export const MUSIM_1: Episode[] = [
-  { no: 1, judul: "Sapi ke Rumah Budi", ikon: "sapi", siap: true, menit: "5-8 menit",
-    belajar: { warnai: "Sapi", hitung: "Kaki, tanduk, mangga (1-5)", baca: "RU·MAH, SA·PU" } },
+  { no: 1, judul: "Sapi ke Rumah Budi", ikon: "sapi", siap: true, menit: "10-12 menit",
+    belajar: { warnai: "Sapi", hitung: "Kaki, tanduk sekilas, mangga, batu 1-5", baca: "SA·PI, RU·MAH, SA·PU", tulis: "S, A" } },
   { no: 2, judul: "Astronot Roket Kertas", ikon: "roket", siap: false,
     belajar: { warnai: "Roket", hitung: "Hitung mundur 5-1", baca: "TO·TO, BA·TU", tulis: "T, O" } },
   { no: 3, judul: "Kupu-kupu di Kebun Nenek", ikon: "kupu", siap: false,

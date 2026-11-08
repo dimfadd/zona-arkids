@@ -12,8 +12,10 @@ import { registerSW } from "virtual:pwa-register";
 import { ColoringBoard } from "./coloring";
 import { CRAYONS } from "./cow-art";
 import { Cow3D, anchorOf, type Countable } from "./cow3d";
-import { World, STOPS, type Item } from "./world";
-import { progress, type Attempt } from "./progress";
+import { World, STOPS, STONES_X, type Item } from "./world";
+import { progress, type Attempt, type SavedRun } from "./progress";
+import { TraceBoard } from "./trace-board";
+import type { LetterKey } from "./tracing-data";
 import { say, hush, NUM, setMuted, isMuted } from "./speech";
 import { MUSIM_1, IKON, ikonSvg, type Episode } from "./episodes";
 
@@ -55,6 +57,7 @@ function show(s: Screen) {
   if (s === "stiker") renderStickers();
   if (s === "ortu") renderReport();
   window.scrollTo({ top: 0 });
+  applyUpdateIfCalm();
 }
 function goHome() { hush(); running = false; if (history.state?.rk === "in") history.back(); else show("peta"); }
 window.addEventListener("popstate", () => { if (current !== "peta") { hush(); running = false; show("peta"); } });
@@ -153,13 +156,17 @@ function openEpisode(ep: Episode) {
     + row("Membaca", ep.belajar.baca, "var(--biru)", "Aa")
     + (ep.belajar.tulis ? row("Menulis", ep.belajar.tulis, "#6a43a3", penMark) : "")
     + row("Berhitung", ep.belajar.hitung, "var(--hijau)", "12");
-  el.epAksi.innerHTML = ep.siap
-    ? `<button class="tombol merah besar" id="playBtn" type="button"><svg><use href="#i-main"/></svg>${episodeDone(ep.no) ? "Main lagi" : "Main"}</button>`
-    : `<p class="segera">Episode ini sedang dibuat. Selesaikan episode 1 dulu, ya.</p>`;
+  const saved = ep.siap ? progress.savedRun(ep.no) : null;
+  el.epAksi.innerHTML = !ep.siap
+    ? `<p class="segera">Episode ini sedang dibuat. Selesaikan episode 1 dulu, ya.</p>`
+    : saved
+      ? `<button class="tombol merah besar" id="lanjutBtn" type="button"><svg><use href="#i-main"/></svg>Lanjutkan: ${esc(CHAPTERS[STEPS[Math.min(saved.si, STEPS.length - 1)].chapter])}</button>
+         <button class="tombol putih" id="playBtn" type="button">Mulai dari awal</button>`
+      : `<button class="tombol merah besar" id="playBtn" type="button"><svg><use href="#i-main"/></svg>${episodeDone(ep.no) ? "Main lagi" : "Main"}</button>`;
   document.getElementById("playBtn")?.addEventListener("click", () => {
-    el.epSheet.close(); board.clear(); show("warnai");
-    say("Ayo warnai sapimu. Pilih krayon, lalu gosok di gambarnya.");
+    el.epSheet.close(); progress.clearRun(); board.clear(); startAdventure();
   });
+  document.getElementById("lanjutBtn")?.addEventListener("click", () => { el.epSheet.close(); startAdventure(saved!); });
   el.epSheet.showModal();
   say(ep.judul);
 }
@@ -201,9 +208,9 @@ function renderReport() {
   const of = (k: Attempt["skill"]) => log.filter((a) => a.skill === k);
   const tile = (k: Attempt["skill"], label: string) => { const a = of(k); return `<div><b>${a.filter((x) => x.tries === 1).length} dari ${a.length}</b><span>${label}, benar di percobaan pertama</span></div>`; };
   el.report.innerHTML = `
-    <div class="ringkas">${tile("hitung", "Berhitung")}${tile("baca", "Membaca")}</div>
+    <div class="ringkas">${tile("hitung", "Berhitung")}${tile("baca", "Membaca")}${tile("tulis", "Menulis")}</div>
     <table class="laporan"><thead><tr><th>Soal</th><th>Kemampuan</th><th>Hasil</th><th>Tanggal</th></tr></thead><tbody>
-    ${log.slice(-12).reverse().map((a) => `<tr><td class="kata">${esc(a.label)}</td><td>${a.skill === "hitung" ? "Berhitung" : "Membaca"}</td>
+    ${log.slice(-12).reverse().map((a) => `<tr><td class="kata">${esc(a.label)}</td><td>${({ hitung: "Berhitung", baca: "Membaca", tulis: "Menulis" })[a.skill]}</td>
       <td class="${a.tries === 1 ? "hasil-1" : ""}">${a.tries === 1 ? "Benar langsung" : `Benar setelah ${a.tries} kali coba`}</td>
       <td>${new Date(a.at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</td></tr>`).join("")}
     </tbody></table>`;
@@ -256,7 +263,7 @@ el.clearBtn.addEventListener("click", () => {
 });
 el.doneBtn.addEventListener("click", () => {
   if (board.coverage() < 0.04) { toast("Warnai dulu sapinya, ya."); say("Warnai dulu sapinya, ya."); return; }
-  startAdventure();
+  colouringDone();
 });
 
 // =================================================================== 3D
@@ -276,7 +283,7 @@ let running = false;
 interface Shot { target: THREE.Vector3; width: number; dir: THREE.Vector3 }
 let shot: Shot = { target: new THREE.Vector3(0, 1.1, 0), width: 4.2, dir: new THREE.Vector3(0.12, 0.28, 1) };
 const camTarget = new THREE.Vector3(0, 1.1, 0);
-function shotFor(name: "sapi" | "kaki" | "kepala" | "jalan" | "pohon" | "rumah" | "dapur"): Shot {
+function shotFor(name: "sapi" | "kaki" | "kepala" | "jalan" | "pohon" | "sungai" | "rumah" | "dapur"): Shot {
   const c = cow!.group.position;
   switch (name) {
     case "sapi": return { target: new THREE.Vector3(c.x + 0.15, 1.15, 0), width: 4.4, dir: new THREE.Vector3(0.15, 0.3, 1) };
@@ -286,6 +293,7 @@ function shotFor(name: "sapi" | "kaki" | "kepala" | "jalan" | "pohon" | "rumah" 
     case "kepala": return { target: new THREE.Vector3(c.x + 1.3, 1.85, 0), width: 2.6, dir: new THREE.Vector3(1, 0.55, 0.45) };
     case "jalan": return { target: new THREE.Vector3(c.x + 1.2, 1.3, 0), width: 7, dir: new THREE.Vector3(0, 0.3, 1) };
     case "pohon": return { target: new THREE.Vector3(STOPS.pohon + 1.0, 2.0, -1.0), width: 5.6, dir: new THREE.Vector3(0, 0.12, 1) };
+    case "sungai": return { target: new THREE.Vector3(STOPS.sungai, 0.7, 0.4), width: 6.4, dir: new THREE.Vector3(0, 0.55, 1) };
     case "rumah": return { target: new THREE.Vector3(STOPS.rumah + 0.6, 1.5, -1.6), width: 6.4, dir: new THREE.Vector3(0, 0.18, 1) };
     case "dapur": return { target: new THREE.Vector3(STOPS.rumah + 1.9, 0.75, -0.9), width: 6.2, dir: new THREE.Vector3(0, 0.45, 1) };
   }
@@ -314,6 +322,7 @@ function ensure3D() {
 function resize3D() {
   if (!renderer) return;
   const w = el.stage.clientWidth, h = el.stage.clientHeight;
+  if (!w || !h) return; // hidden while the child writes
   renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
 }
 
@@ -380,49 +389,88 @@ let badges: Badge[] = [];
 function clearBadges() { badges.forEach((b) => b.dispose()); badges = []; }
 
 // =================================================================== adventure steps
+/*
+ * E01 as built so far (staged release of docs/episodes/E01-sapi-ke-rumah-budi.md): 11 activities in
+ * five short chapters. Each chapter start is a save point. Kinds map to docs/episodes/katalog-aktivitas.md:
+ * count = HITUNG-KETUK (glance: HITUNG-SEKILAS), suku = BACA-KETUK-SUKU, warnai = WARNA-TOKOH,
+ * tulis = TULIS-TEBAL (with context: TULIS-LENGKAPI), urut = HITUNG-URUT, build = BACA-SUSUN,
+ * pick = BACA-PILIH-BENDA.
+ */
 type CountTarget = Countable | "mangga";
 type Step =
-  | { kind: "count"; id: string; target: CountTarget; prompt: string; noun: string; label: string; chapter: number }
+  | { kind: "count"; id: string; target: CountTarget; prompt: string; noun: string; label: string; chapter: number; glance?: boolean }
+  | { kind: "suku"; id: string; parts: string[]; word: string; prompt: string; chapter: number; pause?: boolean }
+  | { kind: "warnai"; id: string; chapter: number }
+  | { kind: "tulis"; id: string; letter: LetterKey; prompt: string; context?: [string, string]; word?: string; chapter: number }
+  | { kind: "urut"; id: string; upto: number; chapter: number }
   | { kind: "build"; id: string; parts: string[]; extra: string; word: string; chapter: number }
   | { kind: "pick"; id: string; parts: string[]; answer: Item; chapter: number };
 
-const CHAPTERS = ["Sapiku", "Pohon", "Rumah", "Ibu"];
+const CHAPTERS = ["Sapi", "Pohon", "Sungai", "Rumah", "Ibu"];
+/** Where the cow stands in each chapter. */
+const CHAPTER_X = [STOPS.start, STOPS.pohon - 1.2, STOPS.sungai - 1.9, STOPS.rumah - 2.4, STOPS.rumah - 2.4];
 const STEPS: Step[] = [
-  { kind: "count", id: "kaki", target: "kaki", prompt: "Ada berapa kaki sapimu?", noun: "Kaki sapi", label: "Kaki sapi", chapter: 0 },
-  { kind: "count", id: "tanduk", target: "tanduk", prompt: "Ada berapa tanduk sapimu?", noun: "Tanduk sapi", label: "Tanduk sapi", chapter: 0 },
+  { kind: "count", id: "kaki", target: "kaki", prompt: "Ada berapa kaki sapi ini?", noun: "Kaki sapi", label: "Kaki sapi", chapter: 0 },
+  { kind: "suku", id: "kalung", parts: ["SA", "PI"], word: "sapi", prompt: "Ada tulisan di kalung sapi. Ketuk kartunya dari kiri.", chapter: 0 },
+  { kind: "warnai", id: "warnai", chapter: 0 },
+  { kind: "count", id: "tanduk", target: "tanduk", glance: true, prompt: "Lihat tanduknya baik-baik!", noun: "Tanduk sapi", label: "Tanduk sapi (lihat sekilas)", chapter: 0 },
   { kind: "count", id: "mangga", target: "mangga", prompt: "Ada berapa mangga di pohon?", noun: "Mangganya", label: "Mangga", chapter: 1 },
-  { kind: "build", id: "rumah", parts: ["RU", "MAH"], extra: "BU", word: "rumah", chapter: 2 },
-  { kind: "pick", id: "sapu", parts: ["SA", "PU"], answer: "sapu", chapter: 3 },
+  { kind: "tulis", id: "tulis-s", letter: "S", prompt: "Tulis S di keranjang mangga. S untuk sapi!", chapter: 1 },
+  { kind: "urut", id: "batu", upto: 5, chapter: 2 },
+  { kind: "build", id: "rumah", parts: ["RU", "MAH"], extra: "BU", word: "rumah", chapter: 3 },
+  { kind: "tulis", id: "tulis-a", letter: "A", prompt: "Papan nama sapi kurang satu huruf. Tulis A.", context: ["S", "PI"], word: "sapi", chapter: 3 },
+  { kind: "pick", id: "sapu", parts: ["SA", "PU"], answer: "sapu", chapter: 4 },
+  { kind: "suku", id: "papan", parts: ["SA", "PI"], word: "sapi", pause: true, prompt: "Sudah sore. Ayo baca papan nama sapi bersama.", chapter: 4 },
 ];
 
 interface Run {
-  si: number; phase: "count" | "choose" | "done"; counted: number[]; tries: number;
+  si: number; phase: "lihat" | "count" | "choose" | "work" | "done"; counted: number[]; tries: number;
   built: string[]; cards: string[]; mangoes: number;
+  /** BACA-KETUK-SUKU: cards tapped so far. HITUNG-URUT: next stone, the two on offer, misses on this stone. */
+  tapped: number; stone: number; stoneOpts: number[]; stoneMiss: number;
+  /** HITUNG-SEKILAS: the child gets a second look, then counts by tapping. */
+  glanceTap: boolean;
+  art: SavedRun["art"];
 }
-let R: Run = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes: 4 };
+const freshRun = (mangoes: number): Run => ({ si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes,
+  tapped: 0, stone: 1, stoneOpts: [], stoneMiss: 0, glanceTap: false, art: null });
+let R: Run = freshRun(4);
+/** Bumped whenever a step opens, so a late timer from an earlier step does nothing. */
+let stepToken = 0;
 
-async function startAdventure() {
+const trace = new TraceBoard();
+const tulisHost = document.createElement("div");
+tulisHost.className = "tulis-host"; tulisHost.append(trace.el);
+el.stage.after(tulisHost);
+const curtain = document.createElement("div");
+curtain.className = "tirai"; curtain.hidden = true; curtain.innerHTML = `<span aria-hidden="true">?</span>`;
+el.stage.append(curtain);
+function setCurtain(on: boolean) { curtain.hidden = !on; }
+
+async function startAdventure(resume?: SavedRun) {
   show("main");
   el.loading.hidden = false;
   await document.fonts?.load("700 40px Andika").catch(() => undefined);
   ensure3D();
   el.loading.hidden = true;
   running = true;
-  const colors = board.regionColors();
-  cow!.setColors(colors);
-  cow!.group.position.set(STOPS.start, 0, 0); cow!.group.rotation.y = 0;
-  world!.reset();
   // 3 to 5 mangoes; ?mangga=N fixes the number (used by the tests to check the fullest tree)
   const forced = Number(new URLSearchParams(location.search).get("mangga"));
-  const mangoes = forced >= 1 && forced <= 5 ? forced : 3 + Math.floor(Math.random() * 3);
-  R = { si: 0, phase: "count", counted: [], tries: 1, built: [], cards: [], mangoes };
+  const mangoes = resume?.mangoes ?? (forced >= 1 && forced <= 5 ? forced : 3 + Math.floor(Math.random() * 3));
+  R = freshRun(mangoes);
+  R.art = resume?.art ?? null;
+  // the cow starts white, like a drawing in a book; the child colours it a little later
+  cow!.setColors((R.art?.colors ?? {}) as Record<string, string | null>);
+  const si = Math.min(STEPS.length - 1, Math.max(0, resume?.si ?? 0));
+  cow!.group.position.set(CHAPTER_X[STEPS[si].chapter], 0, 0); cow!.group.rotation.y = 0;
+  world!.reset();
   world!.setMangoes(R.mangoes);
-  shot = shotFor("sapi");
+  if (STEPS[si].chapter >= 4) world!.openDoor();
+  openStep(si, false);
   camera.position.copy(desiredCamera(shot)); camTarget.copy(shot.target);
   cow!.hop();
-  openStep(0, false);
-  await say("Ini sapimu! Geser untuk memutarnya.");
-  if (running && R.si === 0) say(STEPS[0].kind === "count" ? STEPS[0].prompt : "");
+  await say(resume ? "Ayo lanjutkan petualangan sapi!" : "Ini sapi dari buku gambar. Sapinya masih putih.");
+  if (running && R.si === si) promptStep();
 }
 
 function renderChapters() {
@@ -431,30 +479,69 @@ function renderChapters() {
 }
 
 function openStep(i: number, speak = true) {
-  R.si = i; R.phase = "count"; R.counted = []; R.tries = 1; R.built = [];
-  clearBadges();
+  const token = ++stepToken;
+  R.si = i; R.phase = "count"; R.counted = []; R.tries = 1; R.built = []; R.tapped = 0; R.stone = 1; R.stoneMiss = 0; R.glanceTap = false;
+  clearBadges(); setCurtain(false); el.main.classList.remove("menulis");
   const s = STEPS[i];
-  cow!.calm = s.kind === "count" && s.target !== "mangga" ? 1 : 0;
+  cow!.calm = (s.kind === "count" && s.target !== "mangga") || s.kind === "suku" ? 1 : 0;
   if (s.kind === "count") {
     cow!.group.rotation.y = 0;
     shot = shotFor(s.target === "mangga" ? "pohon" : s.target === "kaki" ? "kaki" : "kepala");
+    if (s.glance) R.phase = "lihat";
   }
+  if (s.kind === "suku") { R.phase = "work"; shot = shotFor(s.id === "papan" ? "rumah" : "sapi"); }
   if (s.kind === "build") { shot = shotFor("rumah"); R.cards = shuffle([...s.parts, s.extra]); }
   if (s.kind === "pick") { shot = shotFor("dapur"); world!.showItems(true); }
+  if (s.kind === "urut") { R.phase = "work"; shot = shotFor("sungai"); R.stoneOpts = stoneOptions(1, s.upto); }
+  if (s.kind === "tulis") {
+    R.phase = "work"; el.main.classList.add("menulis");
+    trace.color = traceColor();
+    trace.run(s.letter).then((r) => {
+      if (token !== stepToken) return;
+      R.phase = "done"; R.tries = r.tries;
+      progress.record({ skill: "tulis", label: s.context ? `${s.context[0]} _ ${s.context[1]}: tulis ${s.letter}` : `Tulis ${s.letter}`, tries: r.tries });
+      renderStep(); cow!.hop();
+      say(s.context ? `Hebat! ${s.context[0]}, ${s.letter}, ${s.context[1].toLowerCase()}. ${s.word}!` : `Hebat! Kamu menulis ${s.letter}.`);
+    });
+  }
+  if (s.kind === "warnai") {
+    R.phase = "work"; renderChapters(); renderParentTools();
+    show("warnai");
+    if (speak) say(promptOf(s));
+    return;
+  }
   renderChapters(); renderStep(); renderParentTools();
-  if (speak) say(promptOf(s));
+  if (speak) promptStep();
+}
+/** Say the current step's question; a glance step then shows its things for a moment. */
+function promptStep() {
+  const s = STEPS[R.si], token = stepToken;
+  const p = say(promptOf(s));
+  if (s.kind === "count" && s.glance) p.then(() => { if (token === stepToken) glanceShow(2500); });
 }
 function promptOf(s: Step) {
-  return s.kind === "count" ? s.prompt
-    : s.kind === "build" ? "Susun kartunya, jadi nama tempat ini."
-    : "Ibu minta tolong ambilkan benda ini. Baca kartunya, lalu pilih bendanya.";
+  switch (s.kind) {
+    case "count": case "suku": case "tulis": return s.prompt;
+    case "warnai": return "Ayo warnai sapinya! Pilih krayon, lalu gosok di gambarnya.";
+    case "urut": return "Ada sungai! Bantu sapi menyeberang lewat batu. Injak batu nomor satu dulu.";
+    case "build": return "Susun kartunya, jadi nama tempat ini.";
+    case "pick": return "Ibu minta tolong ambilkan benda ini. Baca kartunya, lalu pilih bendanya.";
+  }
 }
 function shuffle<T>(a: T[]) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+/** Ink for writing: the crayon the child last used, unless it is too pale to see on white paper. */
+function traceColor() {
+  const pale = ["#f7c925", "#7cc4ef", "#f39bb6"];
+  return pale.includes(board.color) ? "#e0392b" : board.color;
+}
 
 function targetsOf(t: CountTarget): THREE.Object3D[] { return t === "mangga" ? world!.mangoes : cow!.countables[t]; }
 
-/** Five answer cards around the right answer. */
-function choices(n: number) { const start = Math.max(1, Math.min(n - 2, 6)); return Array.from({ length: 5 }, (_, i) => start + i); }
+/** Five answer cards around the right answer (1-4 for a glance). */
+function choices(s: Extract<Step, { kind: "count" }>, n: number) {
+  if (s.glance) return [1, 2, 3, 4];
+  const start = Math.max(1, Math.min(n - 2, 6)); return Array.from({ length: 5 }, (_, i) => start + i);
+}
 
 function renderStep() {
   const s = STEPS[R.si];
@@ -463,13 +550,36 @@ function renderStep() {
   const ask = (t: string) => `<div class="soal"><p class="soal-teks">${esc(t)}</p><button class="bulat dengar" id="dengar" type="button" aria-label="Dengar lagi">${ICON_DENGAR}</button></div>`;
   if (s.kind === "count") {
     const n = targetsOf(s.target).length, c = R.counted.length;
-    const body = R.phase === "count"
-      ? `<div class="ketuk" aria-label="${c} dari ${n} sudah diketuk">${Array.from({ length: n }, (_, i) => `<span class="${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</span>`).join("")}</div>`
-      : R.phase === "choose"
-        ? `<div class="angka" role="group" aria-label="Pilih jumlahnya">${choices(n).map((k) => `<button class="token" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
-        : `<p class="pujian">Betul! ${esc(s.noun)} ada ${n}.</p>`;
-    el.panel.innerHTML = `${R.phase === "done" ? "" : ask(R.phase === "count" ? s.prompt : "Jadi, ada berapa?")}${body}${next}`;
+    const q = R.phase === "lihat" ? s.prompt : R.phase === "choose" ? (s.glance && !R.glanceTap ? "Ada berapa tanduknya?" : "Jadi, ada berapa?")
+      : s.glance ? "Ketuk tanduknya satu per satu." : s.prompt;
+    const body = R.phase === "lihat"
+      ? `<p class="lihat-dulu">Lihat dulu…</p>`
+      : R.phase === "count"
+        ? `<div class="ketuk" aria-label="${c} dari ${n} sudah diketuk">${Array.from({ length: n }, (_, i) => `<span class="${i < c ? "on" : ""}">${i < c ? i + 1 : ""}</span>`).join("")}</div>`
+        : R.phase === "choose"
+          ? `<div class="angka ${s.glance ? "empat" : ""}" role="group" aria-label="Pilih jumlahnya">${choices(s, n).map((k) => `<button class="token ${s.glance && R.glanceTap && k === n ? "petunjuk" : ""}" type="button" data-n="${k}">${k}</button>`).join("")}</div>`
+          : `<p class="pujian">Betul! ${esc(s.noun)} ada ${n}.</p>`;
+    el.panel.innerHTML = `${R.phase === "done" ? "" : ask(q)}${body}${next}`;
     el.panel.querySelectorAll<HTMLButtonElement>("[data-n]").forEach((b) => b.addEventListener("click", () => chooseNumber(b, Number(b.dataset.n))));
+  } else if (s.kind === "suku") {
+    const done = R.phase === "done";
+    el.panel.innerHTML = `${done ? `<p class="pujian">${s.parts.map((p) => p.toLowerCase()).join(", ")}: ${esc(s.word)}!</p>` : ask(s.prompt)}
+      <div class="kartu-baris" role="group" aria-label="Kartu suku kata">${s.parts.map((c, i) => `<button class="kartu-suku ${i < R.tapped ? "nyala" : ""}" type="button" data-suku="${i}">${c}</button>`).join("")}</div>
+      ${next}`;
+    el.panel.querySelectorAll<HTMLButtonElement>("[data-suku]").forEach((b) => b.addEventListener("click", () => tapSuku(b, Number(b.dataset.suku))));
+  } else if (s.kind === "warnai") {
+    el.panel.innerHTML = R.phase === "done" ? `<p class="pujian">Wah, sapimu jadi berwarna! Geser untuk memutarnya.</p>${next}` : "";
+  } else if (s.kind === "tulis") {
+    const word = s.context
+      ? `<p class="kata-besar konteks" aria-label="${s.context.join(" ")}"><span>${s.context[0]}</span><span class="kosong ${R.phase === "done" ? "terisi" : ""}">${R.phase === "done" ? s.letter : "_"}</span><span>${s.context[1]}</span></p>` : "";
+    el.panel.innerHTML = `${R.phase === "done" ? `<p class="pujian">Hebat! Kamu menulis ${s.letter}.</p>` : ask(s.prompt)}${word}${next}`;
+  } else if (s.kind === "urut") {
+    const done = R.phase === "done";
+    el.panel.innerHTML = `${done ? `<p class="pujian">Hore! Sapi sampai di seberang.</p>` : ask(R.stone === 1 ? "Injak batu nomor satu dulu." : "Sekarang nomor berapa?")}
+      <ol class="batu-jejak" aria-label="Batu yang sudah diinjak">${Array.from({ length: s.upto }, (_, i) => `<li class="${i + 1 < R.stone ? "on" : ""}">${i + 1 < R.stone ? i + 1 : ""}</li>`).join("")}</ol>
+      ${done ? "" : `<div class="batu-pilih" role="group" aria-label="Pilih batu">${R.stoneOpts.map((v) => `<button class="batu" type="button" data-batu="${v}">${v}</button>`).join("")}</div>`}
+      ${next}`;
+    el.panel.querySelectorAll<HTMLButtonElement>("[data-batu]").forEach((b) => b.addEventListener("click", () => pickStone(b, Number(b.dataset.batu))));
   } else if (s.kind === "build") {
     const doneWord = R.built.length === s.parts.length;
     el.panel.innerHTML = `${doneWord ? `<p class="pujian">Betul! Ini RUMAH Budi.</p>` : ask("Susun kartunya, jadi nama tempat ini.")}
@@ -484,7 +594,10 @@ function renderStep() {
       ${next}`;
     el.panel.querySelectorAll<HTMLButtonElement>("[data-item]").forEach((b) => b.addEventListener("click", () => pickItem(b.dataset.item as Item, b)));
   }
-  document.getElementById("dengar")?.addEventListener("click", () => say(R.phase === "choose" ? "Jadi, ada berapa?" : promptOf(s)));
+  document.getElementById("dengar")?.addEventListener("click", () => {
+    const q = el.panel.querySelector(".soal-teks")?.textContent ?? "";
+    say(R.phase === "choose" || (s.kind === "urut" && R.stone > 1) ? q : promptOf(s));
+  });
   document.getElementById("nextBtn")?.addEventListener("click", nextStep);
 }
 
@@ -495,8 +608,9 @@ function itemIcon(k: Item) {
   if (k === "bola") return `<svg viewBox="0 0 48 48" ${s} aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M8 24h32"/><path d="M24 8c6 5 6 27 0 32"/></svg>`;
   return `<svg viewBox="0 0 48 48" ${s} aria-hidden="true"><path d="M6 34h36"/><path d="M14 34c0-12 4-18 10-18s10 6 10 18"/><path d="M14 28h20"/></svg>`;
 }
+const shake = (b: Element) => { b.classList.remove("salah"); void (b as HTMLElement).offsetWidth; b.classList.add("salah"); };
 
-// ------------------------------------------------------------------- counting
+// ------------------------------------------------------------------- counting (tap, or glance)
 function countOne(index: number, part: THREE.Object3D) {
   const s = STEPS[R.si]; if (s.kind !== "count" || R.phase !== "count") return;
   if (R.counted.includes(index)) { toast("Yang itu sudah dihitung. Cari yang lain."); return; }
@@ -506,19 +620,103 @@ function countOne(index: number, part: THREE.Object3D) {
   if (k >= n) { R.phase = "choose"; renderStep(); say(NUM[k]).then(() => say("Jadi, ada berapa?")); }
   else { renderStep(); say(NUM[k] || String(k)); }
 }
+/** HITUNG-SEKILAS: show the things for a moment, then cover the stage and ask how many. */
+async function glanceShow(ms: number) {
+  const token = stepToken;
+  R.phase = "lihat"; setCurtain(false); renderStep();
+  await wait(ms);
+  if (token !== stepToken || !running) return;
+  setCurtain(true); R.phase = "choose"; renderStep();
+  say("Ada berapa tanduknya?");
+}
 function chooseNumber(btn: HTMLButtonElement, k: number) {
   const s = STEPS[R.si]; if (s.kind !== "count" || R.phase !== "choose") return;
   const n = targetsOf(s.target).length;
   if (k !== n) {
-    R.tries++; btn.classList.remove("salah"); void btn.offsetWidth; btn.classList.add("salah");
+    R.tries++; shake(btn);
+    if (s.glance && !R.glanceTap) {
+      // first miss: a longer second look; second miss: count them one by one instead
+      if (R.tries === 2) { const token = stepToken; say("Kita lihat sekali lagi, ya.").then(() => { if (token === stepToken) glanceShow(5000); }); return; }
+      R.glanceTap = true; setCurtain(false); R.phase = "count"; renderStep();
+      say("Ayo hitung satu per satu. Ketuk tanduknya.");
+      return;
+    }
     say("Hmm, coba hitung lagi angka terakhirnya.");
     if (R.tries >= 3) el.panel.querySelector(`[data-n="${n}"]`)?.classList.add("petunjuk");
     return;
   }
-  R.phase = "done";
+  R.phase = "done"; setCurtain(false);
   progress.record({ skill: "hitung", label: `${s.label} (${n})`, tries: R.tries });
   renderStep(); if (s.target !== "mangga") cow!.hop();
   say(`Betul! ${s.noun} ada ${NUM[n] || n}.`);
+}
+
+// ------------------------------------------------------------------- reading: tap the syllables left to right
+async function tapSuku(btn: HTMLButtonElement, i: number) {
+  const s = STEPS[R.si]; if (s.kind !== "suku" || R.phase === "done") return;
+  if (i < R.tapped) { say(s.parts[i].toLowerCase()); return; } // already read: just hear it again
+  if (i !== R.tapped) {
+    R.tries++; shake(btn);
+    say("Kita mulai dari kiri, ya.");
+    const nextCard = el.panel.querySelector(`[data-suku="${R.tapped}"]`);
+    nextCard?.classList.add(R.tries >= 3 ? "petunjuk" : "denyut");
+    return;
+  }
+  R.tapped++;
+  btn.classList.add("nyala");
+  el.panel.querySelectorAll(".denyut").forEach((e) => e.classList.remove("denyut"));
+  const token = stepToken, last = R.tapped === s.parts.length;
+  if (last) { R.phase = "done"; progress.record({ skill: "baca", label: `${s.parts.join("·")} (ketuk suku)`, tries: R.tries }); }
+  await say(s.parts[i].toLowerCase());
+  if (!last || token !== stepToken) return;
+  // the bedtime reading waits a moment, so the child can read the word before the voice does
+  if (s.pause) { toast("Tunggu, biarkan anak membaca dulu.", 2500); await wait(2200); }
+  if (token !== stepToken) return;
+  renderStep(); cow!.hop();
+  say(`${s.parts.map((p) => p.toLowerCase()).join("... ")}... ${s.word}!`);
+}
+
+// ------------------------------------------------------------------- counting: stepping stones 1..5
+function stoneOptions(k: number, upto: number) {
+  const others = Array.from({ length: upto }, (_, i) => i + 1).filter((v) => v !== k);
+  return shuffle([k, others[Math.floor(Math.random() * others.length)]]);
+}
+let hopId = 0;
+function hopTo(x: number) {
+  const c = cow!, from = c.group.position.x, t0 = performance.now(), dur = reduceMotion ? 1 : 450, id = ++hopId;
+  c.hop();
+  const tick = (now: number) => {
+    if (id !== hopId) return; // a newer hop took over (fast taps)
+    const k = Math.min(1, (now - t0) / dur);
+    c.group.position.x = from + (x - from) * k;
+    if (k < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function pickStone(btn: HTMLButtonElement, v: number) {
+  const s = STEPS[R.si]; if (s.kind !== "urut" || R.phase === "done") return;
+  if (v !== R.stone) {
+    R.tries++; R.stoneMiss++; shake(btn);
+    say(`Itu nomor ${NUM[v]}. Kita cari nomor ${NUM[R.stone]}.`);
+    if (R.stoneMiss >= 2) el.panel.querySelector(`[data-batu="${R.stone}"]`)?.classList.add("petunjuk");
+    return;
+  }
+  hopTo(STONES_X[v - 1]);
+  R.stone++; R.stoneMiss = 0;
+  if (R.stone > s.upto) {
+    R.phase = "done";
+    progress.record({ skill: "hitung", label: `Urutan 1-${s.upto} (batu sungai)`, tries: R.tries });
+    renderStep();
+    say(NUM[v]).then(() => say("Hore! Sapi sampai di seberang."));
+    return;
+  }
+  R.stoneOpts = stoneOptions(R.stone, s.upto);
+  renderStep();
+  // ask, then leave a moment of quiet before the voice helps with the answer
+  const token = stepToken, want = R.stone;
+  say(NUM[v]).then(() => say("Sekarang nomor...")).then(() => wait(2000)).then(() => {
+    if (token === stepToken && R.stone === want && R.phase !== "done") say(NUM[want]);
+  });
 }
 
 // ------------------------------------------------------------------- reading: build RU + MAH
@@ -526,7 +724,7 @@ function tapCard(b: HTMLButtonElement) {
   const s = STEPS[R.si]; if (s.kind !== "build") return;
   const card = b.dataset.card!, want = s.parts[R.built.length];
   if (card !== want) {
-    R.tries++; b.classList.remove("salah"); void b.offsetWidth; b.classList.add("salah");
+    R.tries++; shake(b);
     say(`Itu ${card.toLowerCase()}. Cari yang lain.`);
     if (R.tries >= 3) el.panel.querySelector(`[data-card="${want}"]`)?.classList.add("petunjuk");
     return;
@@ -545,7 +743,7 @@ function pickItem(item: Item, btn?: HTMLElement) {
   const s = STEPS[R.si]; if (s.kind !== "pick" || R.phase === "done") return;
   if (item !== s.answer) {
     R.tries++;
-    if (btn) { btn.classList.remove("salah"); void (btn as HTMLElement).offsetWidth; btn.classList.add("salah"); }
+    if (btn) shake(btn);
     say(`Itu ${item}. Coba baca lagi: ${s.parts.map((p) => p.toLowerCase()).join("... ")}.`);
     if (R.tries >= 3) el.panel.querySelector(`[data-item="${s.answer}"]`)?.classList.add("petunjuk");
     return;
@@ -557,17 +755,31 @@ function pickItem(item: Item, btn?: HTMLElement) {
   say("Betul! Itu sapu. Terima kasih, ya!");
 }
 
+// ------------------------------------------------------------------- colouring as a step
+/** Back from the colouring screen: the cow wears the child's colours. */
+function colouringDone() {
+  const s = STEPS[R.si]; if (s.kind !== "warnai") return;
+  R.art = { colors: board.regionColors(), png: board.snapshot(320) };
+  cow!.setColors(R.art.colors as Record<string, string | null>);
+  show("main");
+  R.phase = "done"; renderStep(); cow!.hop();
+  say("Wah, sapimu jadi berwarna! Geser untuk memutarnya.");
+}
+
 async function nextStep() {
   const s = STEPS[R.si];
   if (R.si === STEPS.length - 1) { finish(); return; }
   const n = STEPS[R.si + 1];
   if (n.chapter !== s.chapter) {
+    // save point: an unfinished episode goes on from here next time
+    progress.saveRun({ ep: 1, si: R.si + 1, mangoes: R.mangoes, art: R.art, at: Date.now() });
+    stepToken++;
+    el.main.classList.remove("menulis");
     el.panel.innerHTML = `<p class="pujian">Ayo jalan…</p>`;
     clearBadges();
     cow!.calm = 0;
-    const to = n.chapter === 1 ? STOPS.pohon - 1.2 : STOPS.rumah - 2.4;
-    if (n.kind === "pick") { openStep(R.si + 1); return; }
-    await walkTo(to);
+    const to = CHAPTER_X[n.chapter];
+    if (Math.abs(cow!.group.position.x - to) > 0.05) await walkTo(to);
     if (!running) return;
   }
   openStep(R.si + 1);
@@ -575,24 +787,33 @@ async function nextStep() {
 
 function finish() {
   clearBadges();
-  const png = board.snapshot(320);
+  stepToken++;
+  const png = R.art?.png ?? board.snapshot(320);
   progress.addSticker(png);
+  progress.clearRun();
   el.newSticker.src = png;
   show("selesai");
   say("Hore! Sapimu sudah membantu Ibu. Stikernya masuk ke buku stiker.");
 }
-el.againBtn.addEventListener("click", () => { board.clear(); show("warnai"); });
+el.againBtn.addEventListener("click", () => { progress.clearRun(); board.clear(); startAdventure(); });
 el.toMapBtn.addEventListener("click", goHome);
 
 // ------------------------------------------------------------------- parent tools (also the keyboard path)
 function renderParentTools() {
   const s = STEPS[R.si];
-  el.ortuMainIsi.innerHTML = s.kind === "count"
-    ? `<p>Biarkan anak mengetuk sendiri satu per satu, lalu memilih angkanya. Beri jeda sebelum membantu, dan puji usahanya.</p>
-       <button class="tombol putih kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu</button>`
-    : s.kind === "build"
-      ? `<p>Tunjuk papan nama rumah, baca pelan bersama: ru, mah. Anak menyusun kartunya sendiri.</p>`
-      : `<p>Ajak anak membaca kartu: sa, pu. Jangan sebutkan bendanya dulu; biar anak yang memilih.</p>`;
+  const tip: Record<Step["kind"], string> = {
+    count: s.kind === "count" && s.glance
+      ? `<p>Lihat sekilas: anak menebak jumlah kecil tanpa menghitung satu per satu. Kalau belum bisa, aplikasi beralih ke menghitung dengan ketukan.</p>`
+      : `<p>Biarkan anak mengetuk sendiri satu per satu, lalu memilih angkanya. Beri jeda sebelum membantu, dan puji usahanya.</p>
+       <button class="tombol putih kecil" id="tandai" type="button">Ketukan tidak kena? Tandai satu</button>`,
+    suku: `<p>Tunjuk kartu dari kiri ke kanan sambil membaca pelan: sa, pi. Biarkan anak mengetuk sendiri.</p>`,
+    warnai: `<p>Biarkan anak memilih warnanya sendiri, warna apa saja boleh. Warna itu akan dipakai sapi 3D.</p>`,
+    tulis: `<p>Anak mulai dari titik hijau dan mengikuti panah. Kalau dua kali meleset, aplikasi menunjukkan contoh dan jalurnya dibuat lebih lebar.</p>`,
+    urut: `<p>Ajak anak menyebut angkanya keras-keras sebelum mengetuk batu: satu, dua, tiga.</p>`,
+    build: `<p>Tunjuk papan nama rumah, baca pelan bersama: ru, mah. Anak menyusun kartunya sendiri.</p>`,
+    pick: `<p>Ajak anak membaca kartu: sa, pu. Jangan sebutkan bendanya dulu; biar anak yang memilih.</p>`,
+  };
+  el.ortuMainIsi.innerHTML = tip[s.kind];
   document.getElementById("tandai")?.addEventListener("click", () => {
     const st = STEPS[R.si]; if (st.kind !== "count" || R.phase !== "count") return;
     const ts = targetsOf(st.target), i = ts.findIndex((_, k) => !R.counted.includes(k));
@@ -612,7 +833,8 @@ function bindTaps() {
     if (Math.abs(dx) > 8 || Math.abs(e.clientY - down.y) > 8) down.moved = true;
     const s = STEPS[R.si];
     // the child may turn the cow while getting to know it
-    if (down.moved && s.kind === "count" && s.target !== "mangga") cow!.group.rotation.y = down.rot + dx * 0.012;
+    const turnable = (s.kind === "count" && s.target !== "mangga") || s.kind === "warnai" || (s.kind === "suku" && s.id === "kalung");
+    if (down.moved && turnable) cow!.group.rotation.y = down.rot + dx * 0.012;
   });
   c.addEventListener("pointercancel", () => { down = null; });
   c.addEventListener("pointerup", (e) => {
@@ -640,16 +862,36 @@ function onTap() {
 }
 
 // =================================================================== PWA + start
-registerSW({ immediate: true });
+/*
+ * Updates: a new version is downloaded in the background. It is switched on (the page reloads by
+ * itself) only on the map, sticker book or parents' room, never in the middle of an episode, so the
+ * child loses nothing and nobody has to clear a cache. Phones that keep the app open for days check
+ * again every 30 minutes and whenever the app comes back to the front.
+ */
+let updateReady = false;
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() { updateReady = true; applyUpdateIfCalm(); },
+  onRegisteredSW(_url, reg) {
+    if (!reg) return;
+    const check = () => { if (navigator.onLine) reg.update().catch(() => undefined); };
+    setInterval(check, 30 * 60 * 1000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+  },
+});
+function applyUpdateIfCalm() {
+  if (updateReady && (current === "peta" || current === "stiker" || current === "ortu")) { updateReady = false; updateSW(true); }
+}
 let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e as typeof installEvt; el.installBtn.hidden = false; });
 el.installBtn.addEventListener("click", async () => { if (!installEvt) return; el.installBtn.hidden = true; await installEvt.prompt(); installEvt = null; });
 window.addEventListener("appinstalled", () => { el.installBtn.hidden = true; });
 
+document.getElementById("versi")!.textContent = __BUILD__;
 show("peta");
 history.replaceState({ rk: "home" }, "");
 
 // Handle for automated browser tests.
 (window as unknown as { __RK: unknown }).__RK = {
-  board, get cow() { return cow; }, get world() { return world; }, camera, THREE, anchorOf, cameraSettled, get R() { return R; }, STEPS, get screen() { return current; },
+  board, trace, progress, get cow() { return cow; }, get world() { return world; }, camera, THREE, anchorOf, cameraSettled, get R() { return R; }, STEPS, get screen() { return current; },
 };

@@ -1,7 +1,13 @@
 import { defineConfig } from "vitest/config";
 import { VitePWA } from "vite-plugin-pwa";
+import { execSync } from "node:child_process";
+
+// Shown in the parents' room, so anyone can tell which version a phone is running.
+const sha = (process.env.VERCEL_GIT_COMMIT_SHA || (() => { try { return execSync("git rev-parse HEAD").toString().trim(); } catch { return "lokal"; } })()).slice(0, 7);
+const BUILD = `${sha} · ${new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`;
 
 export default defineConfig({
+  define: { __BUILD__: JSON.stringify(BUILD) },
   build: {
     target: "es2020", chunkSizeWarningLimit: 900,
     // index.html = the game (main product); scan.html = the earlier paper-scan prototype, kept for reference
@@ -9,7 +15,9 @@ export default defineConfig({
   },
   plugins: [
     VitePWA({
-      registerType: "autoUpdate",
+      // A new version waits until the child is back on the map, then the app reloads itself there
+      // (see src/play/app.ts). Nobody has to clear a cache, and nobody loses a half-played episode.
+      registerType: "prompt",
       injectRegister: false, // registered in src/main.ts
       includeAssets: ["icons/favicon-64.png", "icons/apple-touch-icon.png", "brand/*.png", "demo/*.jpg"],
       manifest: {
@@ -32,6 +40,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,woff2,webmanifest}"],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallback: "/index.html",

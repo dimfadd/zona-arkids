@@ -3,6 +3,26 @@
 Catatan keputusan dan perubahan, terbaru di atas. Setiap sesi kerja menambah satu entri:
 tanggal, apa yang diputuskan (dan oleh siapa), apa yang berubah, hasil uji, dan apa yang belum.
 
+## 2026-11-08 · E01 tahap 1: menebalkan huruf, soal lebih banyak, krayon bidik, pembaruan otomatis
+- Pemilik: (1) setiap ada pembaruan web tidak berubah sampai cache dihapus, ini tidak bisa dibebankan ke
+  pembeli; (2) krayon jari ikut mewarnai bagian luar saat lewat menuju bagian dalam (kasus donat), usul
+  lingkaran "aktifkan warna"; (3) soal dalam satu episode masih sedikit.
+- Pembaruan: PWA diubah ke mode "prompt" dengan penjaga: versi baru dipasang otomatis (muat ulang) hanya
+  di peta/stiker/ruang orang tua, dicek tiap 30 menit dan saat aplikasi kembali dibuka. Versi tampil di
+  ruang Ayah/Bunda. Halaman arsip scan langsung memperbarui diri.
+- Krayon: usul lingkaran aktivasi tidak dipakai (dua kontrol terlalu sulit untuk 4-5 tahun). Gantinya
+  "bidik otomatis": goresan milik bagian tempat krayon paling banyak mewarnai; coretan di bagian yang
+  dilewati ditarik kembali; terkunci setelah ±110 unit. Diuji E2E: lewat badan ke corak → hanya corak;
+  lama di badan lalu terpeleset ke corak → tetap badan.
+- Komponen baru: TULIS-TEBAL + TULIS-LENGKAPI (15 huruf, penilai per goresan, 142 tes unit), HITUNG-SEKILAS,
+  BACA-KETUK-SUKU (dengan varian jeda), HITUNG-URUT (sungai + 5 batu di 3D). Laporan orang tua kini
+  mencatat menulis.
+- E01: dari 5 menjadi 11 aktivitas dalam 5 babak, dibuka dengan menghitung sapi putih, mewarnai di
+  tengah babak 1; titik simpan di awal setiap babak (kartu episode menawarkan "Lanjutkan").
+- Bug yang ditemukan tes: tirai sekilas menutupi ketukan (CSS mengalahkan `hidden`); lompatan sapi
+  bertabrakan bila batu diketuk cepat. Keduanya diperbaiki.
+- Uji: `npm test` 152 lulus, `npm run e2e` lulus di 4 ukuran layar. Belum diuji di HP asli.
+
 ## 2026-11-07 · Keputusan pemilik soal durasi dan rilis
 - Durasi episode tetap 15-18 menit dengan titik simpan per babak (pemilik: masih normal).
 - E01 menjadi episode gratis untuk iklan Meta.

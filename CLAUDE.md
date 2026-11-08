@@ -19,20 +19,26 @@ objek 3D (warna anak terbawa ke bagian yang sama), lalu ikut petualangan pendek 
 berisi soal berhitung dan membaca. Pemilik memutuskan tidak memakai AR kertas (biaya HPP kertas,
 cetak, kirim). Iklan utama: Meta.
 
-Prototipe pertama (sudah jalan, `apps/scan/index.html`): sapi.
-1. Warnai sapi (10 krayon, kuas besar/kecil, penghapus, urungkan, hapus semua).
-2. Sapi 3D (toon + garis tinta). Kenalan: hitung kaki (4) dan tanduk (2), lalu pilih angka.
-3. Jalan ke pohon: hitung mangga (acak 3-5), pilih angka.
-4. Rumah Budi: susun kartu RU + MAH (pengecoh BU), pintu terbuka.
-5. Ibu minta SA·PU: anak membaca kartu lalu memilih benda (bola / sapu / topi), di 3D atau tombol gambar.
-6. Selesai: gambar anak jadi stiker di "kebun stiker"; laporan untuk orang tua.
+E01 yang jalan sekarang (`apps/scan/index.html`, rilis bertahap dari storyboard): 11 aktivitas dalam
+5 babak pendek (Sapi, Pohon, Sungai, Rumah, Ibu), sekitar 10-12 menit. Awal setiap babak = titik simpan.
+1. Sapi putih dari buku: hitung kaki (KETUK) → ketuk kartu SA·PI di kalung → **warnai** sapi → tanduk
+   **lihat sekilas** (panggung ditutup, pilih 1-4; salah 2 kali → menghitung dengan ketukan).
+2. Pohon: hitung mangga (acak 3-5) → **tebalkan S** di keranjang.
+3. Sungai: **batu titian 1-5** (2 pilihan per langkah, sapi melompat).
+4. Rumah: susun RU + MAH (pengecoh BU) → papan **S _ PI: tulis A** (3 goresan).
+5. Ibu: baca SA·PU, pilih sapu → baca papan SA·PI bersama (jeda 2 detik). Stiker + laporan.
+Belum dibangun dari storyboard E01: TULIS-JALUR, HITUNG-AMBIL (seret mangga), momen ringan
+GOSOK/SERET, WARNA-BENDA-KECIL (atap kandang), papan nama SAPI di 3D.
 
 Navigasi (sejak desain ulang): beranda = **Peta Petualangan** (pulau per episode dari `src/play/episodes.ts`),
 kartu episode dari bawah, **Buku Stiker**, **Ruang Ayah/Bunda** di balik gerbang orang tua (laporan,
 pengaturan mode mewarnai, hapus data), tombol suara on/off. Login dan landing page belum, sengaja ditunda.
 
 Mewarnai punya dua mode (`coloring.ts`): **Jari** (bawaan untuk sentuhan): krayon virtual dengan ujung
-64 px di atas jari, dan goresan terkunci di bagian gambar tempat goresan dimulai (tidak meluber).
+64 px di atas jari; satu goresan hanya mewarnai satu bagian. Bagian itu = bagian tempat krayon paling
+banyak mewarnai, bukan tempat jari mendarat: krayon yang melintasi bagian luar menuju bagian dalam
+(kasus donat) hanya mewarnai bagian dalam, coretan di bagian luar ditarik kembali. Setelah ±110 unit
+gambar mewarnai satu bagian, pilihan terkunci (keluar garis sedikit tidak memindahkan warna).
 **Pen**: langsung di bawah pen/mouse, bebas. Pen stylus terdeteksi otomatis; pilihan diingat di HP.
 
 Aturan permainan:
@@ -53,8 +59,9 @@ Storyboard dirancang oleh agen `.claude/agents/storyboard-episode.md` (format da
 hasilnya di `docs/episodes/`: `E01-sapi-ke-rumah-budi.md` (versi lengkap, 8 adegan, 11-15 menit, dengan
 menebalkan huruf S A), `E02-astronot-roket-kertas.md`, dan `musim-1.md` (peta 10 episode Tingkat 1:
 15 huruf, 21 kata KV-KV, angka 1-5 lalu 1-10). Prototipe yang jalan sekarang masih E01 versi pendek.
-Komponen yang dipakai semua episode dan belum dibangun: **menebalkan huruf** (titik mulai, panah, cek
-arah goresan) dan **lihat sekilas** (subitizing). Urutan goresan huruf perlu disahkan guru TK.
+Komponen sudah dibangun: TULIS-TEBAL/LENGKAPI (`tracing-data.ts` = 15 huruf musim 1 + penilai,
+`trace-board.ts` = papan tulis), HITUNG-SEKILAS, BACA-KETUK-SUKU, HITUNG-URUT. Urutan goresan huruf
+masih tebakan wajar dan **perlu disahkan guru TK**.
 
 ## Struktur repo
 ```
@@ -65,7 +72,9 @@ apps/scan/            PWA (Vite + TS + three.js r128) yang di-deploy ke Vercel
   src/play/coloring.ts papan mewarnai + baca warna dominan per region
   src/play/cow3d.ts   sapi 3D dari bentuk sederhana; bagian terpisah = sasaran ketuk
   src/play/world.ts   jalan, pohon mangga, rumah Budi, Ibu, sapu/bola/topi
-  src/play/app.ts     alur layar dan langkah petualangan
+  src/play/app.ts     alur layar, langkah episode (STEPS), titik simpan, pembaruan otomatis
+  src/play/tracing-data.ts  data goresan huruf + penilai goresan (diuji di test/tracing.test.ts)
+  src/play/trace-board.ts   papan menebalkan huruf (titik mulai, panah, contoh, bantuan)
   e2e/play.mjs        memainkan seluruh petualangan di 4 ukuran layar
 content3d/sand3d/     program model 3D sand3d (sepeda, sapi) + hasil uji; lihat README di sana
 prototype/            prototipe asli + pipeline konten Python (arsip AR kertas)
@@ -74,7 +83,8 @@ docs/brand/           logo asli + prompt logo
 Vercel: Root Directory = `apps/scan`; konfigurasi di `apps/scan/vercel.json`.
 
 ## Tes
-- `cd apps/scan && npm test`: tes geometri/QR untuk arsip AR kertas.
+- `cd apps/scan && npm test`: penilai goresan huruf (benar lulus; terbalik, dari tengah, berhenti,
+  acak gagal) + tes geometri/QR arsip AR kertas.
 - `npm run build && npm run e2e`: `e2e/play.mjs` (warnai → warna pindah ke 3D → hitung kaki, tanduk,
   mangga dengan cek "sasaran tidak tertutup" dan jarak ≥ 44 px → susun RU+MAH → pilih sapu → stiker
   → laporan) lalu `e2e/smoke.mjs` (arsip AR kertas di /scan.html).
@@ -105,8 +115,11 @@ aturan jarak 20 mm di kertas, AR kamera. Anti-bajak untuk produk digital = konte
 - [x] Desain ulang UI: dunia potongan kertas, peta episode, buku stiker, ruang Ayah/Bunda.
 - [x] Storyboard E01 lengkap, E02, peta musim 1.
 - [x] Katalog aktivitas (26 jenis) + E01/E02 versi bervariasi + pola pembuka musim 1.
-- [ ] Bangun komponen dari `docs/episodes/katalog-aktivitas.md` bertahap (paling sering dipakai dulu,
-  terberat TULIS-TEBAL) dan pasang langsung ke E01 versi baru. Diputuskan: 15-18 menit dengan titik
-  simpan, E01 = episode gratis untuk iklan, huruf kapital campur kecil boleh.
+- [x] Tahap 1 komponen: TULIS-TEBAL/LENGKAPI, HITUNG-SEKILAS, BACA-KETUK-SUKU, HITUNG-URUT; E01 jadi
+  11 aktivitas, titik simpan per babak, pembaruan otomatis tanpa hapus cache, krayon "bidik" (donat).
+- [ ] Tahap 2 E01: TULIS-JALUR, HITUNG-AMBIL (seret), momen ringan GOSOK/SERET, WARNA-BENDA-KECIL,
+  papan nama 3D. Diputuskan: 15-18 menit dengan titik simpan, E01 = episode gratis untuk iklan
+  (iklan baru jalan setelah E01 lengkap), huruf kapital campur kecil boleh.
+- [ ] Urutan goresan 15 huruf disahkan guru TK.
 - [ ] Objek dan episode berikutnya (benda/kendaraan via sand3d, hewan via three.js).
 - [ ] Akun, pembayaran Midtrans, penguncian konten, toko + pixel Meta (server-side Purchase).

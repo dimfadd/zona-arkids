@@ -914,7 +914,8 @@ el.viewBtn.addEventListener("click", () => {
 });
 
 // ----------------------------------------------------------------- PWA
-registerSW({ immediate: true });
+// the archived paper-scan page has nothing to lose: switch to a new version as soon as it is ready
+const updateScan = registerSW({ immediate: true, onNeedRefresh() { updateScan(true); } });
 
 let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
 window.addEventListener("beforeinstallprompt", (e) => {

@@ -5,7 +5,9 @@
 import * as THREE from "three";
 import { inked, toonMat } from "./cow3d";
 
-export const STOPS = { start: 0, pohon: 8, rumah: 17.2 };
+export const STOPS = { start: 0, pohon: 8, sungai: 12.6, rumah: 17.2 };
+/** Stepping stones across the river, in order 1..5. */
+export const STONES_X = [0, 1, 2, 3, 4].map((i) => STOPS.sungai - 1.3 + i * 0.65);
 export type Item = "sapu" | "bola" | "topi";
 
 /** A canvas texture with words in the children's typeface (Andika). */
@@ -38,11 +40,24 @@ export class World {
     ground.rotation.x = -Math.PI / 2; ground.position.set(10, 0, 0); g.add(ground);
     const road = new THREE.Mesh(new THREE.PlaneGeometry(60, 2.2), toonMat("#e6cf9f"));
     road.rotation.x = -Math.PI / 2; road.position.set(10, 0.01, 0.4); g.add(road);
+    // a small river across the road, with five stepping stones (HITUNG-URUT)
+    const river = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 40), toonMat("#7cc4ef"));
+    river.rotation.x = -Math.PI / 2; river.position.set(STOPS.sungai, 0.02, 0); g.add(river);
+    for (const side of [-1, 1]) {
+      const bank = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 40), toonMat("#26231f"));
+      bank.rotation.x = -Math.PI / 2; bank.position.set(STOPS.sungai + side * 1.7, 0.025, 0); g.add(bank);
+    }
+    const rock = toonMat("#b9b2a3");
+    STONES_X.forEach((x, i) => {
+      const st = inked(new THREE.CylinderGeometry(0.27, 0.3, 0.14, 18), rock, 0.03);
+      st.position.set(x, 0.07, 0.4 + (i % 2 ? 0.12 : -0.12)); g.add(st);
+    });
     // a few flowers along the road, for depth while walking
     const petal = toonMat("#f39bb6"), heart = toonMat("#f7c925");
     for (let i = 0; i < 14; i++) {
       const f = new THREE.Group();
       const x = -6 + i * 2.1 + (i % 3) * 0.4, z = i % 2 ? 2.2 : -1.6 - (i % 3) * 0.5;
+      if (Math.abs(x - STOPS.sungai) < 2) continue; // no flowers in the river
       f.position.set(x, 0, z);
       const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35, 6), toonMat("#3e8a4a")); stem.position.y = 0.17;
       const bloom = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), i % 2 ? petal : toonMat("#ffffff")); bloom.position.y = 0.38;

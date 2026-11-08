@@ -15,11 +15,16 @@ export type Tool = "kuas" | "hapus";
 /**
  * How the child colours:
  * - "jari": a finger on glass is fat and hides what it paints, so a virtual crayon is drawn with its tip
- *   a little above the finger, and the stroke stays inside the part where it started (no spilling over).
+ *   a little above the finger, and each stroke stays inside one part (no spilling over). Which part is
+ *   decided by where the crayon actually colours, not where it first lands: a stroke that crosses an
+ *   outer part on its way to an inner one belongs to the inner part once it has coloured more there,
+ *   and the streak left on the outer part is taken back. After AIM_LOCK of colouring in one part the
+ *   choice is fixed, so scribbling over the edge later does not switch parts.
  * - "pen": a stylus (or a mouse) paints right where it touches, free, like real colouring.
  */
 export type InputMode = "jari" | "pen";
 const TIP_OFFSET = { x: -10, y: -64 }; // CSS px from the finger to the crayon tip
+const AIM_LOCK = 110 * SCALE;          // canvas px of colouring in one part that fixes the stroke to it
 
 export class ColoringBoard {
   readonly el: HTMLDivElement;
@@ -41,9 +46,14 @@ export class ColoringBoard {
   private crayonEl: HTMLDivElement;
   private scratch: HTMLCanvasElement;
   private masks = new Map<number, HTMLCanvasElement>();
-  /** Region (1-based) the current finger stroke is kept inside; 0 = free stroke. */
+  /** Finger stroke: kept inside one region (strokeRegion, 1-based; 0 = none yet, paints nothing). */
+  private clipped = false;
   private strokeRegion = 0;
-  private strokeIgnored = false;
+  /** While aiming: the whole stroke unclipped, the page before it, and how far it ran in each region. */
+  private pending: HTMLCanvasElement | null = null;
+  private before: ImageData | null = null;
+  private runIn = new Map<number, number>();
+  private locked = false;
 
   constructor() {
     this.el = document.createElement("div");
@@ -149,7 +159,8 @@ export class ColoringBoard {
 
   private stroke(a: { x: number; y: number }, b: { x: number; y: number }) {
     const erase = this.tool === "hapus";
-    if (!this.strokeRegion) {
+    if (this.clipped && !this.strokeRegion) return;
+    if (!this.clipped) {
       const x = this.px;
       x.save(); x.globalCompositeOperation = erase ? "destination-out" : "source-over"; this.styleStroke(x);
       x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x + 0.01, b.y); x.stroke(); x.restore();
@@ -169,6 +180,33 @@ export class ColoringBoard {
     s.clearRect(x0, y0, w, h);
   }
 
+  /** Lay the whole pending stroke on the page again, cut to region r (used when the aim changes). */
+  private recomposite(r: number) {
+    this.px.putImageData(this.before!, 0, 0);
+    if (!r) return;
+    const s = this.scratch.getContext("2d")!;
+    s.clearRect(0, 0, BOARD_W, BOARD_H);
+    s.drawImage(this.pending!, 0, 0);
+    s.save(); s.globalCompositeOperation = "destination-in"; s.drawImage(this.mask(r), 0, 0); s.restore();
+    const x = this.px;
+    x.save(); x.globalCompositeOperation = this.tool === "hapus" ? "destination-out" : "source-over"; x.drawImage(this.scratch, 0, 0); x.restore();
+    s.clearRect(0, 0, BOARD_W, BOARD_H);
+  }
+
+  /** Finger stroke from a to b: note where it ran, and switch parts while still aiming. */
+  private fingerStroke(a: { x: number; y: number }, b: { x: number; y: number }) {
+    if (this.locked) { this.stroke(a, b); return; }
+    const pd = this.pending!.getContext("2d")!;
+    pd.save(); this.styleStroke(pd); pd.beginPath(); pd.moveTo(a.x, a.y); pd.lineTo(b.x + 0.01, b.y); pd.stroke(); pd.restore();
+    const r = this.regionAt({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+    if (r) this.runIn.set(r, (this.runIn.get(r) ?? 0) + Math.hypot(b.x - a.x, b.y - a.y));
+    let lead = this.strokeRegion, most = this.runIn.get(lead) ?? 0;
+    for (const [k, v] of this.runIn) if (v > most) { lead = k; most = v; }
+    if (lead !== this.strokeRegion) { this.strokeRegion = lead; this.recomposite(lead); }
+    else this.stroke(a, b);
+    if (most >= AIM_LOCK) { this.locked = true; this.pending = null; this.before = null; this.runIn.clear(); }
+  }
+
   private bindPointer() {
     const c = this.paint;
     let crayon = false;
@@ -181,25 +219,26 @@ export class ColoringBoard {
       this.pushUndo();
       const p = this.point(e, crayon);
       this.crayonEl.hidden = !crayon;
-      // a finger stroke belongs to the part under the crayon tip; until the tip reaches a part, nothing is painted
-      this.strokeRegion = crayon ? this.regionAt(p) : 0;
-      this.strokeIgnored = crayon && this.strokeRegion === 0;
+      this.clipped = crayon;
       this.last = p;
-      if (!this.strokeIgnored) this.stroke(p, p);
+      if (!crayon) { this.strokeRegion = 0; this.stroke(p, p); return; }
+      // aiming starts in the part under the tip (none if the tip is off the cow)
+      this.strokeRegion = this.regionAt(p); this.locked = false; this.runIn.clear();
+      this.before = this.undoStack[this.undoStack.length - 1];
+      this.pending ??= document.createElement("canvas");
+      this.pending.width = BOARD_W; this.pending.height = BOARD_H; // also clears it
+      this.fingerStroke(p, p);
     });
     c.addEventListener("pointermove", (e) => {
       if (e.pointerId !== this.activePointer || !this.last) return;
       const p = this.point(e, crayon);
-      if (this.strokeIgnored) {
-        const r = this.regionAt(p);
-        if (r) { this.strokeRegion = r; this.strokeIgnored = false; this.last = p; }
-        else { this.last = p; return; }
-      }
-      this.stroke(this.last, p); this.last = p;
+      if (this.clipped) this.fingerStroke(this.last, p); else this.stroke(this.last, p);
+      this.last = p;
     });
     const end = (e: PointerEvent) => {
       if (e.pointerId !== this.activePointer) return;
-      this.activePointer = null; this.last = null; this.strokeRegion = 0; this.strokeIgnored = false;
+      this.activePointer = null; this.last = null; this.strokeRegion = 0; this.clipped = false;
+      this.locked = false; this.pending = null; this.before = null; this.runIn.clear();
       this.crayonEl.hidden = true; this.onChange();
     };
     c.addEventListener("pointerup", end);

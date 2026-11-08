@@ -12,8 +12,12 @@ lalu aturan ini diperbarui.
    "WARN" (sasaran ketuk < 44 px) dicatat; perbaikannya di aset atau sudut kamera, bukan di tes.
 4. Sebelum commit, periksa `git status`: jangan ikut meng-commit screenshot tes (`e2e/out*`), foto
    referensi (`ref/`), venv, atau file besar lain. Kalau terlanjur, hapus dengan commit baru.
-5. Push ke GitHub = Vercel deploy ulang otomatis (Root Directory `apps/scan`). Setelah push, minta
-   pemilik membuka ulang aplikasi; PWA bisa menampilkan versi lama sekali sebelum memuat yang baru.
+5. Push ke GitHub = Vercel deploy ulang otomatis (Root Directory `apps/scan`). Aplikasi memperbarui
+   diri sendiri: versi baru diunduh di belakang dan dipasang (halaman memuat ulang) hanya saat anak di
+   peta, buku stiker, atau ruang Ayah/Bunda, tidak pernah di tengah episode. Pengguna tidak perlu
+   menghapus cache. Versi yang sedang jalan terlihat di ruang Ayah/Bunda ("Versi <commit> · <waktu>");
+   pakai itu untuk memastikan HP sudah memuat versi terbaru. Jangan kembalikan ke `autoUpdate` tanpa
+   penjaga ini (bisa memuat ulang di tengah soal).
 6. Akhiri sesi dengan: entri baru di `docs/LOG.md`, `CLAUDE.md` bagian Status diperbarui, dan aturan
    baru (kalau ada) ditambahkan di file ini.
 
